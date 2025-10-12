@@ -1,52 +1,57 @@
-// A client component button for registering for an event.
+// src/components/features/register-event-button.tsx
+
 'use client';
 
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import axios from 'axios';
+import axios, { isAxiosError } from 'axios';
 import toast from 'react-hot-toast';
 
 type RegisterEventButtonProps = {
     eventId: string;
+    isInitiallyRegistered: boolean; // Prop mới
 };
 
-export const RegisterEventButton = ({ eventId }: RegisterEventButtonProps) => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { data: session, status } = useSession();
+export const RegisterEventButton = ({ eventId, isInitiallyRegistered }: RegisterEventButtonProps) => {
+    const { status } = useSession();
     const router = useRouter();
-    const [isLoading, setIsLoading] = useState(false);
 
-    const handleRegister = async () => {
-        // Direct to login if haven't signed in
+    // Dùng state để quản lý trạng thái đăng ký/hủy đăng ký
+    const [isRegistered, setIsRegistered] = useState(isInitiallyRegistered);
+    const [isPending, startTransition] = useTransition(); // deal with loading state
+
+    const handleClick = async () => {
         if (status === 'unauthenticated') {
             router.push('/login');
             return;
         }
 
-        setIsLoading(true);
-        try {
-            await axios.post(`/api/events/${eventId}/register`);
-            toast.success('Đăng ký tham gia thành công!');
-        } catch (error) {
-            if (axios.isAxiosError(error)) {
-                toast.error(error.response?.data || 'Có lỗi xảy ra.');
-            } else {
-                toast.error('Có lỗi không mong muốn xảy ra.');
+        startTransition(async () => {
+            try {
+                if (isRegistered) {
+                    await axios.delete(`/api/events/${eventId}/register`);
+                    toast.success('Hủy đăng ký thành công!');
+                    setIsRegistered(false);
+                } else {
+                    await axios.post(`/api/events/${eventId}/register`);
+                    toast.success('Đăng ký tham gia thành công!');
+                    setIsRegistered(true);
+                }
+            } catch (error) {
+                if (isAxiosError(error)) {
+                    toast.error(error.response?.data || 'Có lỗi xảy ra.');
+                } else {
+                    toast.error('Có lỗi không mong muốn xảy ra.');
+                    console.error(error);
+                }
             }
-        } finally {
-            setIsLoading(false);
-        }
+        });
     };
-
-
 
     if (status !== 'authenticated') {
         return (
-            <button
-                onClick={handleRegister}
-                className="w-full md:w-auto px-8 py-3 text-lg font-medium text-white bg-gray-500 border border-transparent rounded-md shadow-sm hover:bg-gray-600"
-            >
+            <button onClick={handleClick} className="...">
                 Đăng nhập để đăng ký
             </button>
         );
@@ -54,11 +59,14 @@ export const RegisterEventButton = ({ eventId }: RegisterEventButtonProps) => {
 
     return (
         <button
-            onClick={handleRegister}
-            disabled={isLoading}
-            className="w-full md:w-auto px-8 py-3 text-lg font-medium text-white bg-green-600 border border-transparent rounded-md shadow-sm hover:bg-green-700 disabled:bg-green-400"
+            onClick={handleClick}
+            disabled={isPending}
+            className={`w-full md:w-auto px-8 py-3 text-lg font-medium text-white border border-transparent rounded-md shadow-sm disabled:opacity-50 ${isRegistered
+                ? 'bg-red-600 hover:bg-red-700'
+                : 'bg-green-600 hover:bg-green-700'
+                }`}
         >
-            {isLoading ? 'Đang xử lý...' : 'Đăng ký tham gia sự kiện này'}
+            {isPending ? 'Đang xử lý...' : isRegistered ? 'Hủy đăng ký' : 'Đăng ký tham gia sự kiện này'}
         </button>
     );
 };

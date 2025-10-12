@@ -3,6 +3,8 @@
 import prisma from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { RegisterEventButton } from '@/components/features/register-event-button';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 
 type EventDetailPageProps = {
     params: Promise<{
@@ -13,20 +15,26 @@ type EventDetailPageProps = {
 export default async function EventDetailPage({ params }: EventDetailPageProps) {
     const { id } = await params;
 
-    // fetch data base on id
-    const event = await prisma.event.findUnique({
-        where: {
-            id: id,
-        },
-        include: {
-            organization: true,
-        },
-    });
+    const session = await getServerSession(authOptions);
+    const userId = session?.user?.id;
+
+    // Use Promise.all for better performance
+    const [event, registration] = await Promise.all([
+        prisma.event.findUnique({
+            where: { id: id },
+            include: { organization: true },
+        }),
+        userId ? prisma.registration.findUnique({
+            where: { userId_eventId: { userId, eventId: id } },
+        }) : null,
+    ]);
 
 
     if (!event) {
         notFound();
     }
+
+    const isRegistered = !!registration;
 
     // Helper for formatting date
     const formatDateTime = (date: Date) => {
@@ -70,7 +78,7 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
 
                     {/* Registry buttion*/}
                     <div className="border-t pt-6 text-center">
-                        <RegisterEventButton eventId={event.id} />
+                        <RegisterEventButton eventId={event.id} isInitiallyRegistered={isRegistered} />
                     </div>
                 </div>
             </div>

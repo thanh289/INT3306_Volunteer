@@ -11,9 +11,10 @@ type EventWithOrganization = Event & {
 
 type EventCardProps = {
     event: EventWithOrganization;
+    isCompleted?: boolean;
 };
 
-export const EventCard = ({ event }: EventCardProps) => {
+export const EventCard = ({ event, isCompleted }: EventCardProps) => {
     const eventDate = new Date(event.startDateTime).toLocaleDateString('vi-VN', {
         weekday: 'long',
         year: 'numeric',
@@ -23,8 +24,13 @@ export const EventCard = ({ event }: EventCardProps) => {
 
     return (
         <Link href={`/events/${event.id}`}>
-            <div className="border rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 bg-white">
-                <div className="p-6">
+            <div className="border rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 bg-white h-full flex flex-col">
+                <div className="p-6 flex-grow relative">
+                    {isCompleted && (
+                        <span className="absolute top-2 right-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                            ĐÃ HOÀN THÀNH
+                        </span>
+                    )}
                     <p className="text-sm text-indigo-600 font-semibold">{event.organization.name}</p>
                     <h3 className="text-xl font-bold mt-2 text-gray-900">{event.title}</h3>
                     <p className="text-gray-600 mt-2">{event.location}</p>

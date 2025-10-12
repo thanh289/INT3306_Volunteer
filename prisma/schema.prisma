@@ -58,8 +58,9 @@ model Event {
 }
 
 model Registration {
-    id        String   @id @default(auto()) @map("_id") @db.ObjectId
-    createdAt DateTime @default(now())
+    id          String   @id @default(auto()) @map("_id") @db.ObjectId
+    createdAt   DateTime @default(now())
+    isCompleted Boolean  @default(false)
 
     // Which user
     userId String @db.ObjectId
