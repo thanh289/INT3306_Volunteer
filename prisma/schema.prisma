@@ -37,8 +37,15 @@ model Organization {
     events Event[]
 }
 
+enum EventCategory {
+    ENVIRONMENT
+    EDUCATION
+    HEALTHCARE
+    COMMUNITY
+}
+
 model Event {
-    id            String   @id @default(auto()) @map("_id") @db.ObjectId
+    id            String        @id @default(auto()) @map("_id") @db.ObjectId
     title         String
     description   String
     location      String
@@ -46,8 +53,9 @@ model Event {
     startDateTime DateTime
     endDateTime   DateTime
     maxAttendees  Int
-    createdAt     DateTime @default(now())
-    updatedAt     DateTime @updatedAt
+    category      EventCategory @default(COMMUNITY)
+    createdAt     DateTime      @default(now())
+    updatedAt     DateTime      @updatedAt
 
     // this event belong to a organization
     organizationId String       @db.ObjectId
