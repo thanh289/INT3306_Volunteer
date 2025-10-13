@@ -27,14 +27,19 @@ export const Navbar = () => {
                     {status === 'authenticated' && session?.user && (
                         <>
                             <Link
+                                href="/dashboard"
+                                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300"
+                            >
+                                Bảng tin
+                            </Link>
+                            <Link
                                 href="/my-events"
                                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300"
                             >
                                 Sự kiện của tôi
                             </Link>
 
-                            {/* Nút Tạo sự kiện sẽ được dành cho vai trò Tổ chức sau này */}
-                            {/* <Link href="/events/create" ... >Tạo sự kiện</Link> */}
+                            {/* CREATE EVENT BUTTON will be created for Organization later */}
 
                             <span className="text-gray-700">Chào, {session.user.name || session.user.email}</span>
                             <button
