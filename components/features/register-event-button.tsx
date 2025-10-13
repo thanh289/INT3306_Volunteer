@@ -10,14 +10,14 @@ import toast from 'react-hot-toast';
 
 type RegisterEventButtonProps = {
     eventId: string;
-    isInitiallyRegistered: boolean; // Prop mới
+    isInitiallyRegistered: boolean;
 };
 
 export const RegisterEventButton = ({ eventId, isInitiallyRegistered }: RegisterEventButtonProps) => {
     const { status } = useSession();
     const router = useRouter();
 
-    // Dùng state để quản lý trạng thái đăng ký/hủy đăng ký
+
     const [isRegistered, setIsRegistered] = useState(isInitiallyRegistered);
     const [isPending, startTransition] = useTransition(); // deal with loading state
 
@@ -38,6 +38,8 @@ export const RegisterEventButton = ({ eventId, isInitiallyRegistered }: Register
                     toast.success('Đăng ký tham gia thành công!');
                     setIsRegistered(true);
                 }
+
+                router.refresh();
             } catch (error) {
                 if (isAxiosError(error)) {
                     toast.error(error.response?.data || 'Có lỗi xảy ra.');

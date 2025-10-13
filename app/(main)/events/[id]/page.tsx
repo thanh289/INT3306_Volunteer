@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { RegisterEventButton } from '@/components/features/register-event-button';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { EventWall } from "@/components/features/event-wall";
 
 type EventDetailPageProps = {
     params: Promise<{
@@ -82,6 +83,8 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
                     </div>
                 </div>
             </div>
+
+            <EventWall eventId={event.id} isRegistered={isRegistered} />
         </div>
     );
 }

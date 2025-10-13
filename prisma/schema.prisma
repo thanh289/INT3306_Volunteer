@@ -19,8 +19,9 @@ model User {
     createdAt    DateTime @default(now())
     updatedAt    DateTime @updatedAt
 
-    // an user can registry multiple event
+    // an user can registry multiple event and have multiple post
     registrations Registration[]
+    posts         Post[]
 }
 
 model Organization {
@@ -61,8 +62,9 @@ model Event {
     organizationId String       @db.ObjectId
     organization   Organization @relation(fields: [organizationId], references: [id])
 
-    // an event can has multiple user
+    // an event can has multiple user and post
     registrations Registration[]
+    posts         Post[]
 }
 
 model Registration {
@@ -80,4 +82,16 @@ model Registration {
 
     // an user can only registry an event once
     @@unique([userId, eventId])
+}
+
+model Post {
+    id        String   @id @default(auto()) @map("_id") @db.ObjectId
+    content   String
+    createdAt DateTime @default(now())
+
+    eventId String @db.ObjectId
+    event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+    authorId String @db.ObjectId
+    author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
 }
