@@ -30,7 +30,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
     // Take filtered data
     const events = await prisma.event.findMany({
         where,
-        include: { organization: true },
+        include: { creator: true },
         orderBy,
     });
 

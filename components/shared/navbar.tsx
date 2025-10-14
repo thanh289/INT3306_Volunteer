@@ -4,12 +4,14 @@
 
 import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
+import { Role } from '@prisma/client';
 
 export const Navbar = () => {
     // use session to get in4 of user
     // data:session -> name, email, ...
     // status: loading, authenticated, unauthenticated
     const { data: session, status } = useSession();
+    const userRole = session?.user?.role as Role;
 
     return (
         <nav className="bg-white shadow-md">
@@ -39,7 +41,15 @@ export const Navbar = () => {
                                 Sự kiện của tôi
                             </Link>
 
-                            {/* CREATE EVENT BUTTON will be created for Organization later */}
+                            {/* This button only shown for manager and admin */}
+                            {(userRole === 'EVENT_MANAGER' || userRole === 'ADMIN') && (
+                                <Link
+                                    href="/events/create"
+                                    className="px-4 py-2 text-sm font-medium text-white bg-green-500 rounded-md hover:bg-green-600"
+                                >
+                                    Tạo sự kiện
+                                </Link>
+                            )}
 
                             <span className="text-gray-700">Chào, {session.user.name || session.user.email}</span>
                             <button

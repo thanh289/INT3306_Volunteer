@@ -6,15 +6,16 @@ import { RegisterEventButton } from '@/components/features/register-event-button
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { EventWall } from "@/components/features/event-wall";
+import { EventManagementButtons } from "@/components/features/event-management-buttons";
 
 type EventDetailPageProps = {
     params: Promise<{
-        id: string;
+        eventId: string;
     }>;
 };
 
 export default async function EventDetailPage({ params }: EventDetailPageProps) {
-    const { id } = await params;
+    const { eventId } = await params;
 
     const session = await getServerSession(authOptions);
     const userId = session?.user?.id;
@@ -22,11 +23,11 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
     // Use Promise.all for better performance
     const [event, registration] = await Promise.all([
         prisma.event.findUnique({
-            where: { id: id },
-            include: { organization: true },
+            where: { id: eventId },
+            include: { creator: true },
         }),
         userId ? prisma.registration.findUnique({
-            where: { userId_eventId: { userId, eventId: id } },
+            where: { userId_eventId: { userId, eventId: eventId } },
         }) : null,
     ]);
 
@@ -51,9 +52,9 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
     return (
         <div className="max-w-4xl mx-auto p-4 md:p-8">
             <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-                {/* Header with event's name and organization */}
+                {/* Header with name and creator */}
                 <div className="bg-indigo-600 p-8 text-white">
-                    <p className="text-lg font-semibold">{event.organization.name}</p>
+                    <p className="text-lg font-semibold">{event.creator.name}</p>
                     <h1 className="text-4xl font-bold mt-2">{event.title}</h1>
                 </div>
 
@@ -80,6 +81,11 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
                     {/* Registry buttion*/}
                     <div className="border-t pt-6 text-center">
                         <RegisterEventButton eventId={event.id} isInitiallyRegistered={isRegistered} />
+
+                        {/* More option for manager */}
+                        <div className="p-8">
+                            <EventManagementButtons event={event} />
+                        </div>
                     </div>
                 </div>
             </div>

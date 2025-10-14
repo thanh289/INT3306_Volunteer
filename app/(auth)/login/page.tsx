@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 import toast from 'react-hot-toast';
+import Link from 'next/link';
 
 export default function LoginPage() {
     const router = useRouter();
@@ -100,6 +101,13 @@ export default function LoginPage() {
                         </button>
                     </div>
                 </form>
+
+                <p className="mt-6 text-center text-sm text-gray-600">
+                    Chưa có tài khoản?{' '}
+                    <Link href="/register" className="font-medium text-indigo-600 hover:text-indigo-500">
+                        Đăng ký ngay
+                    </Link>
+                </p>
             </div>
         </div>
     );

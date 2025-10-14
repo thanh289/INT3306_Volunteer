@@ -7,6 +7,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import axios, { isAxiosError } from 'axios';
 import toast from 'react-hot-toast';
+import { Role } from '@prisma/client';
 
 type RegisterEventButtonProps = {
     eventId: string;
@@ -14,12 +15,17 @@ type RegisterEventButtonProps = {
 };
 
 export const RegisterEventButton = ({ eventId, isInitiallyRegistered }: RegisterEventButtonProps) => {
-    const { status } = useSession();
+    const { data: session, status } = useSession();
     const router = useRouter();
 
 
     const [isRegistered, setIsRegistered] = useState(isInitiallyRegistered);
     const [isPending, startTransition] = useTransition(); // deal with loading state
+
+    // This button just for user
+    if (session?.user?.role === Role.EVENT_MANAGER || session?.user?.role === Role.ADMIN) {
+        return null;
+    }
 
     const handleClick = async () => {
         if (status === 'unauthenticated') {

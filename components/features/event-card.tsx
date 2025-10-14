@@ -1,16 +1,16 @@
 // A reusable component to display a single event's summary information.
 
 
-import { Event, Organization } from '@prisma/client';
+import { Event, User } from '@prisma/client';
 import Link from 'next/link';
 
-// create an object with artribute Organization
-type EventWithOrganization = Event & {
-    organization: Organization;
+// create an object with artribute creator
+type EventWithCreator = Event & {
+    creator: User;
 };
 
 type EventCardProps = {
-    event: EventWithOrganization;
+    event: EventWithCreator;
     isCompleted?: boolean;
 };
 
@@ -31,7 +31,7 @@ export const EventCard = ({ event, isCompleted }: EventCardProps) => {
                             ĐÃ HOÀN THÀNH
                         </span>
                     )}
-                    <p className="text-sm text-indigo-600 font-semibold">{event.organization.name}</p>
+                    <p className="text-sm text-indigo-600 font-semibold">{event.creator.name}</p>
                     <h3 className="text-xl font-bold mt-2 text-gray-900">{event.title}</h3>
                     <p className="text-gray-600 mt-2">{event.location}</p>
                     <p className="text-gray-500 mt-4">{eventDate}</p>

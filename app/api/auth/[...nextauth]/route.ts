@@ -59,6 +59,7 @@ export const authOptions: AuthOptions = {
         jwt({ token, user }) {
             if (user) {
                 token.id = user.id; // add user's ID into token
+                token.role = user.role;
             }
             return token;
         },
@@ -66,6 +67,7 @@ export const authOptions: AuthOptions = {
         session({ session, token }) {
             if (session.user) {
                 session.user.id = token.id as string;
+                session.user.role = token.role as string;
             }
             return session;
         },

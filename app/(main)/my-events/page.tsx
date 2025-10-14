@@ -22,7 +22,7 @@ export default async function MyEventsPage() {
         include: {
             event: {
                 include: {
-                    organization: true, // take orgarnization for the eventcard
+                    creator: true,
                 },
             },
         },

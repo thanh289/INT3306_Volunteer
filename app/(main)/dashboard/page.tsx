@@ -4,14 +4,14 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma";
 import Link from "next/link";
-import { Event, Organization } from "@prisma/client";
+import { Event, User } from "@prisma/client";
 
 // Small component to show event in the dashboard
-const DashboardEventItem = ({ event }: { event: Event & { organization: Organization } }) => (
+const DashboardEventItem = ({ event }: { event: Event & { creator: User } }) => (
     <Link href={`/events/${event.id}`}>
         <div className="p-4 border rounded-md hover:bg-gray-50 transition-colors">
             <p className="font-bold text-indigo-700">{event.title}</p>
-            <p className="text-sm text-gray-600">{event.organization.name}</p>
+            <p className="text-sm text-gray-600">{event.creator.name}</p>
             <p className="text-xs text-gray-400 mt-1">
                 {new Date(event.startDateTime).toLocaleDateString('vi-VN')}
             </p>
@@ -36,21 +36,21 @@ export default async function DashboardPage() {
             },
             take: 3,
             orderBy: { event: { startDateTime: 'asc' } },
-            include: { event: { include: { organization: true } } },
+            include: { event: { include: { creator: true } } },
         }),
 
         // Take 5 newest event of the page
         prisma.event.findMany({
             take: 5,
             orderBy: { createdAt: 'desc' },
-            include: { organization: true },
+            include: { creator: true },
         }),
         // Take 5 newest post from different events
         prisma.post.findMany({
             take: 5,
             orderBy: { createdAt: 'desc' },
             distinct: ['eventId'], // Take only 1 post from each event
-            include: { event: { include: { organization: true } } },
+            include: { event: { include: { creator: true } } },
         }),
     ]);
 
