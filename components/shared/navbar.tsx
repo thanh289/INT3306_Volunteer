@@ -51,6 +51,13 @@ export const Navbar = () => {
                                 </Link>
                             )}
 
+                            <Link
+                                href="/profile"
+                                className="px-4 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100"
+                            >
+                                Hồ sơ
+                            </Link>
+
                             <span className="text-gray-700">Chào, {session.user.name || session.user.email}</span>
                             <button
                                 onClick={() => signOut({ callbackUrl: '/login' })}

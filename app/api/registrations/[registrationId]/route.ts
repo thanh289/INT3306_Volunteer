@@ -6,6 +6,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import prisma from '@/lib/prisma';
 import { z } from 'zod';
+import { RegistrationStatus } from '@prisma/client';
 
 type RouteParams = {
     params: Promise<{
@@ -14,7 +15,12 @@ type RouteParams = {
 };
 
 const updateSchema = z.object({
-    isCompleted: z.boolean(),
+    status: z.enum([
+        RegistrationStatus.APPROVED,
+        RegistrationStatus.REJECTED,
+        RegistrationStatus.COMPLETED,
+        RegistrationStatus.PENDING,
+    ]),
 });
 
 export async function PATCH(request: Request, { params }: RouteParams) {
@@ -44,12 +50,12 @@ export async function PATCH(request: Request, { params }: RouteParams) {
 
 
         const body = await request.json();
-        const { isCompleted } = updateSchema.parse(body);
+        const { status } = updateSchema.parse(body);
 
 
         const updatedRegistration = await prisma.registration.update({
             where: { id: registrationId },
-            data: { isCompleted },
+            data: { status },
         });
 
         return NextResponse.json(updatedRegistration);

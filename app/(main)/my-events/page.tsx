@@ -5,6 +5,7 @@ import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { redirect } from 'next/navigation';
 import prisma from '@/lib/prisma';
 import { EventCard } from '@/components/features/event-card';
+import { RegistrationStatus } from '@prisma/client';
 
 export default async function MyEventsPage() {
 
@@ -62,7 +63,7 @@ export default async function MyEventsPage() {
                     {registrations
                         .filter(reg => new Date(reg.event.startDateTime) < new Date())
                         .map((reg) => (
-                            <EventCard key={reg.id} event={reg.event} isCompleted={reg.isCompleted} /> // complete?
+                            <EventCard key={reg.id} event={reg.event} isCompleted={reg.status === RegistrationStatus.COMPLETED} /> // complete?
                         ))}
                 </div>
                 {registrations.filter(reg => new Date(reg.event.startDateTime) < new Date()).length === 0 && (

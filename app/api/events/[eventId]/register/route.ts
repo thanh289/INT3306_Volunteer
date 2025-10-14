@@ -23,18 +23,24 @@ export async function POST(request: Request, { params }: PostParams) {
         const userId = session.user.id;
         const { eventId } = await params;
 
-        // Check if user have registered this before
-        const existingRegistration = await prisma.registration.findUnique({
-            where: {
-                userId_eventId: {
-                    userId: userId,
-                    eventId: eventId,
-                },
-            },
-        });
+        const [eventDetails, registrationCount, existingRegistration] = await Promise.all([
+            prisma.event.findUnique({ where: { id: eventId } }),
+            prisma.registration.count({ where: { eventId: eventId } }),
+            prisma.registration.findUnique({ // Vẫn giữ kiểm tra đăng ký trùng lặp
+                where: { userId_eventId: { userId, eventId } },
+            }),
+        ]);
+
+        if (!eventDetails) {
+            return new NextResponse('Sự kiện không tồn tại', { status: 404 });
+        }
 
         if (existingRegistration) {
             return new NextResponse('Bạn đã đăng ký sự kiện này rồi', { status: 409 });
+        }
+
+        if (registrationCount >= eventDetails.maxAttendees) {
+            return new NextResponse('Sự kiện đã đủ số lượng người tham gia', { status: 409 });
         }
 
         // Create new resistration in db

@@ -6,6 +6,7 @@ import { redirect, notFound } from 'next/navigation';
 import prisma from '@/lib/prisma';
 import Link from 'next/link';
 import { RegistrationActions } from '@/components/features/registration-actions';
+import { RegistrationStatus } from '@prisma/client';
 
 type ManageEventPageProps = {
     params: Promise<{
@@ -74,15 +75,7 @@ export default async function ManageEventPage({ params }: ManageEventPageProps) 
                                         {new Date(reg.createdAt).toLocaleDateString('vi-VN')}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                        {reg.isCompleted ? (
-                                            <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                                Đã hoàn thành
-                                            </span>
-                                        ) : (
-                                            <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                                                Chưa hoàn thành
-                                            </span>
-                                        )}
+                                        <StatusBadge status={reg.status} />
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         <RegistrationActions registration={reg} />
@@ -99,3 +92,24 @@ export default async function ManageEventPage({ params }: ManageEventPageProps) 
         </div>
     );
 }
+
+// Create a small component to display the status icon
+const StatusBadge = ({ status }: { status: RegistrationStatus }) => {
+    const statusStyles = {
+        PENDING: 'bg-yellow-100 text-yellow-800',
+        APPROVED: 'bg-blue-100 text-blue-800',
+        COMPLETED: 'bg-green-100 text-green-800',
+        REJECTED: 'bg-red-100 text-red-800',
+    };
+    const statusText = {
+        PENDING: 'Chờ duyệt',
+        APPROVED: 'Đã duyệt',
+        COMPLETED: 'Đã hoàn thành',
+        REJECTED: 'Đã từ chối',
+    }
+    return (
+        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusStyles[status]}`}>
+            {statusText[status]}
+        </span>
+    );
+};
