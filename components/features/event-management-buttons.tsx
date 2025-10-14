@@ -42,6 +42,12 @@ export const EventManagementButtons = ({ event }: Props) => {
     return (
         <div className="mt-6 flex items-center justify-end gap-4 border-t pt-6">
             <Link
+                href={`/events/${event.id}/manage`}
+                className="px-4 py-2 text-sm font-medium text-white bg-gray-600 rounded-md hover:bg-gray-700"
+            >
+                Quản lý
+            </Link>
+            <Link
                 href={`/events/${event.id}/edit`}
                 className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
             >

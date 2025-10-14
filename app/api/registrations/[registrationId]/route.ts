@@ -1,0 +1,60 @@
+// API route to update a specific registration, e.g., mark as complete.
+
+
+import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import prisma from '@/lib/prisma';
+import { z } from 'zod';
+
+type RouteParams = {
+    params: Promise<{
+        registrationId: string;
+    }>;
+};
+
+const updateSchema = z.object({
+    isCompleted: z.boolean(),
+});
+
+export async function PATCH(request: Request, { params }: RouteParams) {
+    try {
+
+        const session = await getServerSession(authOptions);
+        const { registrationId } = await params;
+
+        if (!session?.user?.id) {
+            return new NextResponse('Unauthorized', { status: 401 });
+        }
+
+
+        const registration = await prisma.registration.findUnique({
+            where: { id: registrationId },
+            include: { event: true },
+        });
+
+        if (!registration) {
+            return new NextResponse('Registration not found', { status: 404 });
+        }
+
+        // Only this manager and admin can update
+        if (registration.event.creatorId !== session.user.id && session.user.role !== 'ADMIN') {
+            return new NextResponse('Forbidden', { status: 403 });
+        }
+
+
+        const body = await request.json();
+        const { isCompleted } = updateSchema.parse(body);
+
+
+        const updatedRegistration = await prisma.registration.update({
+            where: { id: registrationId },
+            data: { isCompleted },
+        });
+
+        return NextResponse.json(updatedRegistration);
+    } catch (error) {
+        console.error('LỖI KHI CẬP NHẬT ĐĂNG KÝ:', error);
+        return new NextResponse('Lỗi hệ thống', { status: 500 });
+    }
+}
