@@ -5,6 +5,7 @@
 import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
 import { Role } from '@prisma/client';
+import { NotificationBell } from '../features/notification-bell';
 
 export const Navbar = () => {
     // use session to get in4 of user
@@ -58,6 +59,8 @@ export const Navbar = () => {
                                 Hồ sơ
                             </Link>
 
+                            <NotificationBell />
+
                             <span className="text-gray-700">Chào, {session.user.name || session.user.email}</span>
                             <button
                                 onClick={() => signOut({ callbackUrl: '/login' })}
@@ -86,6 +89,8 @@ export const Navbar = () => {
                         </>
                     )}
                 </div>
+
+
             </div>
         </nav>
     );

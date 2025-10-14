@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import axios, { isAxiosError } from 'axios';
 import toast from 'react-hot-toast';
-import { User } from '@prisma/client';
+import { User, Gender } from '@prisma/client';
 
 // Date format
 const formatDateForInput = (date: Date | null | undefined) => {
@@ -22,9 +22,10 @@ export const ProfileForm = ({ user }: { user: User }) => {
         phone: user.phone || '',
         address: user.address || '',
         dateOfBirth: formatDateForInput(user.dateOfBirth),
+        gender: user.gender || '',
     });
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
@@ -59,13 +60,29 @@ export const ProfileForm = ({ user }: { user: User }) => {
                 <label htmlFor="name" className="block text-sm font-medium text-gray-700">Họ và tên</label>
                 <input type="text" name="name" id="name" required value={formData.name} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm" />
             </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label htmlFor="dateOfBirth" className="block text-sm font-medium text-gray-700">Ngày sinh</label>
+                    <input type="date" name="dateOfBirth" id="dateOfBirth" value={formData.dateOfBirth} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm" />
+                </div>
+                <div>
+                    <label htmlFor="gender" className="block text-sm font-medium text-gray-700">Giới tính</label>
+                    <select
+                        name="gender"
+                        id="gender"
+                        value={formData.gender}
+                        onChange={handleChange}
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                    >
+                        <option value="">-- Chọn giới tính --</option>
+                        <option value={Gender.MALE}>Nam</option>
+                        <option value={Gender.FEMALE}>Nữ</option>
+                    </select>
+                </div>
+            </div>
             <div>
                 <label htmlFor="phone" className="block text-sm font-medium text-gray-700">Số điện thoại</label>
                 <input type="tel" name="phone" id="phone" value={formData.phone} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm" />
-            </div>
-            <div>
-                <label htmlFor="dateOfBirth" className="block text-sm font-medium text-gray-700">Ngày sinh</label>
-                <input type="date" name="dateOfBirth" id="dateOfBirth" value={formData.dateOfBirth} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm" />
             </div>
             <div>
                 <label htmlFor="address" className="block text-sm font-medium text-gray-700">Địa chỉ</label>

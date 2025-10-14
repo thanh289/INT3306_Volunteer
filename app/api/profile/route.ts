@@ -6,6 +6,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import prisma from '@/lib/prisma';
 import { z } from 'zod';
+import { Gender } from '@prisma/client';
 
 // Schema để xác thực dữ liệu gửi lên
 const profileUpdateSchema = z.object({
@@ -13,6 +14,7 @@ const profileUpdateSchema = z.object({
     phone: z.string().optional(),
     address: z.string().optional(),
     dateOfBirth: z.coerce.date().optional(),
+    gender: z.enum([Gender.MALE, Gender.FEMALE]).optional()
 });
 
 export async function PUT(request: Request) {

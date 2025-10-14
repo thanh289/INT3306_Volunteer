@@ -29,6 +29,11 @@ enum RegistrationStatus {
     COMPLETED
 }
 
+enum Gender {
+    MALE
+    FEMALE
+}
+
 // API generated is prisma.user
 model User {
     id           String    @id @default(auto()) @map("_id") @db.ObjectId
@@ -37,6 +42,7 @@ model User {
     phone        String? //optional
     address      String?
     dateOfBirth  DateTime?
+    gender       Gender?
     passwordHash String
     role         Role      @default(VOLUNTEER)
     imageUrl     String?
@@ -47,7 +53,8 @@ model User {
     registrations Registration[]
     posts         Post[]
 
-    createdEvents Event[] @relation("EventCreator")
+    createdEvents Event[]        @relation("EventCreator")
+    notifications Notification[]
 }
 
 model Event {
@@ -99,4 +106,15 @@ model Post {
 
     authorId String @db.ObjectId
     author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+}
+
+model Notification {
+    id        String   @id @default(auto()) @map("_id") @db.ObjectId
+    message   String
+    href      String? // link to direct when click the notification
+    isRead    Boolean  @default(false)
+    createdAt DateTime @default(now())
+
+    userId String @db.ObjectId
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

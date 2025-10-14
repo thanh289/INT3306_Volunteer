@@ -56,7 +56,31 @@ export async function PATCH(request: Request, { params }: RouteParams) {
         const updatedRegistration = await prisma.registration.update({
             where: { id: registrationId },
             data: { status },
+            include: { event: true }
         });
+
+        let message = '';
+        switch (status) {
+            case 'APPROVED':
+                message = `Chúc mừng! Bạn đã được duyệt tham gia sự kiện "${updatedRegistration.event.title}".`;
+                break;
+            case 'REJECTED':
+                message = `Rất tiếc, đăng ký tham gia sự kiện "${updatedRegistration.event.title}" của bạn đã bị từ chối.`;
+                break;
+            case 'COMPLETED':
+                message = `Bạn đã hoàn thành tham gia sự kiện "${updatedRegistration.event.title}". Cảm ơn sự đóng góp của bạn!`;
+                break;
+        }
+
+        if (message) {
+            await prisma.notification.create({
+                data: {
+                    userId: updatedRegistration.userId,
+                    message: message,
+                    href: `/events/${updatedRegistration.eventId}`,
+                },
+            });
+        }
 
         return NextResponse.json(updatedRegistration);
     } catch (error) {
