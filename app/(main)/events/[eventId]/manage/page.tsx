@@ -36,7 +36,7 @@ export default async function ManageEventPage({ params }: ManageEventPageProps) 
         notFound();
     }
 
-    // Only this manager and admin
+    // Only for this manager and admin
     if (!session || (event.creatorId !== session.user.id && session.user.role !== 'ADMIN')) {
         redirect(`/events/${eventId}`);
     }

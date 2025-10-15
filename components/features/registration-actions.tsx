@@ -1,10 +1,10 @@
-// Client component with actions for a single registration (e.g., mark complete).
+// Client component with actions for a single registration (e.g., mark complete, reject).
 
 'use client';
 
 import { useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import axios from 'axios';
+import axios, { isAxiosError } from 'axios';
 import toast from 'react-hot-toast';
 import { Registration, RegistrationStatus } from '@prisma/client';
 
@@ -23,7 +23,12 @@ export const RegistrationActions = ({ registration }: Props) => {
                 toast.success('Cập nhật trạng thái thành công!');
                 router.refresh();
             } catch (error) {
-                toast.error(`Cập nhật thất bại: ${error}`);
+                if (isAxiosError(error)) {
+                    toast.error(error.response?.data || 'Có lỗi xảy ra.');
+                } else {
+                    toast.error('Có lỗi không mong muốn xảy ra.');
+                    console.error(error);
+                }
             }
         });
     };

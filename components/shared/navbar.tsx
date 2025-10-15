@@ -35,12 +35,23 @@ export const Navbar = () => {
                             >
                                 Bảng tin
                             </Link>
-                            <Link
-                                href="/my-events"
-                                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300"
-                            >
-                                Sự kiện của tôi
-                            </Link>
+
+                            {userRole === 'VOLUNTEER' && (
+                                <Link
+                                    href="/registered-events"
+                                    className="px-4 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100"
+                                >
+                                    Sự kiện đã đăng ký
+                                </Link>
+                            )}
+                            {(userRole === 'EVENT_MANAGER' || userRole === 'ADMIN') && (
+                                <Link
+                                    href="/created-events"
+                                    className="px-4 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100"
+                                >
+                                    Sự kiện đã tạo
+                                </Link>
+                            )}
 
                             {/* This button only shown for manager and admin */}
                             {(userRole === 'EVENT_MANAGER' || userRole === 'ADMIN') && (

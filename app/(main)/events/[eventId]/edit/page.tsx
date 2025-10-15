@@ -24,16 +24,15 @@ export default async function EditEventPage({ params }: EditEventPageProps) {
         notFound();
     }
 
-    // Bảo vệ route: Nếu chưa đăng nhập hoặc không có quyền, chuyển về trang chủ
+    // Only for this manager and admin
     if (!session || (event.creatorId !== session.user.id && session.user.role !== 'ADMIN')) {
-        redirect('/');
+        redirect(`/events/${eventId}`);
     }
 
     return (
         <div className="max-w-2xl mx-auto p-4 md:p-8">
             <h1 className="text-3xl font-bold mb-8">Chỉnh sửa sự kiện</h1>
             <div className="bg-white p-8 rounded-lg shadow-md">
-                {/* Truyền dữ liệu hiện tại của sự kiện vào form */}
                 <EditEventForm event={event} />
             </div>
         </div>

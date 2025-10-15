@@ -53,6 +53,16 @@ export async function PATCH(request: Request, { params }: RouteParams) {
         const { status } = updateSchema.parse(body);
 
 
+        // manager can mark completed just after the endtime of the event
+        if (status === RegistrationStatus.COMPLETED) {
+            const eventEndTime = new Date(registration.event.endDateTime);
+            const now = new Date();
+
+            if (eventEndTime > now) {
+                return new NextResponse('Không thể đánh dấu hoàn thành khi sự kiện chưa kết thúc.', { status: 400 });
+            }
+        }
+
         const updatedRegistration = await prisma.registration.update({
             where: { id: registrationId },
             data: { status },

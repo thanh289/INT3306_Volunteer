@@ -19,6 +19,7 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
 
     const session = await getServerSession(authOptions);
     const userId = session?.user?.id;
+    const userRole = session?.user?.role;
 
     // Use Promise.all for better performance
     const [event, registration] = await Promise.all([
@@ -37,6 +38,7 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
     }
 
     const isRegistered = !!registration;
+    const canManage = userId && (userId === event.creatorId || userRole === 'ADMIN');
 
     // Helper for formatting date
     const formatDateTime = (date: Date) => {
@@ -80,12 +82,11 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
 
                     {/* Registry buttion*/}
                     <div className="border-t pt-6 text-center">
-                        <RegisterEventButton eventId={event.id} isInitiallyRegistered={isRegistered} />
-
-                        {/* More option for manager */}
-                        <div className="p-8">
+                        {canManage ? (
                             <EventManagementButtons event={event} />
-                        </div>
+                        ) : (
+                            <RegisterEventButton eventId={event.id} isInitiallyRegistered={isRegistered} />
+                        )}
                     </div>
                 </div>
             </div>
