@@ -20,6 +20,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
     // Dynamic query
     const where: Prisma.EventWhereInput = {
         startDateTime: { gte: new Date() },
+        status: 'PUBLISHED',
         // ...: only use the category filter if it exists
         ...(category && { category: category as EventCategory }),
     };

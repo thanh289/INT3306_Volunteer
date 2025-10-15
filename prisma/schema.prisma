@@ -29,6 +29,12 @@ enum RegistrationStatus {
     COMPLETED
 }
 
+enum EventStatus {
+    PENDING_APPROVAL
+    PUBLISHED
+    REJECTED
+}
+
 enum Gender {
     MALE
     FEMALE
@@ -67,6 +73,7 @@ model Event {
     endDateTime   DateTime
     maxAttendees  Int
     category      EventCategory @default(COMMUNITY)
+    status        EventStatus   @default(PENDING_APPROVAL)
     createdAt     DateTime      @default(now())
     updatedAt     DateTime      @updatedAt
 

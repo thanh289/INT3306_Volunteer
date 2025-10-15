@@ -18,8 +18,8 @@ export const EventManagementButtons = ({ event }: Props) => {
     const { data: session } = useSession();
     const router = useRouter();
 
-
-    const canManage = session?.user && (session.user.id === event.creatorId || session.user.role === 'ADMIN');
+    // it's a bit weird if admin can do these action, so we hide it even if it's admin
+    const canManage = session?.user && session.user.id === event.creatorId;
 
     if (!canManage) {
         return null; // show nothing if have no permit

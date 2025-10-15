@@ -5,7 +5,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import prisma from '@/lib/prisma';
 import { z } from 'zod';
-import { EventCategory } from '@prisma/client';
+import { EventCategory, EventStatus } from '@prisma/client';
 
 
 type RouteParams = {
@@ -58,6 +58,7 @@ const updateEventSchema = z.object({
     endDateTime: z.coerce.date().optional(),
     maxAttendees: z.coerce.number().int().positive().optional(),
     category: z.enum(EventCategory).optional(),
+    status: z.enum(EventStatus).optional(),
 });
 
 export async function PUT(request: Request, { params }: RouteParams) {
@@ -82,8 +83,27 @@ export async function PUT(request: Request, { params }: RouteParams) {
 
         const updatedEvent = await prisma.event.update({
             where: { id: eventId },
-            data: validatedData, // Truyền dữ liệu đã được xác thực
+            data: validatedData,
         });
+
+        if (body.status && session.user.role === 'ADMIN') {
+            let message = '';
+            if (body.status === 'PUBLISHED') {
+                message = `Sự kiện "${updatedEvent.title}" của bạn đã được duyệt và đăng công khai.`;
+            } else if (body.status === 'REJECTED') {
+                message = `Sự kiện "${updatedEvent.title}" của bạn đã bị từ chối.`;
+            }
+
+            if (message) {
+                await prisma.notification.create({
+                    data: {
+                        userId: updatedEvent.creatorId,
+                        message: message,
+                        href: `/events/${updatedEvent.id}`,
+                    },
+                });
+            }
+        }
 
         return NextResponse.json(updatedEvent);
 

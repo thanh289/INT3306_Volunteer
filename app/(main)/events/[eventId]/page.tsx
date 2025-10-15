@@ -36,9 +36,13 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
     if (!event) {
         notFound();
     }
+    // volunteer cannot access unpublished detail event
+    if (event.status !== 'PUBLISHED' && userRole !== 'ADMIN' && userId !== event.creatorId) {
+        notFound();
+    }
 
     const isRegistered = !!registration;
-    const canManage = userId && (userId === event.creatorId || userRole === 'ADMIN');
+    const canManage = (userId === event.creatorId || userRole === 'ADMIN');
 
     // Helper for formatting date
     const formatDateTime = (date: Date) => {

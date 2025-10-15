@@ -29,6 +29,14 @@ export const Navbar = () => {
                     {/* if user signed in */}
                     {status === 'authenticated' && session?.user && (
                         <>
+                            {userRole === 'ADMIN' && (
+                                <Link
+                                    href="/admin/event-approval"
+                                    className="px-4 py-2 text-sm font-medium text-white bg-purple-600 rounded-md hover:bg-purple-700"
+                                >
+                                    Admin Panel
+                                </Link>
+                            )}
                             <Link
                                 href="/dashboard"
                                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300"
