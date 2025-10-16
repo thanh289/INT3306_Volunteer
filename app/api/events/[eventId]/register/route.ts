@@ -35,6 +35,10 @@ export async function POST(request: Request, { params }: PostParams) {
             return new NextResponse('Sự kiện không tồn tại', { status: 404 });
         }
 
+        if (new Date(eventDetails.endDateTime) < new Date()) {
+            return new NextResponse('Sự kiện đã kết thúc, không thể đăng ký.', { status: 400 });
+        }
+
         if (existingRegistration) {
             return new NextResponse('Bạn đã đăng ký sự kiện này rồi', { status: 409 });
         }
@@ -66,6 +70,11 @@ export async function DELETE(request: Request, { params }: PostParams) {
         }
         const userId = session.user.id;
         const { eventId } = await params;
+
+        const eventDetails = await prisma.event.findUnique({ where: { id: eventId } });
+        if (eventDetails && new Date(eventDetails.endDateTime) < new Date()) {
+            return new NextResponse('Sự kiện đã kết thúc, không thể hủy đăng ký.', { status: 400 });
+        }
 
         // delete from db
         await prisma.registration.delete({

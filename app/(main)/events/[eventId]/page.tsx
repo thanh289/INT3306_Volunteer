@@ -42,6 +42,7 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
     }
 
     const isRegistered = !!registration;
+    const isEventEnded = new Date(event.endDateTime) < new Date();
     const canManage = (userId === event.creatorId || userRole === 'ADMIN');
 
     // Helper for formatting date
@@ -89,7 +90,7 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
                         {canManage ? (
                             <EventManagementButtons event={event} />
                         ) : (
-                            <RegisterEventButton eventId={event.id} isInitiallyRegistered={isRegistered} />
+                            <RegisterEventButton eventId={event.id} isInitiallyRegistered={isRegistered} isEventEnded={isEventEnded} />
                         )}
                     </div>
                 </div>

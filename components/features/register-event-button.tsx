@@ -12,9 +12,10 @@ import { Role } from '@prisma/client';
 type RegisterEventButtonProps = {
     eventId: string;
     isInitiallyRegistered: boolean;
+    isEventEnded: boolean;
 };
 
-export const RegisterEventButton = ({ eventId, isInitiallyRegistered }: RegisterEventButtonProps) => {
+export const RegisterEventButton = ({ eventId, isInitiallyRegistered, isEventEnded }: RegisterEventButtonProps) => {
     const { data: session, status } = useSession();
     const router = useRouter();
 
@@ -59,8 +60,16 @@ export const RegisterEventButton = ({ eventId, isInitiallyRegistered }: Register
 
     if (status !== 'authenticated') {
         return (
-            <button onClick={handleClick} className="...">
+            <button onClick={handleClick} className="w-full md:w-auto px-8 py-3 text-lg font-medium text-white bg-gray-400 border border-transparent rounded-md shadow-sm cursor-pointer">
                 Đăng nhập để đăng ký
+            </button>
+        );
+    }
+
+    if (isEventEnded) {
+        return (
+            <button disabled className="w-full md:w-auto px-8 py-3 text-lg font-medium text-white bg-gray-400 border border-transparent rounded-md shadow-sm cursor-not-allowed">
+                Sự kiện đã kết thúc
             </button>
         );
     }
