@@ -41,7 +41,7 @@ export const RegisterEventButton = ({ eventId, isInitiallyRegistered }: Register
                     setIsRegistered(false);
                 } else {
                     await axios.post(`/api/events/${eventId}/register`);
-                    toast.success('Đăng ký tham gia thành công!');
+                    toast.success('Đã gửi yêu cầu đăng ký đến quản lý sự kiện!');
                     setIsRegistered(true);
                 }
 

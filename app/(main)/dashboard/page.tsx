@@ -41,12 +41,18 @@ export default async function DashboardPage() {
 
         // Take 5 newest event of the page
         prisma.event.findMany({
+            where: { status: 'PUBLISHED' },
             take: 5,
             orderBy: { createdAt: 'desc' },
             include: { creator: true },
         }),
         // Take 5 newest post from different events
         prisma.post.findMany({
+            where: {
+                event: {
+                    status: 'PUBLISHED',
+                },
+            },
             take: 5,
             orderBy: { createdAt: 'desc' },
             distinct: ['eventId'], // Take only 1 post from each event
