@@ -20,11 +20,34 @@ export const CreatedEventList = () => {
         return <p className="text-gray-500">Bạn chưa tạo sự kiện nào.</p>;
     }
 
+    const upcomingEvents = createdEvents.filter(event => new Date(event.endDateTime) >= new Date());
+    const pastEvents = createdEvents.filter(event => new Date(event.endDateTime) < new Date());
+
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {createdEvents.map((event) => (
-                <EventCard key={event.id} event={event} showStatus={true} />
-            ))}
+        <div className="space-y-12">
+            {/* Upcoming*/}
+            <section>
+                <h2 className="text-2xl font-semibold mb-6 border-b pb-2">Sự kiện sắp diễn ra</h2>
+                {upcomingEvents.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {upcomingEvents.map(event => (
+                            <EventCard key={event.id} event={event} showStatus={true} />
+                        ))}
+                    </div>
+                ) : <p className="text-gray-500">Bạn không có sự kiện nào sắp diễn ra.</p>}
+            </section>
+
+            {/* Pass*/}
+            <section>
+                <h2 className="text-2xl font-semibold mb-6 border-b pb-2">Sự kiện đã kết thúc</h2>
+                {pastEvents.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {pastEvents.map(event => (
+                            <EventCard key={event.id} event={event} showStatus={true} />
+                        ))}
+                    </div>
+                ) : <p className="text-gray-500">Chưa có sự kiện nào đã kết thúc.</p>}
+            </section>
         </div>
     );
 };
