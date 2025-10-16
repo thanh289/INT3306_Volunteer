@@ -52,6 +52,21 @@ export async function PATCH(request: Request, { params }: RouteParams) {
         const body = await request.json();
         const { status } = updateSchema.parse(body);
 
+        // This one just to make sure number of people approved is enough so that manager can not accept more
+        if (status === RegistrationStatus.APPROVED) {
+            // Check the number of volunteers have been approved
+            const approvedCount = await prisma.registration.count({
+                where: {
+                    eventId: registration.eventId,
+                    status: RegistrationStatus.APPROVED,
+                },
+            });
+
+            if (approvedCount >= registration.event.maxAttendees) {
+                return new NextResponse('Sự kiện đã đủ số lượng người được duyệt. Không thể duyệt thêm.', { status: 409 });
+            }
+        }
+
 
         // manager can mark completed just after the endtime of the event
         if (status === RegistrationStatus.COMPLETED) {

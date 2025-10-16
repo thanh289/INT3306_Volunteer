@@ -38,6 +38,28 @@ export async function DELETE(request: Request, { params }: RouteParams) {
             return new NextResponse('Forbidden', { status: 403 });
         }
 
+
+        // We will notice the volunteer in case the event was deleted
+        const registrations = await prisma.registration.findMany({
+            where: { eventId: eventId },
+            select: { userId: true },
+        });
+
+        if (registrations.length > 0) {
+            const userIds = registrations.map(reg => reg.userId);
+            await prisma.notification.createMany({
+                data: userIds.map(userId => ({
+                    userId: userId,
+                    message: `Rất tiếc, sự kiện "${event.title}" đã bị hủy bởi người tổ chức.`,
+                })),
+            });
+        }
+
+        // Delete all registrations before event
+        await prisma.registration.deleteMany({
+            where: { eventId: eventId },
+        });
+
         await prisma.event.delete({
             where: { id: eventId },
         });
@@ -61,6 +83,9 @@ const updateEventSchema = z.object({
     status: z.enum(EventStatus).optional(),
 });
 
+
+
+
 export async function PUT(request: Request, { params }: RouteParams) {
     try {
         const session = await getServerSession(authOptions);
@@ -79,7 +104,14 @@ export async function PUT(request: Request, { params }: RouteParams) {
         }
 
         const body = await request.json();
+        const isCreator = event.creatorId === session.user.id;
         const validatedData = updateEventSchema.parse(body);
+
+        // If manager fix the event's information, the status must become pending again and let admin see
+        // And to make sure not when the admin want to change the status
+        if (event.status === 'PUBLISHED' && isCreator) {
+            validatedData.status = 'PENDING_APPROVAL';
+        }
 
         const updatedEvent = await prisma.event.update({
             where: { id: eventId },
