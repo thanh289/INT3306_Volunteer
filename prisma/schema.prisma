@@ -40,20 +40,26 @@ enum Gender {
     FEMALE
 }
 
+enum UserStatus {
+    ACTIVE
+    LOCKED
+}
+
 // API generated is prisma.user
 model User {
-    id           String    @id @default(auto()) @map("_id") @db.ObjectId
+    id           String     @id @default(auto()) @map("_id") @db.ObjectId
     name         String?
-    email        String    @unique
+    email        String     @unique
     phone        String? //optional
     address      String?
     dateOfBirth  DateTime?
     gender       Gender?
     passwordHash String
-    role         Role      @default(VOLUNTEER)
+    role         Role       @default(VOLUNTEER)
+    status       UserStatus @default(ACTIVE)
     imageUrl     String?
-    createdAt    DateTime  @default(now())
-    updatedAt    DateTime  @updatedAt
+    createdAt    DateTime   @default(now())
+    updatedAt    DateTime   @updatedAt
 
     // an user can registry multiple event and have multiple post
     registrations Registration[]

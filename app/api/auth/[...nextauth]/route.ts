@@ -34,7 +34,12 @@ export const authOptions: AuthOptions = {
                     throw new Error('Người dùng không tồn tại');
                 }
 
-                // checkpw
+                // check status
+                if (user.status === 'LOCKED') {
+                    throw new Error('Tài khoản này đã bị khóa.');
+                }
+
+                // check pw
                 const isPasswordCorrect = await bcrypt.compare(
                     credentials.password,
                     user.passwordHash
