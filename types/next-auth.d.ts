@@ -19,6 +19,7 @@ declare module 'next-auth' {
         user: {
             id: string;
             role: Role;
+            status: UserStatus;
         } & DefaultSession['user'];
     }
 
@@ -30,6 +31,7 @@ declare module 'next-auth' {
     interface User {
         id: string;
         role: Role;
+        status: UserStatus;
     }
 }
 

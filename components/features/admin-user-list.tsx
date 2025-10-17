@@ -4,7 +4,7 @@
 
 import useSWR from 'swr';
 import axios from 'axios';
-import { User, Role, UserStatus } from '@prisma/client';
+import { User } from '@prisma/client';
 import { AdminUserActions } from './admin-user-actions';
 
 const fetcher = (url: string) => axios.get(url).then(res => res.data);

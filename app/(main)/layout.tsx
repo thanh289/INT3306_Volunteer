@@ -1,4 +1,5 @@
 import { Navbar } from "@/components/shared/navbar";
+import { SessionManager } from '@/components/shared/session-manager';
 
 export default function MainLayout({
     children,
@@ -7,6 +8,7 @@ export default function MainLayout({
 }) {
     return (
         <div>
+            <SessionManager />
             <Navbar />
             <main className="container mx-auto p-6">
                 {children}

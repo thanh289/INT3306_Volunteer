@@ -5,6 +5,7 @@ import { AuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import bcrypt from 'bcryptjs';
 import prisma from '@/lib/prisma';
+import { UserStatus } from '@prisma/client';
 
 export const authOptions: AuthOptions = {
     providers: [
@@ -65,14 +66,22 @@ export const authOptions: AuthOptions = {
             if (user) {
                 token.id = user.id; // add user's ID into token
                 token.role = user.role;
+                token.status = user.status;
             }
             return token;
         },
         // called when a token is accessed
-        session({ session, token }) {
+        async session({ session, token }) {
             if (session.user) {
                 session.user.id = token.id as string;
                 session.user.role = token.role as string;
+
+                // take status from db each time session is called
+                const userFromDb = await prisma.user.findUnique({
+                    where: { id: token.id as string },
+                    select: { status: true },
+                });
+                session.user.status = userFromDb?.status || UserStatus.LOCKED;
             }
             return session;
         },
