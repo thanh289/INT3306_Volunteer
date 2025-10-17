@@ -2,19 +2,29 @@
 
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
 
 export default function LoginPage() {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const [formData, setFormData] = useState({
         email: '',
         password: '',
     });
     const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+        const error = searchParams.get('error');
+        if (error === 'account_locked') {
+            toast.error('Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên.');
+            // delete error from url, not to show again
+            router.replace('/login', { scroll: false });
+        }
+    }, [searchParams, router])
 
     // update form data whenever user type in input
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -36,10 +46,10 @@ export default function LoginPage() {
 
             if (result?.error) {
                 toast.error(result.error);
-            } else {
+            } else if (result?.ok) {
                 toast.success('Đăng nhập thành công!');
                 router.push('/');
-                router.refresh(); // reload to update session status
+                router.refresh();
             }
         } catch (error) {
             toast.error(`Đã có lỗi xảy ra: ${error}`);
