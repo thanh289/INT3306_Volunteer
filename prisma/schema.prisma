@@ -65,8 +65,9 @@ model User {
     registrations Registration[]
     posts         Post[]
 
-    createdEvents Event[]        @relation("EventCreator")
-    notifications Notification[]
+    createdEvents      Event[]             @relation("EventCreator")
+    notifications      Notification[]
+    passwordResetToken PasswordResetToken?
 }
 
 model Event {
@@ -129,5 +130,15 @@ model Notification {
     createdAt DateTime @default(now())
 
     userId String @db.ObjectId
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model PasswordResetToken {
+    id      String   @id @default(auto()) @map("_id") @db.ObjectId
+    token   String   @unique
+    expires DateTime
+
+    // 1 user will just have 1 token
+    userId String @unique @db.ObjectId
     user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
