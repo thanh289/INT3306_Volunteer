@@ -1,4 +1,5 @@
 // Renders the user registration form and handles client-side logic.
+// src/app/(auth)/register/page.tsx
 
 'use client';
 
@@ -6,6 +7,9 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import axios, { isAxiosError } from 'axios';
 import toast from 'react-hot-toast';            // show state popup
+import AuthContainer from '@/components/auth/AuthContainer';
+import AuthInput from '@/components/auth/AuthInput';
+import Link from 'next/link';
 
 export default function RegisterPage() {
     const router = useRouter();
@@ -45,79 +49,90 @@ export default function RegisterPage() {
     };
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-100">
-            <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
-                <h2 className="text-2xl font-bold text-center text-gray-900">
-                    Tạo tài khoản VolunteerHub
-                </h2>
-                <form onSubmit={handleSubmit} className="space-y-6">
-                    <div>
-                        <label
-                            htmlFor="name"
-                            className="text-sm font-medium text-gray-700"
-                        >
-                            Họ và tên
-                        </label>
-                        <input
-                            id="name"
-                            name="name"
-                            type="text"
-                            required
+        <AuthContainer title="Tạo tài khoản mới" subtitle="Tham gia cộng đồng tình nguyện viên VolunteerHub">
+            <form onSubmit={handleSubmit} className="space-y-4">
+                <AuthInput
+                    id="name"
+                    name="name"
+                    type="text"
+                    label="Họ và tên"
+                    required
+                    value={formData.name}
+                    onChange={handleChange}
+                    placeholder="Nguyễn Văn A"
+                />
 
-                            value={formData.name}
-                            onChange={handleChange}
-                            className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                        />
-                    </div>
-                    <div>
-                        <label
-                            htmlFor="email"
-                            className="text-sm font-medium text-gray-700"
-                        >
-                            Địa chỉ Email
-                        </label>
-                        <input
-                            id="email"
-                            name="email"
-                            type="email"
-                            autoComplete="email"
-                            required
-                            // show that this can be differnt in the server
-                            value={formData.email}
-                            onChange={handleChange}
-                            className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                        />
-                    </div>
-                    <div>
-                        <label
-                            htmlFor="password"
-                            className="text-sm font-medium text-gray-700"
-                        >
-                            Mật khẩu
-                        </label>
-                        <input
-                            id="password"
-                            name="password"
-                            type="password"
-                            autoComplete="current-password"
-                            required
+                <AuthInput
+                    id="email"
+                    name="email"
+                    type="email"
+                    label="Địa chỉ Email"
+                    autoComplete="email"
+                    required
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="@gmail.com"
+                />
 
-                            value={formData.password}
-                            onChange={handleChange}
-                            className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                        />
-                    </div>
-                    <div>
-                        <button
-                            type="submit"
-                            disabled={isLoading}
-                            className="w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-400"
-                        >
-                            {isLoading ? 'Đang đăng ký...' : 'Đăng ký'}
-                        </button>
-                    </div>
-                </form>
+                <AuthInput
+                    id="password"
+                    name="password"
+                    type="password"
+                    label="Mật khẩu"
+                    autoComplete="new-password"
+                    required
+                    value={formData.password}
+                    onChange={handleChange}
+                    placeholder="••••••••"
+                />
+
+                <div className="form-control mt-2">
+                    <label className="label cursor-pointer justify-start gap-3">
+                        <input type="checkbox" required className="checkbox checkbox-primary checkbox-sm" />
+                        <span className="label-text text-xs">
+                            Tôi đồng ý với{' '}
+                            <Link href="/terms" className="link link-primary no-underline hover:underline">
+                                Điều khoản dịch vụ
+                            </Link>{' '}
+                            và{' '}
+                            <Link href="/privacy" className="link link-primary no-underline hover:underline">
+                                Chính sách bảo mật
+                            </Link>
+                        </span>
+                    </label>
+                </div>
+
+                <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="btn btn-primary w-full mt-6 gap-2"
+                >
+                    {isLoading ? (
+                        <>
+                            <span className="loading loading-spinner loading-sm"></span>
+                            Đang tạo tài khoản...
+                        </>
+                    ) : (
+                        <>
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                            </svg>
+                            Tạo tài khoản
+                        </>
+                    )}
+                </button>
+            </form>
+
+            <div className="divider text-base-content/50">HOẶC</div>
+
+            <div className="text-center">
+                <p className="text-sm text-base-content/70">
+                    Đã có tài khoản?{' '}
+                    <Link href="/login" className="link link-primary font-semibold no-underline hover:underline">
+                        Đăng nhập ngay
+                    </Link>
+                </p>
             </div>
-        </div>
+        </AuthContainer>
     );
 }

@@ -1,29 +1,32 @@
-// English: Renders the password reset form and handles submission.
+// Renders the password reset form and handles submission.
 // src/app/(auth)/reset-password/page.tsx
 
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import axios, { isAxiosError } from 'axios';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
+import AuthContainer from '@/components/auth/AuthContainer';
+import AuthInput from '@/components/auth/AuthInput';
 
 export default function ResetPasswordPage() {
+    const router = useRouter();
     const searchParams = useSearchParams();
     const token = searchParams.get('token');
 
     const [formData, setFormData] = useState({ password: '', confirmPassword: '' });
     const [isLoading, setIsLoading] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
-    const [error, setError] = useState('');
 
     // Check for token existence on page load
     useEffect(() => {
         if (!token) {
-            setError('Đường dẫn không hợp lệ hoặc đã hết hạn.');
+            toast.error('Đường dẫn không hợp lệ hoặc đã hết hạn. Vui lòng yêu cầu link mới.');
+            router.push('/forgot-password');
         }
-    }, [token]);
+    }, [token, router]);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -45,7 +48,14 @@ export default function ResetPasswordPage() {
             setIsSuccess(true);
         } catch (error) {
             if (isAxiosError(error)) {
-                toast.error(error.response?.data || 'Đặt lại mật khẩu thất bại.');
+                // Extract the message if it's an object, otherwise use the data as-is
+                const errorData = error.response?.data;
+                const errorMessage = typeof errorData === 'object' && errorData?.message
+                    ? errorData.message
+                    : typeof errorData === 'string'
+                        ? errorData
+                        : 'Đặt lại mật khẩu thất bại.';
+                toast.error(errorMessage);
             } else {
                 toast.error('Đã có lỗi không mong muốn xảy ra.');
             }
@@ -59,57 +69,85 @@ export default function ResetPasswordPage() {
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
-    // If the process is successful, show a success message
+    // Success state
     if (isSuccess) {
         return (
-            <div className="flex items-center justify-center min-h-screen bg-gray-100">
-                <div className="w-full max-w-md p-8 text-center bg-white rounded-lg shadow-md">
-                    <h2 className="text-2xl font-bold text-gray-900">Thành công!</h2>
-                    <p className="mt-4 text-gray-600">Mật khẩu của bạn đã được cập nhật.</p>
-                    <Link href="/login" className="mt-6 inline-block font-medium text-indigo-600 hover:text-indigo-500">
+            <AuthContainer title="Thành công!" subtitle="">
+                <div className="text-center py-6">
+                    <div className="mb-6 inline-flex items-center justify-center w-20 h-20 rounded-full bg-success/10">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <h3 className="text-xl font-semibold mb-2">Mật khẩu đã được cập nhật</h3>
+                    <p className="text-base-content/60 mb-6">
+                        Bạn có thể đăng nhập với mật khẩu mới của mình ngay bây giờ.
+                    </p>
+                    <Link href="/login" className="btn btn-primary gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                        </svg>
                         Đi đến trang đăng nhập
                     </Link>
                 </div>
-            </div>
+            </AuthContainer>
         );
     }
 
-    // If there's an error (like no token), show an error message
-    if (error) {
-        return (
-            <div className="flex items-center justify-center min-h-screen bg-gray-100">
-                <div className="w-full max-w-md p-8 text-center bg-white rounded-lg shadow-md">
-                    <h2 className="text-2xl font-bold text-red-600">Lỗi</h2>
-                    <p className="mt-4 text-gray-600">{error}</p>
-                    <Link href="/login" className="mt-6 inline-block font-medium text-indigo-600 hover:text-indigo-500">
-                        &larr; Quay lại trang đăng nhập
-                    </Link>
-                </div>
-            </div>
-        );
-    }
 
-    // The main form view
+    // Main form
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-100">
-            <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
-                <h2 className="text-2xl font-bold text-center text-gray-900">Đặt lại mật khẩu mới</h2>
-                <form onSubmit={handleSubmit} className="space-y-6">
-                    <div>
-                        <label htmlFor="password" className="text-sm font-medium text-gray-700">Mật khẩu mới</label>
-                        <input type="password" name="password" id="password" required value={formData.password} onChange={handleChange} className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm" />
-                    </div>
-                    <div>
-                        <label htmlFor="confirmPassword" className="text-sm font-medium text-gray-700">Xác nhận mật khẩu mới</label>
-                        <input type="password" name="confirmPassword" id="confirmPassword" required value={formData.confirmPassword} onChange={handleChange} className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm" />
-                    </div>
-                    <div>
-                        <button type="submit" disabled={isLoading} className="w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md shadow-sm hover:bg-indigo-700 disabled:bg-indigo-400">
-                            {isLoading ? 'Đang lưu...' : 'Lưu mật khẩu mới'}
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
+        <AuthContainer title="Đặt lại mật khẩu" subtitle="Tạo mật khẩu mới cho tài khoản của bạn">
+            <form onSubmit={handleSubmit} className="space-y-4">
+                <AuthInput
+                    id="password"
+                    name="password"
+                    type="password"
+                    label="Mật khẩu mới"
+                    required
+                    value={formData.password}
+                    onChange={handleChange}
+                    placeholder="••••••••"
+                />
+
+                <AuthInput
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type="password"
+                    label="Xác nhận mật khẩu mới"
+                    required
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    placeholder="••••••••"
+                />
+
+                <div className="alert text-sm mt-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span>Mật khẩu nên có ít nhất 8 ký tự và bao gồm chữ cái, số.</span>
+                </div>
+
+                <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="btn btn-primary w-full mt-6 gap-2"
+                >
+                    {isLoading ? (
+                        <>
+                            <span className="loading loading-spinner loading-sm"></span>
+                            Đang lưu...
+                        </>
+                    ) : (
+                        <>
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            </svg>
+                            Lưu mật khẩu mới
+                        </>
+                    )}
+                </button>
+            </form>
+        </AuthContainer>
     );
 }

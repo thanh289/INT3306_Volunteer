@@ -1,6 +1,7 @@
 @import "tailwindcss";
+@plugin "daisyui";
 
-:root {
+/* :root {
   --background: #ffffff;
   --foreground: #171717;
 }
@@ -17,10 +18,33 @@
     --background: #0a0a0a;
     --foreground: #ededed;
   }
-}
+} */
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+ 
+:root {
+ --color-primary: #ec4899;        /* Pink - love & compassion */
+  --color-primary-content: #ffffff;
+  --color-secondary: #d87ca7;      /* Purple - community & unity */
+  --color-secondary-content: #ffffff;
+  --color-accent: #14b8a6;         /* Teal - positive change */
+  --color-neutral: #374151;
+  --color-base-100: #ffffff;
+  --color-base-200: #fdf2f8;       /* Soft pink tint */
+  --color-base-300: #fce7f3;
+  --color-base-content: #1f2937;
+}
+
+/* For dark mode (optional) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-primary: #818cf8;
+    --color-base-100: #1f2937;
+    --color-base-200: #111827;
+    --color-base-content: #f9fafb;
+  }
 }
