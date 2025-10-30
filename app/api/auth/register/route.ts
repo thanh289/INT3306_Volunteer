@@ -1,18 +1,28 @@
+// API route to handle user registration.
+// app/api/auth/register/route.ts
+
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import prisma from "@/lib/prisma";
+
+import { z } from 'zod';
+
+const registerSchema = z.object({
+    email: z.email('Email không hợp lệ'),
+    name: z.string().min(2, 'Tên phải có ít nhất 2 ký tự'),
+    password: z.string().min(8, 'Mật khẩu phải có ít nhất 8 ký tự'),
+});
 
 // new use registery
 export async function POST(request: Request) {
     try {
         // take request from user
         const body = await request.json();
-        const { email, name, password } = body;
-
-        // basic checking
-        if (!email || !password) {
-            return new NextResponse("Email và mật khẩu là bắt buộc", { status: 400 });
+        const result = registerSchema.safeParse(body);
+        if (!result.success) {
+            return new NextResponse(result.error.issues[0].message, { status: 400 });
         }
+        const { email, name, password } = result.data;
 
         // email exist or not?
         const existingUser = await prisma.user.findUnique({

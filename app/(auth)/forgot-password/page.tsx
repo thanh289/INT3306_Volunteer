@@ -1,5 +1,5 @@
 // Renders the "forgot password" form and handles the reset request.
-// src/app/(auth)/forgot-password/page.tsx
+// app/(auth)/forgot-password/page.tsx
 
 'use client';
 

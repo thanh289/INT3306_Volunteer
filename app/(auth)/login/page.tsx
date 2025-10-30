@@ -1,5 +1,5 @@
 // Renders the user login form and handles client-side logic using NextAuth's signIn.
-// src/app/(auth)/login/page.tsx
+// app/(auth)/login/page.tsx
 
 'use client';
 

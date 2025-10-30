@@ -1,5 +1,5 @@
-// English: API route to handle the final password reset submission.
-// src/app/api/auth/reset-password/route.ts
+// API route to handle the final password reset submission.
+// app/api/auth/reset-password/route.ts
 
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
@@ -9,7 +9,7 @@ import { z } from 'zod';
 // Schema to validate the incoming token and new password
 const resetSchema = z.object({
     token: z.string().min(1, 'Token is required'),
-    password: z.string().min(6, 'Mật khẩu phải có ít nhất 6 ký tự'),
+    password: z.string().min(8, 'Mật khẩu phải có ít nhất 8 ký tự'),
 });
 
 export async function POST(request: Request) {
@@ -48,7 +48,8 @@ export async function POST(request: Request) {
         return NextResponse.json({ message: 'Mật khẩu đã được cập nhật thành công.' });
     } catch (error) {
         if (error instanceof z.ZodError) {
-            return new NextResponse(JSON.stringify(error.issues), { status: 400 });
+            // Return just the first error message
+            return new NextResponse(error.issues[0].message, { status: 400 });
         }
         console.error('LỖI KHI RESET MẬT KHẨU:', error);
         return new NextResponse('Lỗi hệ thống', { status: 500 });

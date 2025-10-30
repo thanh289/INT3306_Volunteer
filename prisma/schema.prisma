@@ -1,4 +1,5 @@
 // Defines the database schema for all models in the application.
+// prisma/schema.prisma
 
 datasource db {
     provider = "mongodb"

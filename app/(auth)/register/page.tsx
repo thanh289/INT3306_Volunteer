@@ -1,5 +1,5 @@
 // Renders the user registration form and handles client-side logic.
-// src/app/(auth)/register/page.tsx
+// app/(auth)/register/page.tsx
 
 'use client';
 
