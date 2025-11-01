@@ -15,12 +15,7 @@ type RouteParams = {
 };
 
 const updateSchema = z.object({
-    status: z.enum([
-        RegistrationStatus.APPROVED,
-        RegistrationStatus.REJECTED,
-        RegistrationStatus.COMPLETED,
-        RegistrationStatus.PENDING,
-    ]),
+    status: z.enum(RegistrationStatus),
 });
 
 export async function PATCH(request: Request, { params }: RouteParams) {
@@ -52,36 +47,37 @@ export async function PATCH(request: Request, { params }: RouteParams) {
         const body = await request.json();
         const { status } = updateSchema.parse(body);
 
-        // This one just to make sure number of people approved is enough so that manager can not accept more
-        if (status === RegistrationStatus.APPROVED) {
-            // Check the number of volunteers have been approved
-            const approvedCount = await prisma.registration.count({
-                where: {
-                    eventId: registration.eventId,
-                    status: RegistrationStatus.APPROVED,
-                },
+        const updatedRegistration = await prisma.$transaction(async (tx) => {
+            // Check capacity of approved volunteer
+            if (status === RegistrationStatus.APPROVED) {
+                const approvedCount = await tx.registration.count({
+                    where: {
+                        eventId: registration.eventId,
+                        status: RegistrationStatus.APPROVED,
+                    },
+                });
+
+                if (approvedCount >= registration.event.maxAttendees) {
+                    throw new Error('EVENT_FULL');
+                }
+            }
+
+            // Manager can mark completed only after event ends
+            if (status === RegistrationStatus.COMPLETED) {
+                const eventEndTime = new Date(registration.event.endDateTime);
+                const now = new Date();
+
+                if (eventEndTime > now) {
+                    throw new Error('EVENT_NOT_ENDED');
+                }
+            }
+
+            // Update the registration status
+            return await tx.registration.update({
+                where: { id: registrationId },
+                data: { status },
+                include: { event: true }
             });
-
-            if (approvedCount >= registration.event.maxAttendees) {
-                return new NextResponse('Sự kiện đã đủ số lượng người được duyệt. Không thể duyệt thêm.', { status: 409 });
-            }
-        }
-
-
-        // manager can mark completed just after the endtime of the event
-        if (status === RegistrationStatus.COMPLETED) {
-            const eventEndTime = new Date(registration.event.endDateTime);
-            const now = new Date();
-
-            if (eventEndTime > now) {
-                return new NextResponse('Không thể đánh dấu hoàn thành khi sự kiện chưa kết thúc.', { status: 400 });
-            }
-        }
-
-        const updatedRegistration = await prisma.registration.update({
-            where: { id: registrationId },
-            data: { status },
-            include: { event: true }
         });
 
         let message = '';
@@ -108,7 +104,27 @@ export async function PATCH(request: Request, { params }: RouteParams) {
         }
 
         return NextResponse.json(updatedRegistration);
+
     } catch (error) {
+        if (error instanceof Error) {
+            if (error.message === 'EVENT_FULL') {
+                return new NextResponse(
+                    'Sự kiện đã đủ số lượng người được duyệt. Không thể duyệt thêm.',
+                    { status: 409 }
+                );
+            }
+            if (error.message === 'EVENT_NOT_ENDED') {
+                return new NextResponse(
+                    'Không thể đánh dấu hoàn thành khi sự kiện chưa kết thúc.',
+                    { status: 400 }
+                );
+            }
+        }
+
+        if (error instanceof z.ZodError) {
+            return new NextResponse(error.issues[0].message, { status: 400 });
+        }
+
         console.error('LỖI KHI CẬP NHẬT ĐĂNG KÝ:', error);
         return new NextResponse('Lỗi hệ thống', { status: 500 });
     }
