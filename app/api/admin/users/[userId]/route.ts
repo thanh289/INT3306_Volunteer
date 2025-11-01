@@ -1,4 +1,5 @@
 // API route for an Admin to update a user's status (lock/unlock)
+// app/api/admin/users/[userId]/route.ts
 
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';

@@ -1,4 +1,5 @@
 // Client component with actions for a single registration (e.g., mark complete, reject).
+// components/features/registration-actions.tsx
 
 'use client';
 

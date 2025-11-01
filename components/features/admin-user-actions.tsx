@@ -1,4 +1,5 @@
 // Client component with actions for an admin to manage a user
+// components/features/admin-user-actions.tsx
 
 'use client';
 

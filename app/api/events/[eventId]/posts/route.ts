@@ -1,4 +1,5 @@
-//  API routes for fetching and creating posts for a specific event.
+// API routes for fetching and creating posts for a specific event.
+// app/api/events/[eventId]/posts/route.ts
 
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';

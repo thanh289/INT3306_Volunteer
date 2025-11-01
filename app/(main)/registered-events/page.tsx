@@ -1,4 +1,5 @@
 // A protected page displaying all events a user has registered for.
+// app/(main)/registered-events/page.tsx
 
 import { RegisteredEventList } from '@/components/features/registered-event-list';
 

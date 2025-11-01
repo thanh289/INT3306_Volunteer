@@ -1,5 +1,5 @@
-//  API route for creating a new event.
-
+// API route for creating a new event.
+// app/api/events/route.ts
 
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';

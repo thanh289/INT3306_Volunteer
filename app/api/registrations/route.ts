@@ -1,4 +1,5 @@
 // API route for a volunteer to fetch their own event registrations.
+// app/api/registrations/route.ts
 
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';

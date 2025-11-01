@@ -1,4 +1,6 @@
 // A protected dashboard page for volunteers to see a summary of relevant events.
+// app/(main)/dashboard/page.tsx
+
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";

@@ -1,4 +1,5 @@
 // API route for deleting a specific event.
+// app/api/events/[eventId]/route.ts
 
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';

@@ -1,5 +1,5 @@
 // A protected page for users to view and edit their profile.
-
+// app/(main)/profile/page.tsx
 
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';

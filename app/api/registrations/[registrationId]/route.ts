@@ -1,5 +1,5 @@
 // API route to update a specific registration, e.g., mark as complete.
-
+// app/api/registrations/[registrationId]/route.ts
 
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';

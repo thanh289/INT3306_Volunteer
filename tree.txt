@@ -53,3 +53,10 @@ volunteerhub-app/
 │   └── types/               # Chứa các ĐỊNH NGHĨA kiểu dữ liệu
 │       └── next-auth.d.ts   # Mở rộng type của NextAuth
 └── ... (các file cấu hình khác)
+
+
+
+Có thể sẽ phải sửa:
+- Sẽ cần làm thêm 1 chỗ để admin có thể xem tất cả các events đã được duyệt chẳng hạn
+- có thể lúc đang đăng nhập thì bị khóa tài khoản, đợi đến lúc reload thì mới bị kick (chưa chawcs cái này)
+

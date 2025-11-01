@@ -1,4 +1,5 @@
 // A client component form for editing user profile information.
+// components/features/profile-form.tsx
 
 'use client';
 

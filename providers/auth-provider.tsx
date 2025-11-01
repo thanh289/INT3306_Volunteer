@@ -1,4 +1,5 @@
 // Provides NextAuth session context to the entire application.
+// providers/auth-provider.tsx
 
 'use client';
 

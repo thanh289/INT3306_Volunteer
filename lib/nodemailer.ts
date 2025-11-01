@@ -1,4 +1,5 @@
 // Manage sending email
+// lib/nodemailer.ts
 
 import nodemailer from 'nodemailer';
 

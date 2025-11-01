@@ -1,4 +1,5 @@
 // A protected page for editing an existing event.
+// app/(main)/events/[eventId]/edit/page.tsx
 
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';

@@ -1,4 +1,5 @@
 // API route to fetch all registrations for a specific event.
+// app/api/events/[eventId]/registrations/route.ts
 
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';

@@ -1,4 +1,5 @@
 // A client component form for creating a new event.
+// components/features/create-event-form.tsx
 
 'use client';
 

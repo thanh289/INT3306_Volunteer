@@ -1,5 +1,5 @@
 // API route to handle a user's registration for a specific event.
-
+// app/api/events/[eventId]/register/route.ts
 
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';

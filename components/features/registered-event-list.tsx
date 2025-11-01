@@ -1,4 +1,5 @@
 // A client component that fetches and displays the list of registered events for a volunteer.
+// components/features/registered-event-list.tsx
 
 'use client';
 

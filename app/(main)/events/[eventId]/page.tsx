@@ -1,4 +1,5 @@
 // Renders the detailed page for a single event, fetched by its ID.
+// app/(main)/events/[eventId]/page.tsx
 
 import prisma from "@/lib/prisma";
 import { notFound } from "next/navigation";

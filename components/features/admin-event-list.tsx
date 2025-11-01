@@ -1,4 +1,5 @@
 // A client component that fetches and displays the list of pending events for admins.
+// components/features/admin-event-list.tsx
 
 'use client';
 

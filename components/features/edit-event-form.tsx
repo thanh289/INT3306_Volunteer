@@ -1,5 +1,5 @@
 // English: A client component form for editing an existing event.
-// src/components/features/edit-event-form.tsx
+// components/features/edit-event-form.tsx
 
 'use client';
 

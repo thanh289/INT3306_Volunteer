@@ -1,5 +1,5 @@
 // Client component for event management buttons (Edit, Delete)
-
+// components/features/event-management-buttons.tsx
 
 'use client';
 

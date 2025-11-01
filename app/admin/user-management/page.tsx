@@ -1,4 +1,5 @@
 // The main page for user management in the admin panel
+// app/admin/user-management/page.tsx
 
 import { UserList } from '@/components/features/admin-user-list';
 

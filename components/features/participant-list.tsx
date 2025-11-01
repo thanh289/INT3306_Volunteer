@@ -1,4 +1,5 @@
 // A client component that fetches and displays the list of event participants
+// component/features/participant-list.tsx
 
 'use client';
 

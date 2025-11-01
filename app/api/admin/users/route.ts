@@ -1,4 +1,5 @@
 // API route for Admins to fetch all users
+// app/api/admin/users/route.ts
 
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';

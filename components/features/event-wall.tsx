@@ -1,4 +1,5 @@
 // A client component for the event's communication wall.
+// components/features/event-wall.tsx
 'use client';
 
 import { useState, useEffect } from 'react';

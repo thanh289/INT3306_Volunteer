@@ -1,5 +1,5 @@
 // English: Client component for Admin actions on an event (Approve, Reject).
-// src/components/features/admin-event-actions.tsx
+// components/features/admin-event-actions.tsx
 
 'use client';
 

@@ -1,4 +1,5 @@
 // src/components/features/register-event-button.tsx
+// components/features/register-event-button.tsx
 
 'use client';
 

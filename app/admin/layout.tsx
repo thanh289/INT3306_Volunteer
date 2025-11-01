@@ -1,4 +1,5 @@
 // The main layout for the entire admin section, including authorization.
+// app/admin/layout.tsx
 
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';

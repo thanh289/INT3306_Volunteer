@@ -1,4 +1,5 @@
 // Initializes a singleton Prisma Client instance to prevent multiple database connections.
+// lib/prisma.ts
 
 import { PrismaClient } from '@prisma/client';
 

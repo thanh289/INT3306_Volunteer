@@ -1,4 +1,5 @@
 // A header component for the admin section.
+// components/shared/admin-header.tsx
 
 import Link from 'next/link';
 

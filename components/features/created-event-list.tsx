@@ -1,4 +1,6 @@
 // A client component that fetches and displays the list of created events for a manager
+// using SWR for data fetching and caching.
+// components/features/created-event-list.tsx
 
 'use client';
 
@@ -11,7 +13,6 @@ type CreatedEvent = Event & { creator: User };
 const fetcher = (url: string) => axios.get(url).then(res => res.data);
 
 export const CreatedEventList = () => {
-    // Again use swr
     const { data: createdEvents, isLoading, error } = useSWR<CreatedEvent[]>('/api/created-events', fetcher);
 
     if (isLoading) return <p>Đang tải danh sách sự kiện...</p>;

@@ -1,4 +1,5 @@
 // API routes for fetching and managing user notifications.
+// app/api/notifications/route.ts
 
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';

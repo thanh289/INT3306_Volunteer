@@ -1,4 +1,5 @@
 // API route for an event manager to fetch events they created.
+// app/api/created-events/route.ts
 
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
@@ -9,7 +10,7 @@ export async function GET() {
     try {
         const session = await getServerSession(authOptions);
 
-        // Bảo vệ API: Chỉ EVENT_MANAGER và ADMIN mới có quyền truy cập
+        // API protected: only for EVENT_MANAGER and ADMIN
         if (!session || (session.user.role !== 'EVENT_MANAGER' && session.user.role !== 'ADMIN')) {
             return new NextResponse('Unauthorized', { status: 401 });
         }

@@ -1,4 +1,5 @@
 // A client component that periodically checks the session and logs out locked users.
+// components/shared/session-manager.tsx
 
 'use client';
 

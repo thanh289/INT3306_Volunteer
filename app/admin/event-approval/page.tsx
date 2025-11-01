@@ -1,4 +1,5 @@
-//A protected dashboard for Admins to manage pending events.
+// A protected dashboard for Admins to manage pending events.
+// app/admin/event-approval/page.tsx
 
 import { AdminEventList } from '@/components/features/admin-event-list';
 

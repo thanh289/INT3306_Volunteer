@@ -1,4 +1,5 @@
 // A client component that fetches and displays the list of users for admins
+// components/features/admin-user-list.tsx
 
 'use client';
 
