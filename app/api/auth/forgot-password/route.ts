@@ -6,6 +6,7 @@ import prisma from '@/lib/prisma';
 import { transporter, mailOptions } from '@/lib/nodemailer';
 import { createHash, randomBytes } from 'crypto';
 import { z } from 'zod';
+import { strictRateLimiter, withRateLimit } from '@/lib/rate-limit';
 
 const requestSchema = z.object({
     email: z.email('Email không hợp lệ'),
@@ -13,6 +14,12 @@ const requestSchema = z.object({
 
 export async function POST(request: Request) {
     try {
+        // ADDED: Rate limiting for forgot password
+        const rateLimitError = await withRateLimit(request, strictRateLimiter);
+        if (rateLimitError) {
+            return rateLimitError;
+        }
+
         const body = await request.json();
         const { email } = requestSchema.parse(body);
 

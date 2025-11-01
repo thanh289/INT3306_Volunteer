@@ -4,8 +4,9 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import prisma from "@/lib/prisma";
-
 import { z } from 'zod';
+import { authRateLimiter, withRateLimit } from '@/lib/rate-limit';
+
 
 const registerSchema = z.object({
     email: z.email('Email không hợp lệ'),
@@ -25,6 +26,12 @@ const registerSchema = z.object({
 // new use registery
 export async function POST(request: Request) {
     try {
+        // ADDED: Rate limiting for forgot password
+        const rateLimitError = await withRateLimit(request, authRateLimiter);
+        if (rateLimitError) {
+            return rateLimitError;
+        }
+
         // take request from user
         const body = await request.json();
         const result = registerSchema.safeParse(body);

@@ -125,7 +125,16 @@ export default function ResetPasswordPage() {
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    <span>Mật khẩu nên có ít nhất 8 ký tự và bao gồm chữ cái, số.</span>
+                    <div className="text-xs">
+                        <p className="font-semibold mb-1">Yêu cầu mật khẩu:</p>
+                        <ul className="list-disc list-inside space-y-1">
+                            <li>Ít nhất 8 ký tự</li>
+                            <li>Có chữ hoa (A-Z)</li>
+                            <li>Có chữ thường (a-z)</li>
+                            <li>Có số (0-9)</li>
+                            <li>Có ký tự đặc biệt (@$!%*?&#)</li>
+                        </ul>
+                    </div>
                 </div>
 
                 <button

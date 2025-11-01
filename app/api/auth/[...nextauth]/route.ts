@@ -7,6 +7,7 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import bcrypt from 'bcryptjs';
 import prisma from '@/lib/prisma';
 import { UserStatus } from '@prisma/client';
+import { authRateLimiter, getIdentifier } from '@/lib/rate-limit';
 
 export const authOptions: AuthOptions = {
     providers: [
@@ -19,7 +20,17 @@ export const authOptions: AuthOptions = {
             },
 
 
-            async authorize(credentials) {
+            async authorize(credentials, req) {
+                // Rate limiting for login attempts
+                if (req) {
+                    const identifier = getIdentifier(req as unknown as Request);
+                    const rateLimit = await authRateLimiter.check(identifier);
+
+                    if (!rateLimit.success) {
+                        throw new Error(`Quá nhiều lần đăng nhập thất bại. Vui lòng thử lại sau ${Math.ceil((rateLimit.reset - Date.now()) / 1000 / 60)} phút.`);
+                    }
+                }
+
                 // Check whether type email and pw
                 if (!credentials?.email || !credentials?.password) {
                     throw new Error('Vui lòng nhập email và mật khẩu');
