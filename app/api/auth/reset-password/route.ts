@@ -5,11 +5,17 @@ import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
 import { z } from 'zod';
+import { createHash } from 'crypto';
 
 // Schema to validate the incoming token and new password
 const resetSchema = z.object({
     token: z.string().min(1, 'Token is required'),
-    password: z.string().min(8, 'Mật khẩu phải có ít nhất 8 ký tự'),
+    password: z.string()
+        .min(8, 'Mật khẩu phải có ít nhất 8 ký tự')
+        .regex(/[a-z]/, 'Mật khẩu phải chứa ít nhất 1 chữ thường')
+        .regex(/[A-Z]/, 'Mật khẩu phải chứa ít nhất 1 chữ hoa')
+        .regex(/[0-9]/, 'Mật khẩu phải chứa ít nhất 1 số')
+        .regex(/[@$!%*?&#]/, 'Mật khẩu phải chứa ít nhất 1 ký tự đặc biệt (@$!%*?&#)'),
 });
 
 export async function POST(request: Request) {
@@ -17,11 +23,13 @@ export async function POST(request: Request) {
         const body = await request.json();
         const { token, password } = resetSchema.parse(body);
 
-        // Find the password reset token in the database
-        // For now, we are comparing the raw token. (can hash in the future)
+        // SECURITY FIX: Hash the token before comparing with database
+        const tokenHash = createHash('sha256').update(token).digest('hex');
+
+        // Find the password with hashed token in the database
         const passwordResetToken = await prisma.passwordResetToken.findFirst({
             where: {
-                token: token,
+                token: tokenHash,
             },
         });
 
@@ -33,19 +41,24 @@ export async function POST(request: Request) {
         // Hash the new password
         const hashedPassword = await bcrypt.hash(password, 12);
 
-        await prisma.user.update({
-            where: { id: passwordResetToken.userId },
-            data: {
-                passwordHash: hashedPassword,
-            },
-        });
 
-        // Delete the used password reset token
-        await prisma.passwordResetToken.delete({
-            where: { id: passwordResetToken.id },
-        });
+        // Use transaction to ensure both operations succeed or fail together
+        await prisma.$transaction([
+            prisma.user.update({
+                where: { id: passwordResetToken.userId },
+                data: {
+                    passwordHash: hashedPassword,
+                },
+            }),
+
+            // Delete the used password reset token
+            prisma.passwordResetToken.delete({
+                where: { id: passwordResetToken.id },
+            }),
+        ])
 
         return NextResponse.json({ message: 'Mật khẩu đã được cập nhật thành công.' });
+
     } catch (error) {
         if (error instanceof z.ZodError) {
             // Return just the first error message

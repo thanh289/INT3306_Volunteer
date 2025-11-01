@@ -4,7 +4,7 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { transporter, mailOptions } from '@/lib/nodemailer';
-import { randomBytes } from 'crypto';
+import { createHash, randomBytes } from 'crypto';
 import { z } from 'zod';
 
 const requestSchema = z.object({
@@ -29,18 +29,20 @@ export async function POST(request: Request) {
 
         // generate a secure, random token
         const resetToken = randomBytes(32).toString('hex');
-        // const tokenHash = randomBytes(32).toString('hex'); can hash this in the future for more security
+
+        // hash the token for more security before storing in DB
+        const tokenHash = createHash('sha256').update(resetToken).digest('hex');
 
         // Set an expiration date for the token (like 1 hour from now)
         const expires = new Date();
         expires.setHours(expires.getHours() + 1);
 
-        // Store the token in the database
+        // Store the HASHED token in the database
         // Use upsert to create a new token or update an existing one for this user
         await prisma.passwordResetToken.upsert({
             where: { userId: user.id },
             update: {
-                token: resetToken,
+                token: tokenHash,
                 expires,
             },
             create: {
@@ -50,7 +52,7 @@ export async function POST(request: Request) {
             },
         });
 
-        // send the password reset email
+        // send the password reset email (with RAW token)
         const resetUrl = `${process.env.NEXTAUTH_URL}/reset-password?token=${resetToken}`;
 
         await transporter.sendMail({
