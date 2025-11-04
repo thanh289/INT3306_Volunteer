@@ -1,5 +1,6 @@
 // Defines the database schema for all models in the application.
 // prisma/schema.prisma
+// update: add indexes for optimization (and looke like we don't need to add index for unique fields)
 
 datasource db {
     provider = "mongodb"
@@ -69,6 +70,10 @@ model User {
     createdEvents      Event[]             @relation("EventCreator")
     notifications      Notification[]
     passwordResetToken PasswordResetToken?
+
+    @@index([role])
+    @@index([status])
+    @@index([createdAt])
 }
 
 model Event {
@@ -92,6 +97,12 @@ model Event {
     // an event can has multiple user and post
     registrations Registration[]
     posts         Post[]
+
+    @@index([status, startDateTime])
+    @@index([creatorId, createdAt])
+    @@index([category, startDateTime])
+    @@index([status, category])
+    @@index([startDateTime])
 }
 
 model Registration {
@@ -109,6 +120,9 @@ model Registration {
 
     // an user can only registry an event once
     @@unique([userId, eventId])
+    @@index([userId, status])
+    @@index([eventId, status])
+    @@index([status, createdAt])
 }
 
 model Post {
@@ -121,6 +135,8 @@ model Post {
 
     authorId String @db.ObjectId
     author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+    @@index([eventId, createdAt])
 }
 
 model Notification {
@@ -132,6 +148,8 @@ model Notification {
 
     userId String @db.ObjectId
     user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@index([userId, isRead, createdAt])
 }
 
 model PasswordResetToken {
@@ -142,4 +160,6 @@ model PasswordResetToken {
     // 1 user will just have 1 token
     userId String @unique @db.ObjectId
     user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@index([expires])
 }

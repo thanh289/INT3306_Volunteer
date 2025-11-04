@@ -5,11 +5,15 @@ import prisma from '@/lib/prisma';
 import { EventCard } from '@/components/features/event-card';
 import { EventFilters } from '@/components/features/event-filters';
 import { EventCategory, Prisma } from '@prisma/client';
+import { Pagination } from '@/components/shared/pagination';
+
+const ITEMS_PER_PAGE = 1;
 
 type HomePageProps = {
     searchParams: Promise<{
         category?: string;
         sortBy?: string;
+        page?: string;
     }>;
 };
 export default async function HomePage({ searchParams }: HomePageProps) {
@@ -17,6 +21,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
     const resolvedSearchParams = await searchParams;
     const category = resolvedSearchParams.category;
     const sortBy = resolvedSearchParams.sortBy || 'startDateTime';
+    const page = parseInt(resolvedSearchParams.page || '1', 10);
 
     // Dynamic query
     const where: Prisma.EventWhereInput = {
@@ -29,13 +34,19 @@ export default async function HomePage({ searchParams }: HomePageProps) {
     const orderBy: Prisma.EventOrderByWithRelationInput =
         sortBy === 'title' ? { title: 'asc' } : { startDateTime: 'asc' };
 
-    // Take filtered data
-    const events = await prisma.event.findMany({
-        where,
-        include: { creator: true },
-        orderBy,
-    });
+    // Get total count and paginated data in parallel
+    const [totalEvents, events] = await Promise.all([
+        prisma.event.count({ where }),
+        prisma.event.findMany({
+            where,
+            include: { creator: true },
+            orderBy,
+            take: ITEMS_PER_PAGE,
+            skip: (page - 1) * ITEMS_PER_PAGE,
+        }),
+    ]);
 
+    const totalPages = Math.ceil(totalEvents / ITEMS_PER_PAGE);
     return (
         <div className="space-y-6">
             {/* Hero Section */}
@@ -86,11 +97,23 @@ export default async function HomePage({ searchParams }: HomePageProps) {
                     </div>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {events.map((event) => (
-                        <EventCard key={event.id} event={event} />
-                    ))}
-                </div>
+                <>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {events.map((event) => (
+                            <EventCard key={event.id} event={event} />
+                        ))}
+                    </div>
+
+                    {/* Pagination */}
+                    {totalPages > 1 && (
+                        < Pagination
+                            currentPage={page}
+                            totalPages={totalPages}
+                            baseUrl="/"
+                        />
+                    )}
+                </>
+
             )}
         </div>
     );

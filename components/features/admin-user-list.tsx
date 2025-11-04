@@ -11,9 +11,29 @@ import { AdminUserActions } from './admin-user-actions';
 
 const fetcher = (url: string) => axios.get(url).then(res => res.data);
 
+type ApiResponse = {
+    users: User[];
+    pagination: {
+        currentPage: number;
+        totalPages: number;
+        totalUsers: number;
+        itemsPerPage: number;
+    };
+};
+
 export const UserList = () => {
-    const { data: users, isLoading, error } = useSWR<User[]>('/api/admin/users', fetcher);
+    const [page, setPage] = useState(1);
+    const [search, setSearch] = useState('');
+    const [searchInput, setSearchInput] = useState('')
     const [isExporting, setIsExporting] = useState(false);
+
+    const { data, isLoading, error } = useSWR<ApiResponse>('/api/admin/users', fetcher);
+
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        setPage(1);
+        setSearch(searchInput);
+    }
 
     const handleExport = async () => {
         setIsExporting(true);
@@ -35,7 +55,9 @@ export const UserList = () => {
             let fileName = 'users_export.csv';
             if (contentDisposition) {
                 const fileNameMatch = contentDisposition.match(/filename="(.+)"/); // @@, welp, use regex to get filename
-                if (fileNameMatch.length === 2) fileName = fileNameMatch[1];
+                if (fileNameMatch && fileNameMatch[1]) {
+                    fileName = fileNameMatch[1];
+                }
             }
 
             link.setAttribute('download', fileName);
@@ -51,53 +73,142 @@ export const UserList = () => {
         }
     };
 
-    if (isLoading) return <p>Đang tải danh sách...</p>;
     if (error) return <p>Không thể tải danh sách người dùng.</p>;
-    if (!users) return null;
 
     return (
-        <div>
-            <div className="flex justify-end mb-4">
+        <div className="space-y-4">
+            {/* Search and Export */}
+            <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
+                {/* Search Form */}
+                <form onSubmit={handleSearch} className="flex gap-2 flex-1 max-w-md">
+                    <input
+                        type="text"
+                        placeholder="Tìm theo tên hoặc email..."
+                        value={searchInput}
+                        onChange={(e) => setSearchInput(e.target.value)}
+                        className="input input-bordered flex-1"
+                    />
+                    <button type="submit" className="btn btn-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </button>
+                    {search && (
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setSearch('');
+                                setSearchInput('');
+                            }}
+                            className="btn btn-ghost"
+                        >
+                            Xóa
+                        </button>
+                    )}
+                </form>
+
+                {/* Export Button */}
                 <button
                     onClick={handleExport}
                     disabled={isExporting}
-                    className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:bg-blue-400"
+                    className="btn btn-secondary"
                 >
                     {isExporting ? 'Đang xuất...' : 'Xuất ra CSV'}
                 </button>
             </div>
 
-            <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                        <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Họ và tên</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Vai trò</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Trạng thái</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Hành động</th>
-                        </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                        {users.map((user) => (
-                            <tr key={user.id}>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{user.name}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.email}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.role}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${user.status === 'ACTIVE' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                                        {user.status === 'ACTIVE' ? 'Hoạt động' : 'Bị khóa'}
-                                    </span>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <AdminUserActions user={user} />
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-        </div>
+            {/* Results Info */}
+            {data && (
+                <div className="text-sm text-base-content/60">
+                    Hiển thị {data.users.length} / {data.pagination.totalUsers} người dùng
+                </div>
+            )}
 
+            {/* Loading State */}
+            {isLoading && (
+                <div className="flex justify-center py-8">
+                    <span className="loading loading-spinner loading-lg"></span>
+                </div>
+            )}
+
+            {/* User Table */}
+            {data && data.users.length > 0 && (
+                <>
+                    <div className="overflow-x-auto">
+                        <table className="table table-zebra">
+                            <thead>
+                                <tr>
+                                    <th>Họ và tên</th>
+                                    <th>Email</th>
+                                    <th>Vai trò</th>
+                                    <th>Trạng thái</th>
+                                    <th>Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {data.users.map((user) => (
+                                    <tr key={user.id}>
+                                        <td className="font-medium">{user.name}</td>
+                                        <td>{user.email}</td>
+                                        <td>
+                                            <span className="badge badge-ghost">
+                                                {user.role}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span
+                                                className={`badge ${user.status === 'ACTIVE'
+                                                        ? 'badge-success'
+                                                        : 'badge-error'
+                                                    }`}
+                                            >
+                                                {user.status === 'ACTIVE' ? 'Hoạt động' : 'Bị khóa'}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <AdminUserActions user={user} />
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {/* Pagination */}
+                    {data.pagination.totalPages > 1 && (
+                        <div className="flex justify-center mt-6">
+                            <div className="join">
+                                <button
+                                    className="join-item btn btn-sm"
+                                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                                    disabled={page <= 1}
+                                >
+                                    «
+                                </button>
+                                <button className="join-item btn btn-sm">
+                                    Trang {page} / {data.pagination.totalPages}
+                                </button>
+                                <button
+                                    className="join-item btn btn-sm"
+                                    onClick={() => setPage((p) => Math.min(data.pagination.totalPages, p + 1))}
+                                    disabled={page >= data.pagination.totalPages}
+                                >
+                                    »
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </>
+            )}
+
+            {/* Empty State */}
+            {data && data.users.length === 0 && (
+                <div className="text-center py-12">
+                    <p className="text-base-content/60">
+                        {search ? 'Không tìm thấy người dùng phù hợp' : 'Chưa có người dùng nào'}
+                    </p>
+                </div>
+            )}
+        </div>
     );
 };
