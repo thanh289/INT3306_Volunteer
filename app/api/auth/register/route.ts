@@ -5,23 +5,10 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import prisma from "@/lib/prisma";
 import { z } from 'zod';
+import { registerSchema } from '@/lib/validations/auth';
 import { authRateLimiter, withRateLimit } from '@/lib/rate-limit';
 
 
-const registerSchema = z.object({
-    email: z.email('Email không hợp lệ'),
-    name: z.string()
-        .min(2, 'Tên phải có ít nhất 2 ký tự')
-        .max(100, 'Tên không được quá 100 ký tự')
-        .regex(/^[\p{L}\s]+$/u, 'Tên chỉ được chứa chữ cái và khoảng trắng'),
-    password: z.string()
-        .min(8, 'Mật khẩu phải có ít nhất 8 ký tự')
-        .max(128, 'Mật khẩu không được quá 128 ký tự')
-        .regex(/[a-z]/, 'Mật khẩu phải chứa ít nhất 1 chữ thường')
-        .regex(/[A-Z]/, 'Mật khẩu phải chứa ít nhất 1 chữ hoa')
-        .regex(/[0-9]/, 'Mật khẩu phải chứa ít nhất 1 số')
-        .regex(/[@$!%*?&#]/, 'Mật khẩu phải chứa ít nhất 1 ký tự đặc biệt (@$!%*?&#)'),
-});
 
 // new use registery
 export async function POST(request: Request) {

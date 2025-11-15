@@ -10,10 +10,16 @@ import toast from 'react-hot-toast';            // show state popup
 import AuthContainer from '@/components/auth/AuthContainer';
 import AuthInput from '@/components/auth/AuthInput';
 import Link from 'next/link';
+import { validateEmail, validateName, validatePassword } from '@/lib/validations/auth';
 
 export default function RegisterPage() {
     const router = useRouter();
     const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        password: '',
+    });
+    const [errors, setErrors] = useState({
         name: '',
         email: '',
         password: '',
@@ -23,11 +29,36 @@ export default function RegisterPage() {
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
+
+        // Clear error when user types
+        if (errors[name as keyof typeof errors]) {
+            setErrors((prev) => ({ ...prev, [name]: '' }));
+        }
     };
 
     // press the submit button
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault(); // prevent form loading the page
+
+        // Client-side validation
+        const nameError = validateName(formData.name);
+        const emailError = validateEmail(formData.email);
+        const passwordError = validatePassword(formData.password);
+
+        if (nameError || emailError || passwordError) {
+            setErrors({
+                name: nameError || '',
+                email: emailError || '',
+                password: passwordError || '',
+            });
+
+            // Show first error
+            if (nameError) toast.error(nameError);
+            else if (emailError) toast.error(emailError);
+            else if (passwordError) toast.error(passwordError);
+            return;
+        }
+
         setIsLoading(true);
 
         try {
@@ -56,22 +87,23 @@ export default function RegisterPage() {
                     name="name"
                     type="text"
                     label="Họ và tên"
-                    required
                     value={formData.name}
                     onChange={handleChange}
                     placeholder="Nguyễn Văn A"
+                    error={errors.name}
+                    autoComplete="name"
                 />
 
                 <AuthInput
                     id="email"
                     name="email"
-                    type="email"
+                    type="text"
                     label="Địa chỉ Email"
-                    autoComplete="email"
-                    required
                     value={formData.email}
                     onChange={handleChange}
                     placeholder="@gmail.com"
+                    error={errors.email}
+                    autoComplete="email"
                 />
 
                 <AuthInput
@@ -79,11 +111,11 @@ export default function RegisterPage() {
                     name="password"
                     type="password"
                     label="Mật khẩu"
-                    autoComplete="new-password"
-                    required
                     value={formData.password}
                     onChange={handleChange}
                     placeholder="••••••••"
+                    error={errors.password}
+                    autoComplete="new-password"
                 />
 
                 <div className="form-control mt-2">

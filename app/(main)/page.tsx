@@ -7,7 +7,7 @@ import { EventFilters } from '@/components/features/event-filters';
 import { EventCategory, Prisma } from '@prisma/client';
 import { Pagination } from '@/components/shared/pagination';
 
-const ITEMS_PER_PAGE = 1;
+const ITEMS_PER_PAGE = 9;
 
 type HomePageProps = {
     searchParams: Promise<{

@@ -10,6 +10,7 @@ import toast from 'react-hot-toast';
 import Link from 'next/link';
 import AuthContainer from '@/components/auth/AuthContainer';
 import AuthInput from '@/components/auth/AuthInput';
+import { validatePassword, PASSWORD_RULES } from '@/lib/validations/auth';
 
 export default function ResetPasswordPage() {
     const router = useRouter();
@@ -17,8 +18,10 @@ export default function ResetPasswordPage() {
     const token = searchParams.get('token');
 
     const [formData, setFormData] = useState({ password: '', confirmPassword: '' });
+    const [passwordError, setPasswordError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
+
 
     // Check for token existence on page load
     useEffect(() => {
@@ -28,12 +31,34 @@ export default function ResetPasswordPage() {
         }
     }, [token, router]);
 
+    const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({ ...prev, [name]: value }));
+
+        // Reset each time type
+        if (name === 'password' && passwordError) {
+            setPasswordError('');
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+
+        // Check pw requirement
+        const passwordValidationError = validatePassword(formData.password);
+        if (passwordValidationError) {
+            // setPasswordError(passwordValidationError);
+            toast.error(passwordValidationError);
+            return;
+        }
+
+        // Check pw match
         if (formData.password !== formData.confirmPassword) {
             toast.error('Mật khẩu xác nhận không khớp.');
             return;
         }
+
+        // Check token
         if (!token) {
             toast.error('Token không hợp lệ.');
             return;
@@ -62,11 +87,6 @@ export default function ResetPasswordPage() {
         } finally {
             setIsLoading(false);
         }
-    };
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
     // Success state
@@ -99,40 +119,49 @@ export default function ResetPasswordPage() {
     return (
         <AuthContainer title="Đặt lại mật khẩu" subtitle="Tạo mật khẩu mới cho tài khoản của bạn">
             <form onSubmit={handleSubmit} className="space-y-4">
-                <AuthInput
-                    id="password"
-                    name="password"
-                    type="password"
-                    label="Mật khẩu mới"
-                    required
-                    value={formData.password}
-                    onChange={handleChange}
-                    placeholder="••••••••"
-                />
+                <div>
+                    <AuthInput
+                        id="password"
+                        name="password"
+                        type="password"
+                        label="Mật khẩu mới"
+                        value={formData.password}
+                        onChange={handlePasswordChange}
+                        placeholder="••••••••"
+                        error={passwordError}
+                        autoComplete="new-password"
+                    />
+                </div>
 
                 <AuthInput
                     id="confirmPassword"
                     name="confirmPassword"
                     type="password"
                     label="Xác nhận mật khẩu mới"
-                    required
                     value={formData.confirmPassword}
-                    onChange={handleChange}
+                    onChange={handlePasswordChange}
                     placeholder="••••••••"
                 />
 
                 <div className="alert text-sm mt-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
                     <div className="text-xs">
-                        <p className="font-semibold mb-1">Yêu cầu mật khẩu:</p>
-                        <ul className="list-disc list-inside space-y-1">
-                            <li>Ít nhất 8 ký tự</li>
-                            <li>Có chữ hoa (A-Z)</li>
-                            <li>Có chữ thường (a-z)</li>
-                            <li>Có số (0-9)</li>
-                            <li>Có ký tự đặc biệt (@$!%*?&#)</li>
+                        <p className="font-semibold mb-2">Yêu cầu mật khẩu:</p>
+                        <ul className="space-y-1">
+                            <li className={formData.password.length >= 8 ? 'text-success' : ''}>
+                                {formData.password.length >= 8 ? '✓' : '○'} Ít nhất 8 ký tự
+                            </li>
+                            <li className={PASSWORD_RULES.hasUppercase.test(formData.password) ? 'text-success' : ''}>
+                                {PASSWORD_RULES.hasUppercase.test(formData.password) ? '✓' : '○'} Có chữ hoa (A-Z)
+                            </li>
+                            <li className={PASSWORD_RULES.hasLowercase.test(formData.password) ? 'text-success' : ''}>
+                                {PASSWORD_RULES.hasLowercase.test(formData.password) ? '✓' : '○'} Có chữ thường (a-z)
+                            </li>
+                            <li className={PASSWORD_RULES.hasNumber.test(formData.password) ? 'text-success' : ''}>
+                                {PASSWORD_RULES.hasNumber.test(formData.password) ? '✓' : '○'} Có số (0-9)
+                            </li>
+                            <li className={PASSWORD_RULES.hasSpecial.test(formData.password) ? 'text-success' : ''}>
+                                {PASSWORD_RULES.hasSpecial.test(formData.password) ? '✓' : '○'} Có ký tự đặc biệt (@$!%*?&#)
+                            </li>
                         </ul>
                     </div>
                 </div>

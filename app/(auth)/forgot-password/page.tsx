@@ -6,16 +6,28 @@
 import { useState } from 'react';
 import axios from 'axios';
 import Link from 'next/link';
+import toast from 'react-hot-toast';
 import AuthContainer from '@/components/auth/AuthContainer';
 import AuthInput from '@/components/auth/AuthInput';
+import { validateEmail } from '@/lib/validations/auth';
 
 export default function ForgotPasswordPage() {
     const [email, setEmail] = useState('');
+    const [emailError, setEmailError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [isSubmitted, setIsSubmitted] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+
+        // Client-side validation
+        const error = validateEmail(email);
+        if (error) {
+            setEmailError(error);
+            toast.error(error);
+            return;
+        }
+
         setIsLoading(true);
         setIsSubmitted(false);
 
@@ -24,7 +36,7 @@ export default function ForgotPasswordPage() {
             setIsSubmitted(true);
         } catch (error) {
             console.error("Forgot password error:", error);
-            setIsSubmitted(true); // Still show success UI
+            // setIsSubmitted(true); 
         } finally {
             setIsLoading(false);
         }
@@ -46,9 +58,6 @@ export default function ForgotPasswordPage() {
                     </p>
                     <p className="font-semibold text-primary mb-6">{email}</p>
                     <div className="alert text-sm mb-6">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
                         <span>Không nhận được email? Kiểm tra thư mục spam hoặc thử lại sau vài phút.</span>
                     </div>
                     <Link href="/login" className="btn btn-outline gap-2">
@@ -69,18 +78,16 @@ export default function ForgotPasswordPage() {
                 <AuthInput
                     id="email"
                     name="email"
-                    type="email"
+                    type="text"
                     label="Địa chỉ Email"
-                    required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="@gmail.com"
+                    placeholder="example@gmail.com"
+                    error={emailError}
+                    autoComplete="email"
                 />
 
                 <div className="alert text-sm">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
                     <span>Chúng tôi sẽ gửi link đặt lại mật khẩu đến email này nếu tài khoản tồn tại.</span>
                 </div>
 

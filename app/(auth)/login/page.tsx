@@ -10,11 +10,16 @@ import toast from 'react-hot-toast';
 import Link from 'next/link';
 import AuthContainer from '@/components/auth/AuthContainer';
 import AuthInput from '@/components/auth/AuthInput';
+import { validateEmail } from '@/lib/validations/auth'
 
 export default function LoginPage() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [formData, setFormData] = useState({
+        email: '',
+        password: '',
+    });
+    const [errors, setErrors] = useState({
         email: '',
         password: '',
     });
@@ -38,6 +43,21 @@ export default function LoginPage() {
     // when submit
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+
+        // Client-side validation
+        const emailError = validateEmail(formData.email);
+        const passwordError = !formData.password ? 'Mật khẩu không được để trống' : null;
+
+        if (emailError || passwordError) {
+            setErrors({
+                email: emailError || '',
+                password: passwordError || '',
+            });
+            if (emailError) toast.error(emailError);
+            else if (passwordError) toast.error(passwordError);
+            return;
+        }
+
         setIsLoading(true);
 
         try {
@@ -67,13 +87,13 @@ export default function LoginPage() {
                 <AuthInput
                     id="email"
                     name="email"
-                    type="email"
+                    type="text"
                     label="Địa chỉ Email"
-                    required
-                    suppressHydrationWarning
                     value={formData.email}
                     onChange={handleChange}
-                    placeholder="@gmail.com"
+                    placeholder="example@gmail.com"
+                    error={errors.email}
+                    autoComplete="email"
                 />
 
                 <AuthInput
@@ -81,8 +101,6 @@ export default function LoginPage() {
                     name="password"
                     type="password"
                     label="Mật khẩu"
-                    required
-                    suppressHydrationWarning
                     value={formData.password}
                     onChange={handleChange}
                     placeholder="••••••••"

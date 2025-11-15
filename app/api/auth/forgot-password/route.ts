@@ -5,12 +5,9 @@ import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { transporter, mailOptions } from '@/lib/nodemailer';
 import { createHash, randomBytes } from 'crypto';
-import { z } from 'zod';
+import { forgotPasswordSchema } from '@/lib/validations/auth';
 import { strictRateLimiter, withRateLimit } from '@/lib/rate-limit';
 
-const requestSchema = z.object({
-    email: z.email('Email không hợp lệ'),
-});
 
 export async function POST(request: Request) {
     try {
@@ -21,7 +18,13 @@ export async function POST(request: Request) {
         }
 
         const body = await request.json();
-        const { email } = requestSchema.parse(body);
+        const result = forgotPasswordSchema.safeParse(body);
+
+        if (!result.success) {
+            return new NextResponse(result.error.issues[0].message, { status: 400 });
+        }
+
+        const { email } = result.data;
 
         // Find the user by their email
         const user = await prisma.user.findUnique({
@@ -54,7 +57,7 @@ export async function POST(request: Request) {
             },
             create: {
                 userId: user.id,
-                token: resetToken,
+                token: tokenHash,
                 expires,
             },
         });
@@ -97,7 +100,7 @@ export async function POST(request: Request) {
                         <!-- Security note -->
                         <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 16px; border-radius: 4px; margin: 24px 0;">
                         <p style="color: #78350f; margin: 0; font-size: 14px;">
-                            <strong>⚠️ Lưu ý bảo mật:</strong> Nếu bạn không yêu cầu điều này, vui lòng bỏ qua email này và mật khẩu của bạn sẽ không thay đổi.
+                            <strong>Lưu ý bảo mật:</strong> Nếu bạn không yêu cầu điều này, vui lòng bỏ qua email này và mật khẩu của bạn sẽ không thay đổi.
                         </p>
                         </div>
                         
