@@ -4,7 +4,6 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import prisma from "@/lib/prisma";
-import { z } from 'zod';
 import { registerSchema } from '@/lib/validations/auth';
 import { authRateLimiter, withRateLimit } from '@/lib/rate-limit';
 
