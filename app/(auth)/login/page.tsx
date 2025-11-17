@@ -53,8 +53,8 @@ export default function LoginPage() {
                 email: emailError || '',
                 password: passwordError || '',
             });
-            if (emailError) toast.error(emailError);
-            else if (passwordError) toast.error(passwordError);
+            // if (emailError) toast.error(emailError);
+            // else if (passwordError) toast.error(passwordError);
             return;
         }
 

@@ -53,9 +53,9 @@ export default function RegisterPage() {
             });
 
             // Show first error
-            if (nameError) toast.error(nameError);
-            else if (emailError) toast.error(emailError);
-            else if (passwordError) toast.error(passwordError);
+            // if (nameError) toast.error(nameError);
+            // else if (emailError) toast.error(emailError);
+            // else if (passwordError) toast.error(passwordError);
             return;
         }
 

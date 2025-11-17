@@ -24,7 +24,7 @@ export default function ForgotPasswordPage() {
         const error = validateEmail(email);
         if (error) {
             setEmailError(error);
-            toast.error(error);
+            // toast.error(error);
             return;
         }
 
