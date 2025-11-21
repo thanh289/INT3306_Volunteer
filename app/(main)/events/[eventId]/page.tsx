@@ -61,43 +61,106 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
         <div className="max-w-4xl mx-auto p-4 md:p-8">
             <div className="bg-white rounded-lg shadow-lg overflow-hidden">
                 {/* Header with name and creator */}
-                <div className="bg-indigo-600 p-8 text-white">
-                    <p className="text-lg font-semibold">{event.creator.name}</p>
+                <div className="bg-gradient-to-r from-primary to-secondary p-8 text-white">
+                    <div className="flex items-center gap-3 mb-2">
+                        <div className="avatar placeholder">
+                            <div className="bg-white/20 text-white rounded-full w-8 flex items-center justify-center">
+                                <span className="text-sm font-semibold">
+                                    {event.creator.name?.charAt(0).toUpperCase() || 'U'}
+                                </span>
+                            </div>
+                        </div>
+                        <p className="text-lg font-semibold">{event.creator.name}</p>
+                    </div>
                     <h1 className="text-4xl font-bold mt-2">{event.title}</h1>
+
+                    {/* Event status badge for managers/admins */}
+                    {canManage && event.status !== 'PUBLISHED' && (
+                        <div className="mt-4">
+                            <div className={`badge ${event.status === 'PENDING_APPROVAL'
+                                ? 'badge-warning'
+                                : 'badge-error'
+                                } gap-2`}>
+                                {event.status === 'PENDING_APPROVAL' ? 'Đang chờ duyệt' : 'Đã bị từ chối'}
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 {/* Body with description*/}
                 <div className="p-8 space-y-6 text-gray-800">
                     <div>
-                        <h2 className="text-2xl font-semibold mb-2">Thông tin chi tiết</h2>
-                        <p className="text-lg leading-relaxed">{event.description}</p>
+                        <h2 className="text-2xl font-semibold mb-2 flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            Thông tin chi tiết
+                        </h2>
+                        <p className="text-lg leading-relaxed whitespace-pre-wrap">{event.description}</p>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 border-t pt-6">
-                        <div>
-                            <h3 className="text-lg font-bold mb-2">Thời gian</h3>
-                            <p>Bắt đầu: {formatDateTime(event.startDateTime)}</p>
-                            <p>Kết thúc: {formatDateTime(event.endDateTime)}</p>
+                        <div className="space-y-3">
+                            <h3 className="text-lg font-bold flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                Thời gian
+                            </h3>
+                            <div className="pl-7 space-y-2">
+                                <p className="flex items-center gap-2">
+                                    <span className="font-medium">Bắt đầu:</span>
+                                    <span>{formatDateTime(event.startDateTime)}</span>
+                                </p>
+                                <p className="flex items-center gap-2">
+                                    <span className="font-medium">Kết thúc:</span>
+                                    <span>{formatDateTime(event.endDateTime)}</span>
+                                </p>
+                            </div>
                         </div>
-                        <div>
-                            <h3 className="text-lg font-bold mb-2">Địa điểm & Số lượng</h3>
-                            <p>Tại: {event.location}</p>
-                            <p>Số lượng tối đa: {event.maxAttendees} người</p>
+                        <div className="space-y-3">
+                            <h3 className="text-lg font-bold flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                Địa điểm & Số lượng
+                            </h3>
+                            <div className="pl-7 space-y-2">
+                                <p className="flex items-center gap-2">
+                                    <span>{event.location}</span>
+                                </p>
+                                <p className="flex items-center gap-2">
+                                    <span className="font-medium">Số lượng tối đa:</span>
+                                    <span>{event.maxAttendees} người</span>
+                                </p>
+                            </div>
                         </div>
                     </div>
 
-                    {/* Registry buttion*/}
+                    {/* Registry button */}
                     <div className="border-t pt-6 text-center">
                         {canManage ? (
                             <EventManagementButtons event={event} />
                         ) : (
-                            <RegisterEventButton eventId={event.id} isInitiallyRegistered={isRegistered} isEventEnded={isEventEnded} />
+                            <RegisterEventButton
+                                eventId={event.id}
+                                isInitiallyRegistered={isRegistered}
+                                isEventEnded={isEventEnded}
+                            />
                         )}
                     </div>
                 </div>
             </div>
 
-            <EventWall eventId={event.id} isRegistered={isRegistered} />
+
+            <EventWall
+                eventId={event.id}
+                creatorId={event.creatorId}
+                isRegistered={isRegistered}
+                registrationStatus={registration?.status}
+                eventStatus={event.status}
+            />
         </div>
     );
 }
