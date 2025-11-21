@@ -77,11 +77,25 @@ export const authOptions: AuthOptions = {
     // We are adding the user ID from the database to the token here.
     callbacks: {
         // called when a JWT is created
-        jwt({ token, user }) {
+        async jwt({ token, user, trigger }) {
             if (user) {
                 token.id = user.id; // add user's ID into token
                 token.role = user.role;
                 token.status = user.status;
+                token.imageUrl = user.imageUrl;
+            }
+
+            // use const {update} = useSession() -> await update() for for jwt trigger
+            if (trigger === 'update') {
+                const freshUser = await prisma.user.findUnique({
+                    where: { id: token.id as string },
+                    select: { imageUrl: true, status: true },
+                });
+
+                if (freshUser) {
+                    token.imageUrl = freshUser.imageUrl;
+                    token.status = freshUser.status;
+                }
             }
             return token;
         },
@@ -94,9 +108,10 @@ export const authOptions: AuthOptions = {
                 // take status from db each time session is called
                 const userFromDb = await prisma.user.findUnique({
                     where: { id: token.id as string },
-                    select: { status: true },
+                    select: { status: true, imageUrl: true },
                 });
                 session.user.status = userFromDb?.status || UserStatus.LOCKED;
+                session.user.imageUrl = userFromDb?.imageUrl || null;
             }
             return session;
         },

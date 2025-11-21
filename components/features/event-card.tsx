@@ -95,6 +95,9 @@ export const EventCard = ({ event, showStatus, registrationStatus }: EventCardPr
     };
 
     const categoryInfo = categoryConfig[event.category] || categoryConfig.COMMUNITY;
+    const creatorAvatar = event.creator.imageUrl
+        ? '/' + event.creator.imageUrl.replace(/\\/g, '/').replace(/^\/+/, '')
+        : null;
 
     return (
         <Link href={`/events/${event.id}`} className="group">
@@ -102,7 +105,13 @@ export const EventCard = ({ event, showStatus, registrationStatus }: EventCardPr
                 {/* Image placeholder */}
                 <figure className="relative h-48 bg-gradient-to-br from-primary/20 to-secondary/20">
                     {event.imageUrl ? (
-                        <Image src={event.imageUrl} alt={event.title} className="w-full h-full object-cover"></Image>
+                        <Image
+                            src={'/' + event.imageUrl.replace(/\\/g, '/').replace(/^\/+/, '')}
+                            alt={event.title}
+                            fill
+                            className="object-cover"
+                            unoptimized // only add for local filesystem
+                        />
                     ) : (
                         <div className="flex items-center justify-center w-full h-full">
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-20 w-20 text-primary/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -132,12 +141,24 @@ export const EventCard = ({ event, showStatus, registrationStatus }: EventCardPr
                 <div className="card-body">
                     {/* Creator */}
                     <div className="flex items-center gap-2 text-sm text-base-content/60">
-                        <div className="avatar placeholder">
-                            <div className="bg-primary/10 text-primary rounded-full w-6">
-                                <span className="text-xs">
-                                    {event.creator.name?.charAt(0).toUpperCase() || 'U'}
-                                </span>
-                            </div>
+                        <div className="avatar">
+                            {creatorAvatar ? (
+                                <div className="w-6 h-6 rounded-full overflow-hidden">
+                                    <Image
+                                        src={creatorAvatar}
+                                        alt="Avatar"
+                                        width={24}
+                                        height={24}
+                                        className="object-cover"
+                                    />
+                                </div>
+                            ) : (
+                                <div className="bg-primary/10 text-primary rounded-full w-6 flex items-center justify-center">
+                                    <span className="text-xs">
+                                        {event.creator.name?.charAt(0).toUpperCase() || 'U'}
+                                    </span>
+                                </div>
+                            )}
                         </div>
                         <span className="font-medium">{event.creator.name}</span>
                     </div>

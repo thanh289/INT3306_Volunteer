@@ -54,12 +54,27 @@ export const CreateEventForm = () => {
         <form onSubmit={handleSubmit} className="space-y-6">
             <div>
                 <label htmlFor="title" className="block text-sm font-medium text-gray-700">Tiêu đề</label>
-                <input type="text" name="title" id="title" required value={formData.title} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm" />
+                <input
+                    type="text"
+                    name="title"
+                    id="title"
+                    required
+                    value={formData.title}
+                    onChange={handleChange}
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                />
             </div>
 
             <div>
                 <label htmlFor="category" className="block text-sm font-medium text-gray-700">Danh mục</label>
-                <select name="category" id="category" required value={formData.category} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                <select
+                    name="category"
+                    id="category"
+                    required
+                    value={formData.category}
+                    onChange={handleChange}
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                >
                     {Object.values(EventCategory).map((sel) => (
                         <option key={sel} value={sel}>
                             {sel}
@@ -70,28 +85,83 @@ export const CreateEventForm = () => {
 
             <div>
                 <label htmlFor="description" className="block text-sm font-medium text-gray-700">Mô tả</label>
-                <textarea name="description" id="description" required value={formData.description} onChange={handleChange} rows={4} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm" />
+                <textarea
+                    name="description"
+                    id="description"
+                    required
+                    value={formData.description}
+                    onChange={handleChange}
+                    rows={4}
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                />
             </div>
+
             <div>
                 <label htmlFor="location" className="block text-sm font-medium text-gray-700">Địa điểm</label>
-                <input type="text" name="location" id="location" required value={formData.location} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm" />
+                <input
+                    type="text"
+                    name="location"
+                    id="location"
+                    required
+                    value={formData.location}
+                    onChange={handleChange}
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                />
             </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <label htmlFor="startDateTime" className="block text-sm font-medium text-gray-700">Thời gian bắt đầu</label>
-                    <input type="datetime-local" name="startDateTime" id="startDateTime" required value={formData.startDateTime} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm" />
+                    <input
+                        type="datetime-local"
+                        name="startDateTime"
+                        id="startDateTime"
+                        required
+                        value={formData.startDateTime}
+                        onChange={handleChange}
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                    />
                 </div>
                 <div>
                     <label htmlFor="endDateTime" className="block text-sm font-medium text-gray-700">Thời gian kết thúc</label>
-                    <input type="datetime-local" name="endDateTime" id="endDateTime" required value={formData.endDateTime} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm" />
+                    <input
+                        type="datetime-local"
+                        name="endDateTime"
+                        id="endDateTime"
+                        required
+                        value={formData.endDateTime}
+                        onChange={handleChange}
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                    />
                 </div>
             </div>
+
             <div>
                 <label htmlFor="maxAttendees" className="block text-sm font-medium text-gray-700">Số người tham gia tối đa</label>
-                <input type="number" name="maxAttendees" id="maxAttendees" required value={formData.maxAttendees} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm" />
+                <input
+                    type="number"
+                    name="maxAttendees"
+                    id="maxAttendees"
+                    required
+                    value={formData.maxAttendees}
+                    onChange={handleChange}
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                />
             </div>
+
+            <div className="alert alert-info">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span className="text-sm">Sau khi tạo sự kiện, bạn có thể thêm ảnh cho sự kiện.</span>
+            </div>
+
             <div>
-                <button type="submit" disabled={isLoading} className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400">
+                <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400"
+                >
                     {isLoading ? 'Đang tạo...' : 'Tạo sự kiện'}
                 </button>
             </div>

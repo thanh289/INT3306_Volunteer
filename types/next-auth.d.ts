@@ -20,6 +20,7 @@ declare module 'next-auth' {
             id: string;
             role: Role;
             status: UserStatus;
+            imageUrl?: string | null;
         } & DefaultSession['user'];
     }
 
@@ -32,6 +33,7 @@ declare module 'next-auth' {
         id: string;
         role: Role;
         status: UserStatus;
+        imageUrl?: string | null;
     }
 }
 
@@ -42,5 +44,6 @@ declare module 'next-auth/jwt' {
     interface JWT {
         id: string;
         role: Role;
+        imageUrl?: string | null;
     }
 }

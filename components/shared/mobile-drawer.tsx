@@ -8,6 +8,7 @@ import { useSession, signOut } from 'next-auth/react';
 import { Role } from '@prisma/client';
 import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
+import Image from 'next/image';
 
 export const MobileDrawer = ({ children }: { children: React.ReactNode }) => {
     const { data: session, status } = useSession();
@@ -15,6 +16,11 @@ export const MobileDrawer = ({ children }: { children: React.ReactNode }) => {
     const pathname = usePathname();
 
     const isActive = (path: string) => pathname === path;
+
+    const avatarUrl =
+        session?.user?.imageUrl
+            ? '/' + session.user.imageUrl.replace(/\\/g, '/').replace(/^\/+/, '')
+            : null;
 
     // Automatically close the drawer when size of the desktop back to normal
     useEffect(() => {
@@ -63,13 +69,20 @@ export const MobileDrawer = ({ children }: { children: React.ReactNode }) => {
                     {status === 'authenticated' && session?.user && (
                         <>
                             {/* User info */}
-                            <div className="bg-base-200 rounded-lg p-4 mb-4 flex items-center gap-3">
-                                <div className="avatar placeholder">
-                                    <div className="bg-primary text-primary-content rounded-full w-12 flex items-center justify-center">
-                                        <span className="text-lg">
+                            <div className="bg-base-200 rounded-lg p-4 mb-4  flex items-center gap-3">
+                                <div className="w-12 h-12 rounded-full overflow-hidden relative bg-primary/10 flex items-center justify-center">
+                                    {avatarUrl ? (
+                                        <Image
+                                            src={avatarUrl}
+                                            alt="Avatar"
+                                            fill
+                                            className="object-cover"
+                                        />
+                                    ) : (
+                                        <span className="text-lg text-primary font-bold">
                                             {session.user.name?.charAt(0).toUpperCase() || session.user.email?.charAt(0).toUpperCase()}
                                         </span>
-                                    </div>
+                                    )}
                                 </div>
                                 <div className="flex-1 overflow-hidden">
                                     <p className="font-semibold truncate">{session.user.name || 'Người dùng'}</p>

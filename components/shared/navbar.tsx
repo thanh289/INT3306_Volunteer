@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
 import { Role } from '@prisma/client';
 import { NotificationBell } from '../features/notification-bell';
+import Image from 'next/image';
 
 export const Navbar = () => {
     // use session to get in4 of user
@@ -14,6 +15,7 @@ export const Navbar = () => {
     // status: loading, authenticated, unauthenticated
     const { data: session, status } = useSession();
     const userRole = session?.user?.role as Role;
+
 
     return (
         <div className="navbar bg-base-100 shadow-lg sticky top-0 z-50 border-b border-base-300">
@@ -102,13 +104,22 @@ export const Navbar = () => {
 
                             {/* User Dropdown */}
                             <div className="dropdown dropdown-end">
-                                <label tabIndex={0} className="btn btn-ghost btn-sm gap-2">
-                                    <div className="avatar placeholder">
-                                        <div className="bg-primary text-primary-content rounded-full w-8 flex items-center justify-center">
-                                            <span className="text-xs font-semibold">
-                                                {session.user.name?.charAt(0).toUpperCase() || session.user.email?.charAt(0).toUpperCase()}
-                                            </span>
-                                        </div>
+                                <label tabIndex={0} className="btn btn-ghost py-5 btn-sm gap-2">
+                                    <div className="avatar placeholder w-10 h-10 relative rounded-full overflow-hidden">
+                                        {session.user.imageUrl ? (
+                                            <Image
+                                                src={'/' + session.user.imageUrl.replace(/\\/g, '/').replace(/^\/+/, '')}
+                                                alt="Avatar"
+                                                fill
+                                                className="object-cover"
+                                            />
+                                        ) : (
+                                            <div className="bg-primary text-primary-content w-full h-full flex items-center justify-center">
+                                                <span className="text-xs font-semibold">
+                                                    {session.user.name?.charAt(0).toUpperCase() || session.user.email?.charAt(0).toUpperCase()}
+                                                </span>
+                                            </div>
+                                        )}
                                     </div>
                                     <span className="hidden xl:inline">{session.user.name || session.user.email}</span>
                                 </label>
