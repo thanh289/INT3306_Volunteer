@@ -7,6 +7,11 @@ import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import prisma from '@/lib/prisma';
 import { z } from 'zod';
 import { RegistrationStatus } from '@prisma/client';
+import {
+    notifyRegistrationApproved,
+    notifyRegistrationRejected,
+    notifyRegistrationCompleted
+} from '@/lib/send-notification';
 
 type RouteParams = {
     params: Promise<{
@@ -20,7 +25,6 @@ const updateSchema = z.object({
 
 export async function PATCH(request: Request, { params }: RouteParams) {
     try {
-
         const session = await getServerSession(authOptions);
         const { registrationId } = await params;
 
@@ -28,10 +32,12 @@ export async function PATCH(request: Request, { params }: RouteParams) {
             return new NextResponse('Unauthorized', { status: 401 });
         }
 
-
         const registration = await prisma.registration.findUnique({
             where: { id: registrationId },
-            include: { event: true },
+            include: {
+                event: true,
+                user: { select: { name: true } }
+            },
         });
 
         if (!registration) {
@@ -42,7 +48,6 @@ export async function PATCH(request: Request, { params }: RouteParams) {
         if (registration.event.creatorId !== session.user.id && session.user.role !== 'ADMIN') {
             return new NextResponse('Forbidden', { status: 403 });
         }
-
 
         const body = await request.json();
         const { status } = updateSchema.parse(body);
@@ -80,19 +85,37 @@ export async function PATCH(request: Request, { params }: RouteParams) {
             });
         });
 
+        // Send in-app notification and push notification
         let message = '';
         switch (status) {
             case 'APPROVED':
                 message = `Chúc mừng! Bạn đã được duyệt tham gia sự kiện "${updatedRegistration.event.title}".`;
+                // Send push notification
+                await notifyRegistrationApproved(
+                    updatedRegistration.userId,
+                    updatedRegistration.event.title,
+                    updatedRegistration.eventId
+                );
                 break;
             case 'REJECTED':
                 message = `Rất tiếc, đăng ký tham gia sự kiện "${updatedRegistration.event.title}" của bạn đã bị từ chối.`;
+                await notifyRegistrationRejected(
+                    updatedRegistration.userId,
+                    updatedRegistration.event.title,
+                    updatedRegistration.eventId
+                );
                 break;
             case 'COMPLETED':
                 message = `Bạn đã hoàn thành tham gia sự kiện "${updatedRegistration.event.title}". Cảm ơn sự đóng góp của bạn!`;
+                await notifyRegistrationCompleted(
+                    updatedRegistration.userId,
+                    updatedRegistration.event.title,
+                    updatedRegistration.eventId
+                );
                 break;
         }
 
+        // in-app notification
         if (message) {
             await prisma.notification.create({
                 data: {
@@ -125,7 +148,7 @@ export async function PATCH(request: Request, { params }: RouteParams) {
             return new NextResponse(error.issues[0].message, { status: 400 });
         }
 
-        console.error('LỖI KHI CẬP NHẬT ĐĂNG KÝ:', error);
+        console.error('Lỗi khi cập nhật đăng ký:', error);
         return new NextResponse('Lỗi hệ thống', { status: 500 });
     }
 }
