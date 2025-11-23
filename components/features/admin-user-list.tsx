@@ -27,7 +27,10 @@ export const UserList = () => {
     const [searchInput, setSearchInput] = useState('')
     const [isExporting, setIsExporting] = useState(false);
 
-    const { data, isLoading, error } = useSWR<ApiResponse>('/api/admin/users', fetcher);
+    const { data, isLoading, error } = useSWR<ApiResponse>(
+        `/api/admin/users?page=${page}&search=${search}`,
+        fetcher
+    );
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
@@ -99,6 +102,7 @@ export const UserList = () => {
                             onClick={() => {
                                 setSearch('');
                                 setSearchInput('');
+                                setPage(1); // Reset page when clearing search
                             }}
                             className="btn btn-ghost"
                         >
@@ -158,8 +162,8 @@ export const UserList = () => {
                                         <td>
                                             <span
                                                 className={`badge ${user.status === 'ACTIVE'
-                                                        ? 'badge-success'
-                                                        : 'badge-error'
+                                                    ? 'badge-success'
+                                                    : 'badge-error'
                                                     }`}
                                             >
                                                 {user.status === 'ACTIVE' ? 'Hoạt động' : 'Bị khóa'}

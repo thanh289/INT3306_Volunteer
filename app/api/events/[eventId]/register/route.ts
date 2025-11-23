@@ -15,7 +15,6 @@ type PostParams = {
 
 export async function POST(request: Request, { params }: PostParams) {
     try {
-        // Make sure user have logged in
         const session = await getServerSession(authOptions);
         if (!session?.user?.id) {
             return new NextResponse('Unauthorized', { status: 401 });
@@ -23,40 +22,56 @@ export async function POST(request: Request, { params }: PostParams) {
         const userId = session.user.id;
         const { eventId } = await params;
 
-        const [eventDetails, registrationCount, existingRegistration] = await Promise.all([
-            prisma.event.findUnique({ where: { id: eventId } }),
-            prisma.registration.count({ where: { eventId: eventId } }),
-            prisma.registration.findUnique({ // Vẫn giữ kiểm tra đăng ký trùng lặp
-                where: { userId_eventId: { userId, eventId } },
-            }),
-        ]);
+        // use transaction to prevent race condition 
+        // since 2 people may regist at the same time
+        const newRegistration = await prisma.$transaction(async (tx) => {
+            const [eventDetails, registrationCount, existingRegistration] = await Promise.all([
+                tx.event.findUnique({ where: { id: eventId } }),
+                tx.registration.count({ where: { eventId: eventId } }),
+                tx.registration.findUnique({
+                    where: { userId_eventId: { userId, eventId } },
+                }),
+            ]);
 
-        if (!eventDetails) {
-            return new NextResponse('Sự kiện không tồn tại', { status: 404 });
-        }
+            if (!eventDetails) {
+                throw new Error('EVENT_NOT_FOUND');
+            }
 
-        if (new Date(eventDetails.endDateTime) < new Date()) {
-            return new NextResponse('Sự kiện đã kết thúc, không thể đăng ký.', { status: 400 });
-        }
+            if (new Date(eventDetails.endDateTime) < new Date()) {
+                throw new Error('EVENT_ENDED');
+            }
 
-        if (existingRegistration) {
-            return new NextResponse('Bạn đã đăng ký sự kiện này rồi', { status: 409 });
-        }
+            if (existingRegistration) {
+                throw new Error('ALREADY_REGISTERED');
+            }
 
-        if (registrationCount >= eventDetails.maxAttendees) {
-            return new NextResponse('Sự kiện đã đủ số lượng người tham gia', { status: 409 });
-        }
+            if (registrationCount >= eventDetails.maxAttendees) {
+                throw new Error('EVENT_FULL');
+            }
 
-        // Create new resistration in db
-        const newRegistration = await prisma.registration.create({
-            data: {
-                userId: userId,
-                eventId: eventId,
-            },
+            // Create registration inside transaction
+            return await tx.registration.create({
+                data: {
+                    userId: userId,
+                    eventId: eventId,
+                },
+            });
         });
 
         return NextResponse.json(newRegistration, { status: 201 });
     } catch (error) {
+        if (error instanceof Error) {
+            switch (error.message) {
+                case 'EVENT_NOT_FOUND':
+                    return new NextResponse('Sự kiện không tồn tại', { status: 404 });
+                case 'EVENT_ENDED':
+                    return new NextResponse('Sự kiện đã kết thúc, không thể đăng ký.', { status: 400 });
+                case 'ALREADY_REGISTERED':
+                    return new NextResponse('Bạn đã đăng ký sự kiện này rồi', { status: 409 });
+                case 'EVENT_FULL':
+                    return new NextResponse('Sự kiện đã đủ số lượng người tham gia', { status: 409 });
+            }
+        }
         console.error('LỖI KHI ĐĂNG KÝ SỰ KIỆN:', error);
         return new NextResponse('Lỗi hệ thống', { status: 500 });
     }
