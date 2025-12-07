@@ -25,16 +25,16 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
- 
+
 :root {
-  --color-primary: #f6924a;        /* Warm orange - energy & enthusiasm */
+  --color-primary: #f6924a; /* Warm orange - energy & enthusiasm */
   --color-primary-content: #ffffff;
-  --color-secondary: #06b6d4;      /* Cyan - trust & calm */
+  --color-secondary: #06b6d4; /* Cyan - trust & calm */
   --color-secondary-content: #ffffff;
-  --color-accent: #10b981;         /* Green - growth & positive impact */
+  --color-accent: #10b981; /* Green - growth & positive impact */
   --color-neutral: #374151;
   --color-base-100: #ffffff;
-  --color-base-200: #fef3c7;       /* Soft warm background */
+  --color-base-200: #fef3c7; /* Soft warm background */
   --color-base-300: #fde68a;
   --color-base-content: #1f2937;
 }
@@ -47,4 +47,43 @@ body {
     --color-base-200: #111827;
     --color-base-content: #f9fafb;
   }
+}
+
+/* Custom animations for auth pages */
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-5px);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(5px);
+  }
+}
+
+.animate-shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
 }
