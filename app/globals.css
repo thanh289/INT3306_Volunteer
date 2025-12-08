@@ -41,13 +41,19 @@ body {
   --color-base-content: #1f2937;
 }
 
-/* For dark mode (optional) */
+/* For dark mode */
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-primary: #a78bfa;
-    --color-base-100: #1f2937;
-    --color-base-200: #111827;
-    --color-base-content: #f9fafb;
+    --color-primary: #60a5fa; /* Lighter blue for dark mode */
+    --color-primary-content: #ffffff;
+    --color-secondary: #22d3ee; /* Lighter cyan for dark mode */
+    --color-secondary-content: #ffffff;
+    --color-accent: #a78bfa; /* Light purple */
+    --color-base-100: #1e293b; /* Dark slate background */
+    --color-base-200: #0f172a; /* Darker slate */
+    --color-base-300: #334155; /* Medium slate for borders */
+    --color-base-content: #f1f5f9; /* Very light text for contrast */
+    --color-neutral: #94a3b8;
   }
 }
 
@@ -105,6 +111,40 @@ body {
 
 .animate-gradient {
   animation: gradient 2s ease infinite;
+}
+
+/* Force dark text on light gradient backgrounds in dark mode */
+@media (prefers-color-scheme: dark) {
+  /* Target all light gradient cards */
+  .bg-gradient-to-br[class*="from-blue-50"],
+  .bg-gradient-to-br[class*="from-cyan-50"],
+  .bg-gradient-to-br[class*="from-green-50"],
+  .bg-gradient-to-br[class*="from-purple-50"],
+  .bg-gradient-to-br[class*="from-pink-50"],
+  .bg-gradient-to-br[class*="from-red-50"],
+  .bg-gradient-to-br[class*="from-yellow-50"],
+  .bg-gradient-to-br[class*="from-emerald-50"],
+  .bg-gradient-to-br[class*="from-indigo-50"],
+  .bg-gradient-to-br[class*="from-violet-50"],
+  .bg-gradient-to-br[class*="from-orange-50"] {
+    color: #1f2937 !important;
+  }
+
+  /* Force all text inside these cards to be dark */
+  .bg-gradient-to-br[class*="-50"] * {
+    color: #1f2937 !important;
+  }
+
+  /* Keep colored headings visible */
+  .bg-gradient-to-br[class*="-50"] .text-red-600,
+  .bg-gradient-to-br[class*="-50"] .text-green-600,
+  .bg-gradient-to-br[class*="-50"] .text-blue-600,
+  .bg-gradient-to-br[class*="-50"] .text-yellow-600,
+  .bg-gradient-to-br[class*="-50"] .text-purple-600,
+  .bg-gradient-to-br[class*="-50"] .text-primary,
+  .bg-gradient-to-br[class*="-50"] .text-secondary {
+    color: inherit !important;
+  }
 }
 
 /* Shimmer animation for skeleton loading */

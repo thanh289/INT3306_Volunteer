@@ -74,7 +74,7 @@ export default function AboutPage() {
             <h2 className="card-title text-3xl mb-4 text-primary font-bold">
               Sứ mệnh
             </h2>
-            <p className="text-base-content/70 leading-relaxed">
+            <p className="text-gray-700 leading-relaxed">
               Kết nối tình nguyện viên với các tổ chức và hoạt động thiện
               nguyện, tạo cơ hội cho mọi người đóng góp cho cộng đồng. Chúng tôi
               tin rằng mỗi hành động nhỏ đều có thể tạo nên sự thay đổi lớn.
@@ -109,7 +109,7 @@ export default function AboutPage() {
             <h2 className="card-title text-3xl mb-4 text-secondary font-bold">
               Tầm nhìn
             </h2>
-            <p className="text-base-content/70 leading-relaxed">
+            <p className="text-gray-700 leading-relaxed">
               Trở thành nền tảng tình nguyện hàng đầu Việt Nam, nơi mọi người có
               thể dễ dàng tìm kiếm và tham gia các hoạt động thiện nguyện phù
               hợp với đam mê và khả năng của mình.
@@ -150,7 +150,7 @@ export default function AboutPage() {
               <h3 className="card-title text-xl mb-2 text-red-600 font-bold">
                 Yêu thương
               </h3>
-              <p className="text-base-content/70">
+              <p className="text-gray-700">
                 Đặt tình yêu thương và sự quan tâm đến cộng đồng lên hàng đầu
               </p>
             </div>
@@ -178,7 +178,7 @@ export default function AboutPage() {
               <h3 className="card-title text-xl mb-2 text-green-600 font-bold">
                 Kết nối
               </h3>
-              <p className="text-base-content/70">
+              <p className="text-gray-700">
                 Xây dựng cầu nối giữa các cá nhân và tổ chức cùng chí hướng
               </p>
             </div>
@@ -206,7 +206,7 @@ export default function AboutPage() {
               <h3 className="card-title text-xl mb-2 text-yellow-600 font-bold">
                 Hành động
               </h3>
-              <p className="text-base-content/70">
+              <p className="text-gray-700">
                 Biến ý tưởng thành hành động cụ thể để tạo ra sự thay đổi
               </p>
             </div>
@@ -234,7 +234,7 @@ export default function AboutPage() {
               <h3 className="card-title text-xl mb-2 text-blue-600 font-bold">
                 Minh bạch
               </h3>
-              <p className="text-base-content/70">
+              <p className="text-gray-700">
                 Đảm bảo tính minh bạch trong mọi hoạt động và giao dịch
               </p>
             </div>
@@ -262,7 +262,7 @@ export default function AboutPage() {
               <h3 className="card-title text-xl mb-2 text-purple-600 font-bold">
                 Học hỏi
               </h3>
-              <p className="text-base-content/70">
+              <p className="text-gray-700">
                 Không ngừng học hỏi và cải thiện để phục vụ tốt hơn
               </p>
             </div>

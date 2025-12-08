@@ -197,35 +197,6 @@ export const EventFiltersClient = ({ events }: EventFiltersClientProps) => {
                 <option value="title">🔤 Tên (A-Z)</option>
               </select>
             </div>
-
-            {/* Clear Filters Button */}
-            {hasActiveFilters && (
-              <div className="form-control flex-none md:self-end">
-                <label className="label md:hidden">
-                  <span className="label-text opacity-0">.</span>
-                </label>
-                <button
-                  onClick={handleClearFilters}
-                  className="btn btn-ghost btn-outline gap-2"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                  Xóa bộ lọc
-                </button>
-              </div>
-            )}
           </div>
         </div>
       </div>
