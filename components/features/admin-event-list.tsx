@@ -18,6 +18,7 @@ export const AdminEventList = () => {
     data: pendingEvents,
     isLoading,
     error,
+    mutate,
   } = useSWR<PendingEvent[]>("/api/admin/pending-events", fetcher, {
     refreshInterval: 30000, // ask sv after each 30s
   });
@@ -79,7 +80,7 @@ export const AdminEventList = () => {
                 <EventCard event={event} />
               </div>
               <div className="flex-shrink-0">
-                <AdminEventActions eventId={event.id} />
+                <AdminEventActions eventId={event.id} onSuccess={mutate} />
               </div>
             </div>
           </div>

@@ -4,13 +4,17 @@
 "use client";
 
 import { useTransition } from "react";
-import { useRouter } from "next/navigation";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { EventStatus } from "@prisma/client";
 
-export const AdminEventActions = ({ eventId }: { eventId: string }) => {
-  const router = useRouter();
+export const AdminEventActions = ({
+  eventId,
+  onSuccess,
+}: {
+  eventId: string;
+  onSuccess?: () => void;
+}) => {
   const [isPending, startTransition] = useTransition();
 
   const handleUpdateStatus = (status: EventStatus) => {
@@ -20,7 +24,10 @@ export const AdminEventActions = ({ eventId }: { eventId: string }) => {
         toast.success(
           `Sự kiện đã được ${status === "PUBLISHED" ? "duyệt" : "từ chối"}.`
         );
-        router.refresh();
+        // Revalidate data immediately without full page refresh
+        if (onSuccess) {
+          onSuccess();
+        }
       } catch (error: any) {
         const errorMsg =
           error.response?.data?.error || error.message || "Có lỗi xảy ra";
