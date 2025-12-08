@@ -1,5 +1,7 @@
 @import "tailwindcss";
-@plugin "daisyui";
+@plugin "daisyui" {
+  themes: [ "light", "dark"];
+}
 
 /* :root {
   --background: #ffffff;
@@ -27,22 +29,22 @@ body {
 }
 
 :root {
-  --color-primary: #f6924a; /* Warm orange - energy & enthusiasm */
+  --color-primary: #3b82f6; /* Blue - trust & professional */
   --color-primary-content: #ffffff;
-  --color-secondary: #06b6d4; /* Cyan - trust & calm */
+  --color-secondary: #06b6d4; /* Cyan - fresh & modern */
   --color-secondary-content: #ffffff;
-  --color-accent: #10b981; /* Green - growth & positive impact */
+  --color-accent: #8b5cf6; /* Purple accent */
   --color-neutral: #374151;
   --color-base-100: #ffffff;
-  --color-base-200: #fef3c7; /* Soft warm background */
-  --color-base-300: #fde68a;
+  --color-base-200: #f0f9ff; /* Light blue tint background */
+  --color-base-300: #e0f2fe;
   --color-base-content: #1f2937;
 }
 
 /* For dark mode (optional) */
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-primary: #818cf8;
+    --color-primary: #a78bfa;
     --color-base-100: #1f2937;
     --color-base-200: #111827;
     --color-base-content: #f9fafb;
@@ -86,4 +88,35 @@ body {
 
 .animate-float {
   animation: float 3s ease-in-out infinite;
+}
+
+/* Gradient animation for logo text */
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient {
+  animation: gradient 2s ease infinite;
+}
+
+/* Shimmer animation for skeleton loading */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 2s infinite linear;
 }

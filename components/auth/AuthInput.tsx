@@ -94,10 +94,10 @@ export default function AuthInput({
       </div>
       {error && (
         <label className="label">
-          <span className="label-text-alt text-error flex items-center gap-1">
+          <span className="label-text-alt text-error font-semibold text-sm flex items-center gap-1 animate-shake">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4"
+              className="h-5 w-5 flex-shrink-0"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"

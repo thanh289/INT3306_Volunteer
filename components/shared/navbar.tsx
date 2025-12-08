@@ -40,11 +40,14 @@ export const Navbar = () => {
 
         {/* Logo */}
         <div className="flex-1">
-          <Link href="/" className="btn btn-ghost normal-case text-xl gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+          <Link
+            href="/"
+            className="btn btn-ghost normal-case text-xl gap-2 hover:scale-105 transition-transform duration-300"
+          >
+            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary via-secondary to-accent flex items-center justify-center animate-pulse hover:animate-none shadow-xl hover:shadow-2xl transition-all">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 text-primary-content"
+                className="h-6 w-6 text-white drop-shadow-lg"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -52,12 +55,12 @@ export const Navbar = () => {
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  strokeWidth={2}
+                  strokeWidth={2.5}
                   d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
                 />
               </svg>
             </div>
-            <span className="hidden sm:inline bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent font-bold">
+            <span className="hidden sm:inline bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent font-extrabold text-2xl bg-[length:200%_auto] animate-gradient drop-shadow-sm">
               VolunteerHub
             </span>
           </Link>
@@ -65,6 +68,25 @@ export const Navbar = () => {
 
         {/* Desktop Navigation */}
         <div className="flex-none hidden lg:flex items-center gap-2">
+          {/* Home Link - Always visible */}
+          <Link href="/" className="btn btn-ghost btn-sm gap-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+              />
+            </svg>
+            Trang chủ
+          </Link>
+
           {/* About Link - Always visible */}
           <Link href="/about" className="btn btn-ghost btn-sm gap-2">
             <svg

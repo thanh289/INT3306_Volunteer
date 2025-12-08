@@ -30,12 +30,12 @@ export default function ContactPage() {
           {/* Contact Cards Grid */}
           <div className="grid md:grid-cols-3 gap-6 mb-12">
             {/* Email Card */}
-            <div className="card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+            <div className="card bg-gradient-to-br from-blue-50 to-cyan-50 shadow-xl hover:shadow-2xl border-2 border-primary/20 hover:border-primary/40 transition-all duration-300 hover:-translate-y-2">
               <div className="card-body items-center text-center">
-                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center mb-4 shadow-lg">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-8 w-8 text-primary"
+                    className="h-8 w-8 text-white"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -48,7 +48,9 @@ export default function ContactPage() {
                     />
                   </svg>
                 </div>
-                <h3 className="card-title text-lg mb-2">Email</h3>
+                <h3 className="card-title text-lg mb-2 text-primary font-bold">
+                  Email
+                </h3>
                 <p className="text-base-content/70 text-sm mb-3">
                   Gửi email cho chúng tôi
                 </p>
@@ -70,12 +72,12 @@ export default function ContactPage() {
             </div>
 
             {/* Phone Card */}
-            <div className="card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+            <div className="card bg-gradient-to-br from-green-50 to-emerald-50 shadow-xl hover:shadow-2xl border-2 border-green-200 hover:border-green-300 transition-all duration-300 hover:-translate-y-2">
               <div className="card-body items-center text-center">
-                <div className="w-16 h-16 rounded-full bg-secondary/10 flex items-center justify-center mb-4">
+                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center mb-4 shadow-lg">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-8 w-8 text-secondary"
+                    className="h-8 w-8 text-white"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -88,7 +90,9 @@ export default function ContactPage() {
                     />
                   </svg>
                 </div>
-                <h3 className="card-title text-lg mb-2">Điện thoại</h3>
+                <h3 className="card-title text-lg mb-2 text-green-600 font-bold">
+                  Điện thoại
+                </h3>
                 <p className="text-base-content/70 text-sm mb-3">
                   Liên hệ qua hotline
                 </p>
@@ -107,12 +111,12 @@ export default function ContactPage() {
             </div>
 
             {/* Address Card */}
-            <div className="card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+            <div className="card bg-gradient-to-br from-purple-50 to-pink-50 shadow-xl hover:shadow-2xl border-2 border-purple-200 hover:border-purple-300 transition-all duration-300 hover:-translate-y-2">
               <div className="card-body items-center text-center">
-                <div className="w-16 h-16 rounded-full bg-accent/10 flex items-center justify-center mb-4">
+                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center mb-4 shadow-lg">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-8 w-8 text-accent"
+                    className="h-8 w-8 text-white"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -131,7 +135,9 @@ export default function ContactPage() {
                     />
                   </svg>
                 </div>
-                <h3 className="card-title text-lg mb-2">Địa chỉ</h3>
+                <h3 className="card-title text-lg mb-2 text-purple-600 font-bold">
+                  Địa chỉ
+                </h3>
                 <p className="text-base-content/70 text-sm mb-3">
                   Ghé thăm văn phòng của chúng tôi
                 </p>
@@ -260,38 +266,6 @@ export default function ContactPage() {
                       </svg>
                     </a>
                   </div>
-                </div>
-              </div>
-
-              {/* FAQ Link */}
-              <div className="card bg-gradient-to-br from-primary/10 to-secondary/10 shadow-xl">
-                <div className="card-body">
-                  <h3 className="card-title text-xl mb-2">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-6 w-6 text-primary"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
-                    Câu hỏi thường gặp
-                  </h3>
-                  <p className="text-sm text-base-content/70 mb-4">
-                    Có thể câu trả lời bạn cần đã có trong FAQ của chúng tôi
-                  </p>
-                  <Link
-                    href="/#faq"
-                    className="btn btn-outline btn-primary btn-sm"
-                  >
-                    Xem FAQ
-                  </Link>
                 </div>
               </div>
             </div>

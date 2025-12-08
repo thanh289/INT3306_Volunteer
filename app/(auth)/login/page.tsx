@@ -61,8 +61,9 @@ export default function LoginPage() {
         email: emailError || "",
         password: passwordError || "",
       });
-      // if (emailError) toast.error(emailError);
-      // else if (passwordError) toast.error(passwordError);
+      // Show toast for the first error found
+      const firstError = emailError || passwordError;
+      if (firstError) toast.error(firstError);
       return;
     }
 

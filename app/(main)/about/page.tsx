@@ -53,12 +53,12 @@ export default function AboutPage() {
 
       {/* Mission & Vision */}
       <section className="grid md:grid-cols-2 gap-6">
-        <div className="card bg-base-100 shadow-lg border border-base-300 hover:shadow-2xl transition-shadow">
+        <div className="card bg-gradient-to-br from-blue-50 to-cyan-50 shadow-xl border-2 border-primary/20 hover:shadow-2xl hover:border-primary/40 transition-all hover:-translate-y-1">
           <div className="card-body">
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-primary/10 mb-4">
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-gradient-to-br from-primary to-secondary mb-4 shadow-lg">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-8 w-8 text-primary"
+                className="h-8 w-8 text-white"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -71,7 +71,9 @@ export default function AboutPage() {
                 />
               </svg>
             </div>
-            <h2 className="card-title text-3xl mb-4">Sứ mệnh</h2>
+            <h2 className="card-title text-3xl mb-4 text-primary font-bold">
+              Sứ mệnh
+            </h2>
             <p className="text-base-content/70 leading-relaxed">
               Kết nối tình nguyện viên với các tổ chức và hoạt động thiện
               nguyện, tạo cơ hội cho mọi người đóng góp cho cộng đồng. Chúng tôi
@@ -80,12 +82,12 @@ export default function AboutPage() {
           </div>
         </div>
 
-        <div className="card bg-base-100 shadow-lg border border-base-300 hover:shadow-2xl transition-shadow">
+        <div className="card bg-gradient-to-br from-purple-50 to-pink-50 shadow-xl border-2 border-secondary/20 hover:shadow-2xl hover:border-secondary/40 transition-all hover:-translate-y-1">
           <div className="card-body">
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-secondary/10 mb-4">
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-gradient-to-br from-secondary to-accent mb-4 shadow-lg">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-8 w-8 text-secondary"
+                className="h-8 w-8 text-white"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -104,7 +106,9 @@ export default function AboutPage() {
                 />
               </svg>
             </div>
-            <h2 className="card-title text-3xl mb-4">Tầm nhìn</h2>
+            <h2 className="card-title text-3xl mb-4 text-secondary font-bold">
+              Tầm nhìn
+            </h2>
             <p className="text-base-content/70 leading-relaxed">
               Trở thành nền tảng tình nguyện hàng đầu Việt Nam, nơi mọi người có
               thể dễ dàng tìm kiếm và tham gia các hoạt động thiện nguyện phù
@@ -125,12 +129,12 @@ export default function AboutPage() {
 
         <div className="grid md:grid-cols-3 gap-6">
           {/* Value 1 */}
-          <div className="card bg-base-100 shadow-lg border border-base-300 hover:shadow-2xl transition-all hover:-translate-y-1">
+          <div className="card bg-gradient-to-br from-red-50 to-pink-50 shadow-xl border-2 border-red-200 hover:shadow-2xl hover:border-red-300 transition-all hover:-translate-y-2">
             <div className="card-body items-center text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-error/10 mb-4">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-red-500 to-pink-500 mb-4 shadow-lg">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-8 w-8 text-error"
+                  className="h-8 w-8 text-white"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -143,7 +147,9 @@ export default function AboutPage() {
                   />
                 </svg>
               </div>
-              <h3 className="card-title text-xl mb-2">Yêu thương</h3>
+              <h3 className="card-title text-xl mb-2 text-red-600 font-bold">
+                Yêu thương
+              </h3>
               <p className="text-base-content/70">
                 Đặt tình yêu thương và sự quan tâm đến cộng đồng lên hàng đầu
               </p>
@@ -151,12 +157,12 @@ export default function AboutPage() {
           </div>
 
           {/* Value 2 */}
-          <div className="card bg-base-100 shadow-lg border border-base-300 hover:shadow-2xl transition-all hover:-translate-y-1">
+          <div className="card bg-gradient-to-br from-green-50 to-emerald-50 shadow-xl border-2 border-green-200 hover:shadow-2xl hover:border-green-300 transition-all hover:-translate-y-2">
             <div className="card-body items-center text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-success/10 mb-4">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-green-500 to-emerald-500 mb-4 shadow-lg">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-8 w-8 text-success"
+                  className="h-8 w-8 text-white"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -169,7 +175,9 @@ export default function AboutPage() {
                   />
                 </svg>
               </div>
-              <h3 className="card-title text-xl mb-2">Kết nối</h3>
+              <h3 className="card-title text-xl mb-2 text-green-600 font-bold">
+                Kết nối
+              </h3>
               <p className="text-base-content/70">
                 Xây dựng cầu nối giữa các cá nhân và tổ chức cùng chí hướng
               </p>
@@ -177,12 +185,12 @@ export default function AboutPage() {
           </div>
 
           {/* Value 3 */}
-          <div className="card bg-base-100 shadow-lg border border-base-300 hover:shadow-2xl transition-all hover:-translate-y-1">
+          <div className="card bg-gradient-to-br from-yellow-50 to-orange-50 shadow-xl border-2 border-yellow-200 hover:shadow-2xl hover:border-yellow-300 transition-all hover:-translate-y-2">
             <div className="card-body items-center text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-warning/10 mb-4">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-yellow-500 to-orange-500 mb-4 shadow-lg">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-8 w-8 text-warning"
+                  className="h-8 w-8 text-white"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -195,7 +203,9 @@ export default function AboutPage() {
                   />
                 </svg>
               </div>
-              <h3 className="card-title text-xl mb-2">Hành động</h3>
+              <h3 className="card-title text-xl mb-2 text-yellow-600 font-bold">
+                Hành động
+              </h3>
               <p className="text-base-content/70">
                 Biến ý tưởng thành hành động cụ thể để tạo ra sự thay đổi
               </p>
@@ -203,12 +213,12 @@ export default function AboutPage() {
           </div>
 
           {/* Value 4 */}
-          <div className="card bg-base-100 shadow-lg border border-base-300 hover:shadow-2xl transition-all hover:-translate-y-1">
+          <div className="card bg-gradient-to-br from-blue-50 to-indigo-50 shadow-xl border-2 border-blue-200 hover:shadow-2xl hover:border-blue-300 transition-all hover:-translate-y-2">
             <div className="card-body items-center text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-info/10 mb-4">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 mb-4 shadow-lg">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-8 w-8 text-info"
+                  className="h-8 w-8 text-white"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -221,7 +231,9 @@ export default function AboutPage() {
                   />
                 </svg>
               </div>
-              <h3 className="card-title text-xl mb-2">Minh bạch</h3>
+              <h3 className="card-title text-xl mb-2 text-blue-600 font-bold">
+                Minh bạch
+              </h3>
               <p className="text-base-content/70">
                 Đảm bảo tính minh bạch trong mọi hoạt động và giao dịch
               </p>
@@ -229,12 +241,12 @@ export default function AboutPage() {
           </div>
 
           {/* Value 5 */}
-          <div className="card bg-base-100 shadow-lg border border-base-300 hover:shadow-2xl transition-all hover:-translate-y-1">
+          <div className="card bg-gradient-to-br from-purple-50 to-violet-50 shadow-xl border-2 border-purple-200 hover:shadow-2xl hover:border-purple-300 transition-all hover:-translate-y-2">
             <div className="card-body items-center text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-violet-500 mb-4 shadow-lg">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-8 w-8 text-primary"
+                  className="h-8 w-8 text-white"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -247,7 +259,9 @@ export default function AboutPage() {
                   />
                 </svg>
               </div>
-              <h3 className="card-title text-xl mb-2">Học hỏi</h3>
+              <h3 className="card-title text-xl mb-2 text-purple-600 font-bold">
+                Học hỏi
+              </h3>
               <p className="text-base-content/70">
                 Không ngừng học hỏi và cải thiện để phục vụ tốt hơn
               </p>
