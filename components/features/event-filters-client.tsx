@@ -6,6 +6,7 @@
 import { useState, useMemo } from "react";
 import { Event, User } from "@prisma/client";
 import { EventCard } from "./event-card";
+import Image from "next/image";
 
 type EventWithCreator = Event & { creator: User };
 
@@ -66,21 +67,13 @@ export const EventFiltersClient = ({ events }: EventFiltersClientProps) => {
       <div className="hero bg-gradient-to-br from-primary/10 via-base-100 to-secondary/10 rounded-2xl border border-base-300">
         <div className="hero-content text-center py-12">
           <div className="max-w-2xl">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-secondary mb-4">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-8 w-8 text-primary-content"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                />
-              </svg>
+            <div className="relative w-16 h-16 mb-4 mx-auto">
+              <Image
+                src="/images/logo.webp"
+                alt="VolunteerHub Logo"
+                fill
+                className="object-contain"
+              />
             </div>
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
               <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">

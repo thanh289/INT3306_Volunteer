@@ -44,21 +44,14 @@ export const Navbar = () => {
             href="/"
             className="btn btn-ghost normal-case text-xl gap-2 hover:scale-105 transition-transform duration-300"
           >
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary via-secondary to-accent flex items-center justify-center animate-pulse hover:animate-none shadow-xl hover:shadow-2xl transition-all">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6 text-white drop-shadow-lg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2.5}
-                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                />
-              </svg>
+            <div className="relative w-10 h-10">
+              <Image
+                src="/images/logo.webp"
+                alt="VolunteerHub Logo"
+                fill
+                className="object-contain"
+                priority
+              />
             </div>
             <span className="hidden sm:inline bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent font-extrabold text-2xl bg-[length:200%_auto] animate-gradient drop-shadow-sm">
               VolunteerHub

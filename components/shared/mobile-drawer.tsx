@@ -47,21 +47,13 @@ export const MobileDrawer = ({ children }: { children: React.ReactNode }) => {
         <div className="menu p-4 w-80 min-h-full bg-base-100 text-base-content">
           {/* Logo in drawer */}
           <div className="mb-4 flex items-center gap-3 px-4">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6 text-primary-content"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                />
-              </svg>
+            <div className="relative w-10 h-10">
+              <Image
+                src="/images/logo.webp"
+                alt="VolunteerHub Logo"
+                fill
+                className="object-contain"
+              />
             </div>
             <span className="text-lg font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
               VolunteerHub
