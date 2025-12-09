@@ -223,7 +223,6 @@ export const MobileDrawer = ({ children }: { children: React.ReactNode }) => {
                     </Link>
                   </li>
                 )}
-
                 {/* Manager/Admin links */}
                 {(userRole === "EVENT_MANAGER" || userRole === "ADMIN") && (
                   <>

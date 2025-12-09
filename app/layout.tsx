@@ -3,9 +3,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Toaster } from 'react-hot-toast';
-import { AuthProvider } from '@/providers/auth-provider';
-import { CsrfProvider } from '@/providers/csrf-provider';
+import { Toaster } from "react-hot-toast";
+import { AuthProvider } from "@/providers/auth-provider";
+import { CsrfProvider } from "@/providers/csrf-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,13 +29,34 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <Toaster position="top-center" />
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
         <AuthProvider>
-          <CsrfProvider>
-            {children}
-          </CsrfProvider>
+          <CsrfProvider>{children}</CsrfProvider>
         </AuthProvider>
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            duration: 4000,
+            style: {
+              background: "#333",
+              color: "#fff",
+            },
+            success: {
+              iconTheme: {
+                primary: "#10b981",
+                secondary: "#fff",
+              },
+            },
+            error: {
+              iconTheme: {
+                primary: "#ef4444",
+                secondary: "#fff",
+              },
+            },
+          }}
+        />
       </body>
     </html>
   );

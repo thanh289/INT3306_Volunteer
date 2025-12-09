@@ -4,6 +4,7 @@
 import { Event, User, EventStatus, RegistrationStatus } from "@prisma/client";
 import Link from "next/link";
 import Image from "next/image";
+import { FavoriteEventButton } from "./favorite-event-button";
 
 // Badge for manager
 const EventStatusBadge = ({ status }: { status: EventStatus }) => {
@@ -146,14 +147,19 @@ export const EventCard = ({
             <span className="text-xl">{categoryInfo.icon}</span>
           </div>
 
+          {/* Favorite button overlay */}
+          <div className="absolute top-3 right-3 z-10">
+            <FavoriteEventButton eventId={event.id} compact />
+          </div>
+
           {/* Status badge overlay */}
           {showStatus && (
-            <div className="absolute top-3 right-3">
+            <div className="absolute top-12 right-3">
               <EventStatusBadge status={event.status} />
             </div>
           )}
           {registrationStatus && (
-            <div className="absolute top-3 right-3">
+            <div className="absolute top-12 right-3">
               <RegistrationStatusBadge
                 status={registrationStatus}
                 isEventPast={isEventPast}

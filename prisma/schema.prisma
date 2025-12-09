@@ -56,7 +56,7 @@ enum UserStatus {
 
 model PushSubscription {
     id     String @id @default(auto()) @map("_id") @db.ObjectId
-    userId String
+    userId String @db.ObjectId
     user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
     endpoint String @unique
@@ -93,6 +93,7 @@ model User {
     notifications      Notification[]
     passwordResetToken PasswordResetToken?
     pushSubscriptions  PushSubscription[]
+    interestedEvents   InterestedEvent[]
 
     @@index([role])
     @@index([status])
@@ -120,6 +121,7 @@ model Event {
     // an event can has multiple user and post
     registrations Registration[]
     posts         Post[]
+    interestedBy  InterestedEvent[]
 
     @@index([status, startDateTime])
     @@index([creatorId, createdAt])
@@ -185,4 +187,22 @@ model PasswordResetToken {
     user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
     @@index([expires])
+}
+
+model InterestedEvent {
+    id        String   @id @default(auto()) @map("_id") @db.ObjectId
+    createdAt DateTime @default(now())
+
+    // Which user is interested
+    userId String @db.ObjectId
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    // Which event they're interested in
+    eventId String @db.ObjectId
+    event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+    // A user can only mark an event as interested once
+    @@unique([userId, eventId])
+    @@index([userId, createdAt])
+    @@index([eventId])
 }

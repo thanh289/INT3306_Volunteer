@@ -1,0 +1,122 @@
+// Component for favoriting/unfavoriting an event
+// components/features/favorite-event-button.tsx
+
+"use client";
+
+import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import axios, { isAxiosError } from "axios";
+import toast from "react-hot-toast";
+import { Heart } from "lucide-react";
+
+type FavoriteEventButtonProps = {
+  eventId: string;
+  compact?: boolean; // For smaller button in event cards
+};
+
+export const FavoriteEventButton = ({
+  eventId,
+  compact = false,
+}: FavoriteEventButtonProps) => {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  const [isInterested, setIsInterested] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isChecking, setIsChecking] = useState(true);
+
+  // Check if user is already interested in this event
+  useEffect(() => {
+    const checkInterested = async () => {
+      if (status === "authenticated") {
+        try {
+          const response = await axios.get(
+            `/api/interested-events/check?eventId=${eventId}`
+          );
+          setIsInterested(response.data.isInterested);
+        } catch (error) {
+          console.error("Error checking interested status:", error);
+        } finally {
+          setIsChecking(false);
+        }
+      } else {
+        setIsChecking(false);
+      }
+    };
+
+    checkInterested();
+  }, [eventId, status]);
+
+  const handleClick = async (e: React.MouseEvent) => {
+    // Prevent event propagation if button is in a clickable card
+    e.stopPropagation();
+
+    if (status === "unauthenticated") {
+      toast.error("Bạn cần đăng nhập để sử dụng chức năng này!");
+      router.push("/login");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      if (isInterested) {
+        await axios.delete(`/api/interested-events?eventId=${eventId}`);
+        setIsInterested(false);
+        toast.success("Đã xóa khỏi danh sách quan tâm!");
+      } else {
+        await axios.post("/api/interested-events", { eventId });
+        setIsInterested(true);
+        toast.success("Đã thêm vào danh sách quan tâm!");
+      }
+    } catch (error) {
+      if (isAxiosError(error)) {
+        toast.error(error.response?.data || "Có lỗi xảy ra.");
+      } else {
+        toast.error("Có lỗi không mong muốn xảy ra.");
+        console.error(error);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (compact) {
+    // Compact version for event cards
+    return (
+      <button
+        onClick={handleClick}
+        disabled={isLoading || isChecking}
+        className={`p-2 rounded-full transition-all duration-200 disabled:opacity-50 ${
+          isInterested
+            ? "bg-red-100 text-red-600 hover:bg-red-200"
+            : "bg-gray-100 text-gray-400 hover:bg-gray-200 hover:text-red-400"
+        }`}
+        title={
+          isInterested
+            ? "Xóa khỏi danh sách quan tâm"
+            : "Thêm vào danh sách quan tâm"
+        }
+      >
+        <Heart className={`w-5 h-5 ${isInterested ? "fill-current" : ""}`} />
+      </button>
+    );
+  }
+
+  // Full button version for event detail page
+  return (
+    <button
+      onClick={handleClick}
+      disabled={isLoading || isChecking}
+      className={`flex items-center gap-2 px-6 py-3 font-medium border rounded-md shadow-sm transition-all duration-200 disabled:opacity-50 ${
+        isInterested
+          ? "bg-red-50 text-red-600 border-red-300 hover:bg-red-100"
+          : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+      }`}
+    >
+      <Heart className={`w-5 h-5 ${isInterested ? "fill-current" : ""}`} />
+      {isLoading ? "Đang xử lý..." : isInterested ? "Đã quan tâm" : "Quan tâm"}
+    </button>
+  );
+};
