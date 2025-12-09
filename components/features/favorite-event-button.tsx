@@ -54,7 +54,6 @@ export const FavoriteEventButton = ({
 
     if (status === "unauthenticated") {
       toast.error("Bạn cần đăng nhập để sử dụng chức năng này!");
-      router.push("/login");
       return;
     }
 

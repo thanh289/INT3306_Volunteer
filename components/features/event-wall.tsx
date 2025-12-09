@@ -8,6 +8,8 @@ import { useSession } from "next-auth/react";
 import { RegistrationStatus, EventStatus } from "@prisma/client";
 import Image from "next/image";
 import toast from "react-hot-toast";
+import { PostLikeButton } from "./post-like-button";
+import { PostComments } from "./post-comments";
 
 interface Post {
   id: string;
@@ -18,7 +20,13 @@ interface Post {
     email: string | null;
     imageUrl: string | null;
   };
+  _count?: {
+    likes: number;
+    comments: number;
+  };
 }
+
+type SortOption = "recent" | "likes" | "comments";
 
 type EventWallProps = {
   eventId: string;
@@ -40,15 +48,20 @@ export const EventWall = ({
   const [newPostContent, setNewPostContent] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [sortBy, setSortBy] = useState<SortOption>("recent");
+  const [totalCount, setTotalCount] = useState(0);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
-  // When componenet is rendered first time, run the function once
-  // Just run again when eventId change, to fetch post of just the event
+  // Fetch posts with sort option
   useEffect(() => {
     const fetchPosts = async () => {
+      setIsLoading(true);
       try {
-        const response = await axios.get(`/api/events/${eventId}/posts`);
-        // Structural Typing is crazy :)
-        setPosts(response.data);
+        const response = await axios.get(
+          `/api/events/${eventId}/posts?sortBy=${sortBy}&skip=0&take=10`
+        );
+        setPosts(response.data.posts);
+        setTotalCount(response.data.totalCount);
       } catch (error) {
         console.error("Failed to fetch posts:", error);
       } finally {
@@ -57,7 +70,22 @@ export const EventWall = ({
     };
 
     fetchPosts();
-  }, [eventId]);
+  }, [eventId, sortBy]);
+
+  const handleLoadMore = async () => {
+    setIsLoadingMore(true);
+    try {
+      const response = await axios.get(
+        `/api/events/${eventId}/posts?sortBy=${sortBy}&skip=${posts.length}&take=10`
+      );
+      setPosts([...posts, ...response.data.posts]);
+    } catch (error) {
+      console.error("Failed to load more posts:", error);
+      toast.error("Không thể tải thêm bài viết");
+    } finally {
+      setIsLoadingMore(false);
+    }
+  };
 
   const handleSubmitPost = async (e: React.FormEvent) => {
     e.preventDefault(); // prevent form from reload
@@ -70,6 +98,7 @@ export const EventWall = ({
       });
       // add post in at the head of the list to update the UI immediately
       setPosts([response.data, ...posts]);
+      setTotalCount(totalCount + 1); // increment total count
       setNewPostContent(""); // delete content in the form
       toast.success("Đăng bài thành công!");
     } catch (error) {
@@ -259,22 +288,35 @@ export const EventWall = ({
 
   return (
     <div className="mt-12">
-      <div className="flex items-center gap-3 mb-6 pb-4 border-b border-base-300">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-6 w-6 text-primary"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
+      <div className="flex items-center justify-between mb-6 pb-4 border-b border-base-300">
+        <div className="flex items-center gap-3">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6 text-primary"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"
+            />
+          </svg>
+          <h2 className="text-2xl font-semibold">Kênh trao đổi</h2>
+        </div>
+
+        {/* Sort dropdown */}
+        <select
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value as SortOption)}
+          className="select select-bordered w-auto text-base pr-10"
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"
-          />
-        </svg>
-        <h2 className="text-2xl font-semibold">Kênh trao đổi</h2>
+          <option value="recent">Gần đây</option>
+          <option value="likes">Nhiều tym</option>
+          <option value="comments">Nhiều bình luận</option>
+        </select>
       </div>
 
       {/* Access message */}
@@ -402,9 +444,15 @@ export const EventWall = ({
                     </p>
                   </div>
                 </div>
-                <p className="text-base-content whitespace-pre-wrap">
+                <p className="text-base-content whitespace-pre-wrap mb-3">
                   {post.content}
                 </p>
+
+                {/* Like and Comment buttons */}
+                <div className="flex items-start gap-3 pt-2 border-t">
+                  <PostLikeButton postId={post.id} />
+                  <PostComments postId={post.id} />
+                </div>
               </div>
             </div>
           ))
@@ -434,6 +482,29 @@ export const EventWall = ({
           </div>
         )}
       </div>
+
+      {/* Load More Button */}
+      {!isLoading && posts.length < totalCount && (
+        <div className="flex justify-center mt-6">
+          <button
+            onClick={handleLoadMore}
+            disabled={isLoadingMore}
+            className="btn btn-outline btn-primary"
+          >
+            {isLoadingMore ? (
+              <>
+                <span className="loading loading-spinner loading-sm"></span>
+                Đang tải...
+              </>
+            ) : (
+              <>
+                Ấn để tải {Math.min(10, totalCount - posts.length)} bài viết
+                tiếp theo
+              </>
+            )}
+          </button>
+        </div>
+      )}
     </div>
   );
 };
