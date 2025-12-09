@@ -397,7 +397,7 @@ export const EventWall = ({
               className="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-shadow"
             >
               <div className="card-body">
-                <div className="flex items-center gap-3 mb-2">
+                <div className="flex items-center gap-4 mb-2">
                   <div className="avatar placeholder w-8 h-8 relative rounded-full overflow-hidden">
                     {post.author.imageUrl ? (
                       <Image
@@ -457,9 +457,9 @@ export const EventWall = ({
             </div>
           ))
         ) : (
-          <div className="card bg-base-100 border border-base-300">
-            <div className="card-body items-center text-center py-12">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-base-200 mb-4">
+          <div className="card bg-base-100 border border-base-300 ">
+            <div className="card-body items-center text-center py-12 ">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-base-200 mb-4 ">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-8 w-8 text-base-content/40"

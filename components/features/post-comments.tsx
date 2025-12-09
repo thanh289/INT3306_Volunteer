@@ -35,6 +35,8 @@ export const PostComments = ({ postId }: PostCommentsProps) => {
   const [newComment, setNewComment] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [displayCount, setDisplayCount] = useState(5);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
   // Fetch comments on mount
   useEffect(() => {
@@ -84,8 +86,15 @@ export const PostComments = ({ postId }: PostCommentsProps) => {
     }
   };
 
+  const handleLoadMoreComments = () => {
+    setDisplayCount((prev) => prev + 5);
+  };
+
+  const displayedComments = comments.slice(0, displayCount);
+  const remainingComments = comments.length - displayCount;
+
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 flex-1 max-w-2xl">
       {/* Comment toggle button */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
@@ -102,53 +111,69 @@ export const PostComments = ({ postId }: PostCommentsProps) => {
           {isLoading ? (
             <p className="text-sm text-gray-500">Đang tải bình luận...</p>
           ) : comments.length > 0 ? (
-            <div className="space-y-2 max-h-60 overflow-y-auto">
-              {comments.map((comment) => {
-                const avatarUrl = comment.user.imageUrl
-                  ? "/" +
-                    comment.user.imageUrl
-                      .replace(/\\/g, "/")
-                      .replace(/^\/+/, "")
-                  : null;
+            <>
+              <div className="space-y-2">
+                {displayedComments.map((comment) => {
+                  const avatarUrl = comment.user.imageUrl
+                    ? "/" +
+                      comment.user.imageUrl
+                        .replace(/\\/g, "/")
+                        .replace(/^\/+/, "")
+                    : null;
 
-                return (
-                  <div
-                    key={comment.id}
-                    className="flex gap-2 p-2 bg-gray-50 rounded"
+                  return (
+                    <div
+                      key={comment.id}
+                      className="flex gap-2 p-2 bg-gray-50 rounded"
+                    >
+                      <div className="flex-shrink-0">
+                        {avatarUrl ? (
+                          <div className="w-8 h-8 rounded-full overflow-hidden relative">
+                            <Image
+                              src={avatarUrl}
+                              alt="Avatar"
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                        ) : (
+                          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                            <span className="text-xs text-primary font-bold">
+                              {comment.user.name?.charAt(0).toUpperCase() ||
+                                "U"}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-900">
+                          {comment.user.name || "Người dùng"}
+                        </p>
+                        <p className="text-sm text-gray-700 whitespace-pre-wrap break-words">
+                          {comment.content}
+                        </p>
+                        <p className="text-xs text-gray-400 mt-1">
+                          {new Date(comment.createdAt).toLocaleString("vi-VN")}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Load more comments button */}
+              {remainingComments > 0 && (
+                <div className="flex justify-center">
+                  <button
+                    onClick={handleLoadMoreComments}
+                    className="text-sm text-primary hover:text-primary/80 font-medium px-4 py-2 rounded-lg hover:bg-primary/5 transition-all"
                   >
-                    <div className="flex-shrink-0">
-                      {avatarUrl ? (
-                        <div className="w-8 h-8 rounded-full overflow-hidden relative">
-                          <Image
-                            src={avatarUrl}
-                            alt="Avatar"
-                            fill
-                            className="object-cover"
-                          />
-                        </div>
-                      ) : (
-                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                          <span className="text-xs text-primary font-bold">
-                            {comment.user.name?.charAt(0).toUpperCase() || "U"}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900">
-                        {comment.user.name || "Người dùng"}
-                      </p>
-                      <p className="text-sm text-gray-700 whitespace-pre-wrap break-words">
-                        {comment.content}
-                      </p>
-                      <p className="text-xs text-gray-400 mt-1">
-                        {new Date(comment.createdAt).toLocaleString("vi-VN")}
-                      </p>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+                    Ấn để tải {Math.min(5, remainingComments)} bình luận tiếp
+                    theo
+                  </button>
+                </div>
+              )}
+            </>
           ) : (
             <p className="text-sm text-gray-500">Chưa có bình luận nào</p>
           )}
@@ -157,21 +182,25 @@ export const PostComments = ({ postId }: PostCommentsProps) => {
           {status === "authenticated" && (
             <div className="space-y-1">
               <form onSubmit={handleSubmitComment} className="flex gap-2">
-                <input
-                  type="text"
+                <textarea
                   value={newComment}
-                  onChange={(e) => setNewComment(e.target.value)}
+                  onChange={(e) => {
+                    setNewComment(e.target.value);
+                    e.target.style.height = "auto";
+                    e.target.style.height = e.target.scrollHeight + "px";
+                  }}
                   placeholder="Viết bình luận..."
                   maxLength={500}
-                  className="flex-1 px-3 py-2 text-sm border rounded-full focus:outline-none focus:ring-2 focus:ring-primary"
+                  rows={2}
+                  className="flex-1 px-4 py-3 text-sm border rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary resize-none overflow-hidden min-h-[60px]"
                   disabled={isSubmitting}
                 />
                 <button
                   type="submit"
                   disabled={isSubmitting || !newComment.trim()}
-                  className="p-2 rounded-full bg-primary text-white hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                  className="self-end shrink-0 p-3 rounded-full bg-primary text-white hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
                 >
-                  <Send className="w-4 h-4" />
+                  <Send className="w-5 h-5" />
                 </button>
               </form>
               <div className="text-xs text-gray-500 text-right px-2">
