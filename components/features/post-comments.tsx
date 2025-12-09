@@ -8,13 +8,18 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { MessageCircle, Send } from "lucide-react";
+import { MessageCircle, Send, Trash2 } from "lucide-react";
 import Image from "next/image";
+import { Role } from "@prisma/client";
 
 type Comment = {
   id: string;
   content: string;
   createdAt: string;
+  isDeleted: boolean;
+  deletedAt: string | null;
+  deletedBy: string | null;
+  deletedByRole: Role | null;
   user: {
     id: string;
     name: string | null;
@@ -24,9 +29,10 @@ type Comment = {
 
 type PostCommentsProps = {
   postId: string;
+  eventCreatorId?: string; // Pass event creator ID to check permissions
 };
 
-export const PostComments = ({ postId }: PostCommentsProps) => {
+export const PostComments = ({ postId, eventCreatorId }: PostCommentsProps) => {
   const { data: session, status } = useSession();
   const router = useRouter();
 
@@ -83,6 +89,32 @@ export const PostComments = ({ postId }: PostCommentsProps) => {
       toast.error(error.response?.data || "Có lỗi khi thêm bình luận");
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleDeleteComment = async (commentId: string) => {
+    if (!confirm("Bạn có chắc chắn muốn xóa bình luận này?")) return;
+
+    try {
+      await axios.delete(`/api/comments/${commentId}/delete`);
+      // Update the comment in the list to show it's deleted
+      setComments(
+        comments.map((comment) =>
+          comment.id === commentId
+            ? {
+                ...comment,
+                isDeleted: true,
+                deletedAt: new Date().toISOString(),
+                deletedBy: session?.user?.id || null,
+                deletedByRole: session?.user?.role || null,
+              }
+            : comment
+        )
+      );
+      toast.success("Đã xóa bình luận!");
+    } catch (error) {
+      console.error("Failed to delete comment:", error);
+      toast.error("Không thể xóa bình luận");
     }
   };
 
@@ -146,15 +178,52 @@ export const PostComments = ({ postId }: PostCommentsProps) => {
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-900">
-                          {comment.user.name || "Người dùng"}
-                        </p>
-                        <p className="text-sm text-gray-700 whitespace-pre-wrap break-words">
-                          {comment.content}
-                        </p>
-                        <p className="text-xs text-gray-400 mt-1">
-                          {new Date(comment.createdAt).toLocaleString("vi-VN")}
-                        </p>
+                        <div className="flex items-start justify-between gap-2">
+                          <p className="text-sm font-medium text-gray-900">
+                            {comment.user.name || "Người dùng"}
+                          </p>
+                          {/* Delete button for admin/event manager */}
+                          {!comment.isDeleted &&
+                            (session?.user?.role === "ADMIN" ||
+                              (session?.user?.role === "EVENT_MANAGER" &&
+                                session?.user?.id === eventCreatorId)) && (
+                              <button
+                                onClick={() => handleDeleteComment(comment.id)}
+                                className="text-error hover:bg-error/10 p-1 rounded transition-colors"
+                                title="Xóa bình luận"
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </button>
+                            )}
+                        </div>
+
+                        {comment.isDeleted ? (
+                          <div className="mt-1">
+                            <p className="text-xs text-gray-500 italic">
+                              Bình luận này đã bị xóa bởi{" "}
+                              {comment.deletedByRole === "ADMIN"
+                                ? "Quản trị viên"
+                                : "Người quản lý sự kiện"}
+                            </p>
+                            <p className="text-xs text-gray-400">
+                              {comment.deletedAt &&
+                                new Date(comment.deletedAt).toLocaleString(
+                                  "vi-VN"
+                                )}
+                            </p>
+                          </div>
+                        ) : (
+                          <>
+                            <p className="text-sm text-gray-700 whitespace-pre-wrap break-words">
+                              {comment.content}
+                            </p>
+                            <p className="text-xs text-gray-400 mt-1">
+                              {new Date(comment.createdAt).toLocaleString(
+                                "vi-VN"
+                              )}
+                            </p>
+                          </>
+                        )}
                       </div>
                     </div>
                   );

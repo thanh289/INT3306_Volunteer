@@ -5,16 +5,21 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useSession } from "next-auth/react";
-import { RegistrationStatus, EventStatus } from "@prisma/client";
+import { RegistrationStatus, EventStatus, Role } from "@prisma/client";
 import Image from "next/image";
 import toast from "react-hot-toast";
 import { PostLikeButton } from "./post-like-button";
 import { PostComments } from "./post-comments";
+import { Trash2 } from "lucide-react";
 
 interface Post {
   id: string;
   content: string;
   createdAt: string;
+  isDeleted: boolean;
+  deletedAt: string | null;
+  deletedBy: string | null;
+  deletedByRole: Role | null;
   author: {
     name: string | null;
     email: string | null;
@@ -51,6 +56,22 @@ export const EventWall = ({
   const [sortBy, setSortBy] = useState<SortOption>("recent");
   const [totalCount, setTotalCount] = useState(0);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Filter posts based on search query
+  const filteredPosts = posts.filter((post) => {
+    if (!searchQuery.trim()) return true;
+    const query = searchQuery.toLowerCase();
+    const content = post.content.toLowerCase();
+    const authorName = (
+      post.author.name ||
+      post.author.email ||
+      ""
+    ).toLowerCase();
+    return content.includes(query) || authorName.includes(query);
+  });
+
+  // Fetch posts with sort option
 
   // Fetch posts with sort option
   useEffect(() => {
@@ -108,6 +129,32 @@ export const EventWall = ({
       console.error("Failed to submit post:", error);
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleDeletePost = async (postId: string) => {
+    if (!confirm("Bạn có chắc chắn muốn xóa bài viết này?")) return;
+
+    try {
+      await axios.delete(`/api/posts/${postId}/delete`);
+      // Update the post in the list to show it's deleted
+      setPosts(
+        posts.map((post) =>
+          post.id === postId
+            ? {
+                ...post,
+                isDeleted: true,
+                deletedAt: new Date().toISOString(),
+                deletedBy: session?.user?.id || null,
+                deletedByRole: session?.user?.role || null,
+              }
+            : post
+        )
+      );
+      toast.success("Đã xóa bài viết!");
+    } catch (error) {
+      console.error("Failed to delete post:", error);
+      toast.error("Không thể xóa bài viết");
     }
   };
 
@@ -306,17 +353,6 @@ export const EventWall = ({
           </svg>
           <h2 className="text-2xl font-semibold">Kênh trao đổi</h2>
         </div>
-
-        {/* Sort dropdown */}
-        <select
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value as SortOption)}
-          className="select select-bordered w-auto text-base pr-10"
-        >
-          <option value="recent">Gần đây</option>
-          <option value="likes">Nhiều tym</option>
-          <option value="comments">Nhiều bình luận</option>
-        </select>
       </div>
 
       {/* Access message */}
@@ -382,6 +418,45 @@ export const EventWall = ({
         </form>
       )}
 
+      {/* Search and Sort Controls */}
+      <div className="flex flex-col sm:flex-row gap-3 mb-6">
+        {/* Search bar */}
+        <div className="relative flex-1">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
+          </svg>
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Tìm kiếm theo nội dung hoặc tên người đăng..."
+            className="input input-bordered w-full pl-10 pr-4"
+          />
+        </div>
+
+        {/* Sort dropdown */}
+        <select
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value as SortOption)}
+          className="select select-bordered w-full sm:w-auto text-base pr-10"
+        >
+          <option value="recent">Gần đây</option>
+          <option value="likes">Nhiều tym</option>
+          <option value="comments">Nhiều bình luận</option>
+        </select>
+      </div>
+
       {/* Post list */}
       <div className="space-y-4">
         {isLoading ? (
@@ -390,8 +465,8 @@ export const EventWall = ({
               <div key={i} className="skeleton h-32 w-full"></div>
             ))}
           </div>
-        ) : posts.length > 0 ? (
-          posts.map((post) => (
+        ) : filteredPosts.length > 0 ? (
+          filteredPosts.map((post) => (
             <div
               key={post.id}
               className="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-shadow"
@@ -443,16 +518,50 @@ export const EventWall = ({
                       {new Date(post.createdAt).toLocaleString("vi-VN")}
                     </p>
                   </div>
+                  {/* Delete button for admin/event manager */}
+                  {!post.isDeleted &&
+                    (session?.user?.role === "ADMIN" ||
+                      (session?.user?.role === "EVENT_MANAGER" &&
+                        session?.user?.id === creatorId)) && (
+                      <button
+                        onClick={() => handleDeletePost(post.id)}
+                        className="btn btn-ghost btn-sm text-error hover:bg-error/10"
+                        title="Xóa bài viết"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
                 </div>
-                <p className="text-base-content whitespace-pre-wrap mb-3">
-                  {post.content}
-                </p>
 
-                {/* Like and Comment buttons */}
-                <div className="flex items-start gap-3 pt-2 border-t">
-                  <PostLikeButton postId={post.id} />
-                  <PostComments postId={post.id} />
-                </div>
+                {/* Post content or deleted message */}
+                {post.isDeleted ? (
+                  <div className="bg-gray-100 p-4 rounded-lg mb-3">
+                    <p className="text-gray-500 italic">
+                      Bài viết này đã bị xóa bởi{" "}
+                      {post.deletedByRole === "ADMIN"
+                        ? "Quản trị viên"
+                        : "Người quản lý sự kiện"}
+                      .
+                    </p>
+                    <p className="text-xs text-gray-400 mt-1">
+                      Thời gian xóa:{" "}
+                      {post.deletedAt &&
+                        new Date(post.deletedAt).toLocaleString("vi-VN")}
+                    </p>
+                  </div>
+                ) : (
+                  <p className="text-base-content whitespace-pre-wrap mb-3">
+                    {post.content}
+                  </p>
+                )}
+
+                {/* Like and Comment buttons - only show if not deleted */}
+                {!post.isDeleted && (
+                  <div className="flex items-start gap-3 pt-2 border-t">
+                    <PostLikeButton postId={post.id} />
+                    <PostComments postId={post.id} eventCreatorId={creatorId} />
+                  </div>
+                )}
               </div>
             </div>
           ))
@@ -476,7 +585,11 @@ export const EventWall = ({
                 </svg>
               </div>
               <p className="text-base-content/60">
-                Chưa có bài viết nào. {canPost && "Hãy là người đầu tiên!"}
+                {searchQuery.trim()
+                  ? "Không tìm thấy bài viết nào phù hợp với tìm kiếm của bạn."
+                  : `Chưa có bài viết nào. ${
+                      canPost ? "Hãy là người đầu tiên!" : ""
+                    }`}
               </p>
             </div>
           </div>

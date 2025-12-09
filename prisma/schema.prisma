@@ -157,6 +157,12 @@ model Post {
     content   String
     createdAt DateTime @default(now())
 
+    // Soft delete fields
+    isDeleted   Boolean   @default(false)
+    deletedAt   DateTime?
+    deletedBy   String?   @db.ObjectId
+    deletedByRole Role?
+
     eventId String @db.ObjectId
     event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
 
@@ -167,6 +173,7 @@ model Post {
     comments PostComment[]
 
     @@index([eventId, createdAt])
+    @@index([isDeleted])
 }
 
 model PostLike {
@@ -192,6 +199,12 @@ model PostComment {
     content   String
     createdAt DateTime @default(now())
 
+    // Soft delete fields
+    isDeleted     Boolean   @default(false)
+    deletedAt     DateTime?
+    deletedBy     String?   @db.ObjectId
+    deletedByRole Role?
+
     // Which user commented
     userId String @db.ObjectId
     user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -202,6 +215,7 @@ model PostComment {
 
     @@index([postId, createdAt])
     @@index([userId])
+    @@index([isDeleted])
 }
 
 model Notification {
