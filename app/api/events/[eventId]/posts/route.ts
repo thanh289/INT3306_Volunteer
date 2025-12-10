@@ -16,15 +16,58 @@ type RouteParams = {
 // Get a list of post
 export async function GET(request: Request, { params }: RouteParams) {
   try {
+    const session = await getServerSession(authOptions);
     const { eventId } = await params;
     const { searchParams } = new URL(request.url);
     const sortBy = searchParams.get("sortBy") || "recent"; // recent, likes, comments
     const skip = parseInt(searchParams.get("skip") || "0");
     const take = parseInt(searchParams.get("take") || "10");
 
+    // Get event info to check permissions
+    const event = await prisma.event.findUnique({
+      where: { id: eventId },
+      select: {
+        creatorId: true,
+        requirePostApproval: true,
+        eventManagers: {
+          select: { userId: true },
+        },
+      },
+    });
+
+    if (!event) {
+      return new NextResponse("Sự kiện không tồn tại", { status: 404 });
+    }
+
+    // Check if user is privileged (can see pending posts)
+    const isAdmin = session?.user?.role === "ADMIN";
+    const isCreator = session?.user?.id === event.creatorId;
+    const isEventManager = event.eventManagers.some(
+      (m) => m.userId === session?.user?.id
+    );
+    const canSeePending = isAdmin || isCreator || isEventManager;
+    const currentUserId = session?.user?.id;
+
+    // Build where clause for post status
+    // Users can see: approved posts, OR their own pending/rejected posts, OR all posts if privileged
+    const postStatusFilter = canSeePending
+      ? {} // Admins/managers can see all posts
+      : {
+          OR: [
+            { postStatus: "APPROVED" }, // Everyone sees approved posts
+            ...(currentUserId
+              ? [{ authorId: currentUserId }] // Users see their own posts regardless of status
+              : []),
+          ],
+        };
+
     // Base query
     const baseQuery = {
-      where: { eventId },
+      where: {
+        eventId,
+        isDeleted: false,
+        ...postStatusFilter,
+      },
       skip,
       take,
       include: {
@@ -82,7 +125,11 @@ export async function GET(request: Request, { params }: RouteParams) {
 
     // Get total count for pagination
     const totalCount = await prisma.post.count({
-      where: { eventId },
+      where: {
+        eventId,
+        isDeleted: false,
+        ...postStatusFilter,
+      },
     });
 
     return NextResponse.json({ posts, totalCount });
@@ -129,6 +176,7 @@ export async function POST(request: Request, { params }: RouteParams) {
         status: true,
         title: true,
         creatorId: true,
+        requirePostApproval: true,
         eventManagers: {
           select: { userId: true },
         },
@@ -170,11 +218,19 @@ export async function POST(request: Request, { params }: RouteParams) {
 
     const { content } = validationResult.data;
 
+    // Determine post status based on user role and event settings
+    let postStatus = "APPROVED"; // Default for admin/creator/manager
+
+    if (!isPrivileged && event.requirePostApproval) {
+      postStatus = "PENDING"; // Volunteers need approval if enabled
+    }
+
     const newPost = await prisma.post.create({
       data: {
         content,
         eventId,
         authorId: userId,
+        postStatus: postStatus as any,
       },
       include: {
         author: {

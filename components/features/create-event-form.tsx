@@ -27,6 +27,7 @@ export const CreateEventForm = () => {
     endDateTime: "",
     maxAttendees: "50",
     category: EventCategory.COMMUNITY,
+    requirePostApproval: false,
   });
 
   const handleChange = (
@@ -329,6 +330,31 @@ export const CreateEventForm = () => {
           onChange={handleChange}
           className="input input-bordered w-full focus:input-primary"
         />
+      </div>
+
+      {/* Post Approval Checkbox */}
+      <div className="form-control">
+        <label className="label cursor-pointer justify-start gap-3">
+          <input
+            type="checkbox"
+            name="requirePostApproval"
+            checked={formData.requirePostApproval}
+            onChange={(e) =>
+              setFormData((prev) => ({
+                ...prev,
+                requirePostApproval: e.target.checked,
+              }))
+            }
+            className="checkbox checkbox-primary"
+          />
+          <span className="label-text">
+            <span className="font-semibold">Yêu cầu duyệt bài đăng</span>
+            <span className="block text-sm text-base-content/60 mt-1">
+              Bài đăng của tình nguyện viên sẽ cần được admin hoặc người quản lý
+              duyệt trước khi hiển thị công khai
+            </span>
+          </span>
+        </label>
       </div>
 
       {/* Info Alert */}

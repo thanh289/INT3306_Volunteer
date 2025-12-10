@@ -38,6 +38,12 @@ enum RegistrationStatus {
     COMPLETED
 }
 
+enum PostStatus {
+    PENDING
+    APPROVED
+    REJECTED
+}
+
 enum EventStatus {
     PENDING_APPROVAL
     PUBLISHED
@@ -117,6 +123,9 @@ model Event {
     createdAt     DateTime      @default(now())
     updatedAt     DateTime      @updatedAt
 
+    // Post moderation setting
+    requirePostApproval Boolean @default(false)
+
     // Soft delete fields
     isDeleted     Boolean   @default(false)
     deletedAt     DateTime?
@@ -174,10 +183,15 @@ model Post {
     content   String
     createdAt DateTime @default(now())
 
+    // Post approval status
+    postStatus PostStatus @default(APPROVED)
+    reviewedAt DateTime?
+    reviewedBy String?    @db.ObjectId
+
     // Soft delete fields
-    isDeleted   Boolean   @default(false)
-    deletedAt   DateTime?
-    deletedBy   String?   @db.ObjectId
+    isDeleted     Boolean   @default(false)
+    deletedAt     DateTime?
+    deletedBy     String?   @db.ObjectId
     deletedByRole Role?
 
     eventId String @db.ObjectId

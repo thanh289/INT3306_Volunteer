@@ -10,12 +10,15 @@ import Image from "next/image";
 import toast from "react-hot-toast";
 import { PostLikeButton } from "./post-like-button";
 import { PostComments } from "./post-comments";
-import { Trash2 } from "lucide-react";
+import { Trash2, Check, X, Clock } from "lucide-react";
 
 interface Post {
   id: string;
   content: string;
   createdAt: string;
+  postStatus: "PENDING" | "APPROVED" | "REJECTED";
+  reviewedAt: string | null;
+  reviewedBy: string | null;
   isDeleted: boolean;
   deletedAt: string | null;
   deletedBy: string | null;
@@ -129,7 +132,13 @@ export const EventWall = ({
       setPosts([response.data, ...posts]);
       setTotalCount(totalCount + 1); // increment total count
       setNewPostContent(""); // delete content in the form
-      toast.success("Đăng bài thành công!");
+
+      // Show different message based on post status
+      if (response.data.postStatus === "PENDING") {
+        toast.success("Bài viết đã được gửi và đang chờ duyệt!");
+      } else {
+        toast.success("Đăng bài thành công!");
+      }
     } catch (error) {
       if (axios.isAxiosError(error)) {
         toast.error(error.response?.data || "Có lỗi xảy ra khi đăng bài");
@@ -163,6 +172,34 @@ export const EventWall = ({
     } catch (error) {
       console.error("Failed to delete post:", error);
       toast.error("Không thể xóa bài viết");
+    }
+  };
+
+  const handleReviewPost = async (
+    postId: string,
+    action: "approve" | "reject"
+  ) => {
+    try {
+      await axios.patch(`/api/posts/${postId}/review`, { action });
+      // Update post status in the list
+      setPosts(
+        posts.map((post) =>
+          post.id === postId
+            ? {
+                ...post,
+                postStatus: action === "approve" ? "APPROVED" : "REJECTED",
+                reviewedAt: new Date().toISOString(),
+                reviewedBy: session?.user?.id || null,
+              }
+            : post
+        )
+      );
+      toast.success(
+        action === "approve" ? "Đã duyệt bài viết!" : "Đã từ chối bài viết!"
+      );
+    } catch (error) {
+      console.error("Failed to review post:", error);
+      toast.error("Không thể thực hiện thao tác");
     }
   };
 
@@ -508,6 +545,24 @@ export const EventWall = ({
                         )}
                     </div>
 
+                    {/* Post Status Badge */}
+                    {post.postStatus === "PENDING" && (
+                      <div className="mb-3">
+                        <span className="badge badge-warning gap-2">
+                          <Clock className="w-3 h-3" />
+                          Đang chờ duyệt
+                        </span>
+                      </div>
+                    )}
+                    {post.postStatus === "REJECTED" && (
+                      <div className="mb-3">
+                        <span className="badge badge-error gap-2">
+                          <X className="w-3 h-3" />
+                          Đã bị từ chối
+                        </span>
+                      </div>
+                    )}
+
                     {/* Post content or deleted message */}
                     {post.isDeleted ? (
                       <div className="bg-gray-100 p-4 rounded-lg mb-3">
@@ -530,8 +585,33 @@ export const EventWall = ({
                       </p>
                     )}
 
-                    {/* Like and Comment buttons - only show if not deleted */}
-                    {!post.isDeleted && (
+                    {/* Review buttons for pending posts */}
+                    {post.postStatus === "PENDING" &&
+                      !post.isDeleted &&
+                      post.authorId !== session?.user?.id && // Don't show review buttons for own posts
+                      (session?.user?.role === "ADMIN" ||
+                        session?.user?.id === creatorId ||
+                        eventManagerIds.includes(session?.user?.id || "")) && (
+                        <div className="flex gap-2 mb-3 pt-2 border-t">
+                          <button
+                            onClick={() => handleReviewPost(post.id, "approve")}
+                            className="btn btn-sm btn-success gap-2"
+                          >
+                            <Check className="w-4 h-4" />
+                            Duyệt bài
+                          </button>
+                          <button
+                            onClick={() => handleReviewPost(post.id, "reject")}
+                            className="btn btn-sm btn-error gap-2"
+                          >
+                            <X className="w-4 h-4" />
+                            Từ chối
+                          </button>
+                        </div>
+                      )}
+
+                    {/* Like and Comment buttons - only show if not deleted and approved */}
+                    {!post.isDeleted && post.postStatus === "APPROVED" && (
                       <div className="flex items-start gap-3 pt-2 border-t">
                         <PostLikeButton postId={post.id} />
                         <PostComments

@@ -9,6 +9,7 @@ import Link from "next/link";
 import { ParticipantList } from "@/components/features/participant-list";
 import { EventManagerManagement } from "@/components/features/event-manager-management";
 import { EventActions } from "@/components/features/event-actions";
+import { EventPostSettings } from "@/components/features/event-post-settings";
 
 type ManageEventPageProps = {
   params: Promise<{
@@ -67,6 +68,9 @@ export default async function ManageEventPage({
           eventTitle={event.title}
           creatorId={event.creatorId}
         />
+
+        {/* Post Settings */}
+        <EventPostSettings event={event} />
 
         {/* Participant List */}
         <div className="bg-white p-8 rounded-lg shadow-md">
