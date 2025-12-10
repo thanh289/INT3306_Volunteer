@@ -9,6 +9,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { EventWall } from "@/components/features/event-wall";
 import { EventManagementButtons } from "@/components/features/event-management-buttons";
+import { Ban } from "lucide-react";
 
 type EventDetailPageProps = {
   params: Promise<{
@@ -29,7 +30,12 @@ export default async function EventDetailPage({
   const [event, registration] = await Promise.all([
     prisma.event.findUnique({
       where: { id: eventId },
-      include: { creator: true },
+      include: {
+        creator: true,
+        eventManagers: {
+          select: { userId: true },
+        },
+      },
     }),
     userId
       ? prisma.registration.findUnique({
@@ -41,18 +47,27 @@ export default async function EventDetailPage({
   if (!event) {
     notFound();
   }
+
+  // Get all event manager IDs
+  const eventManagerIds = event.eventManagers.map((m) => m.userId);
+
+  // Check if current user is event manager
+  const isEventManager = userId ? eventManagerIds.includes(userId) : false;
+
   // volunteer cannot access unpublished detail event
   if (
     event.status !== "PUBLISHED" &&
     userRole !== "ADMIN" &&
-    userId !== event.creatorId
+    userId !== event.creatorId &&
+    !isEventManager
   ) {
     notFound();
   }
 
   const isRegistered = !!registration;
   const isEventEnded = new Date(event.endDateTime) < new Date();
-  const canManage = userId === event.creatorId || userRole === "ADMIN";
+  const canManage =
+    userId === event.creatorId || userRole === "ADMIN" || isEventManager;
 
   // Helper for formatting date
   const formatDateTime = (date: Date) => {
@@ -95,6 +110,21 @@ export default async function EventDetailPage({
                 {event.status === "PENDING_APPROVAL"
                   ? "Đang chờ duyệt"
                   : "Đã bị từ chối"}
+              </div>
+            </div>
+          )}
+
+          {/* Cancelled badge */}
+          {event.isCancelled && (
+            <div className="mt-4 bg-error/20 border-2 border-error text-white px-4 py-3 rounded-lg flex items-center gap-3">
+              <Ban className="h-6 w-6 flex-shrink-0" />
+              <div>
+                <div className="font-bold text-lg">Sự kiện đã bị hủy</div>
+                {event.cancelReason && (
+                  <div className="text-sm opacity-90 mt-1">
+                    Lý do: {event.cancelReason}
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -201,6 +231,8 @@ export default async function EventDetailPage({
                   eventId={event.id}
                   isInitiallyRegistered={isRegistered}
                   isEventEnded={isEventEnded}
+                  isCancelled={event.isCancelled}
+                  cancelReason={event.cancelReason}
                 />
                 <FavoriteEventButton eventId={event.id} />
               </>
@@ -215,6 +247,7 @@ export default async function EventDetailPage({
         isRegistered={isRegistered}
         registrationStatus={registration?.status}
         eventStatus={event.status}
+        eventManagerIds={eventManagerIds}
       />
     </div>
   );

@@ -5,25 +5,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma";
-import Link from "next/link";
-import { Event, User } from "@prisma/client";
-
-// Small component to show event in the dashboard
-const DashboardEventItem = ({
-  event,
-}: {
-  event: Event & { creator: User };
-}) => (
-  <Link href={`/events/${event.id}`}>
-    <div className="p-4 border rounded-md hover:bg-gray-50 transition-colors">
-      <p className="font-bold text-indigo-700">{event.title}</p>
-      <p className="text-sm text-gray-600">{event.creator.name}</p>
-      <p className="text-xs text-gray-400 mt-1">
-        {new Date(event.startDateTime).toLocaleDateString("vi-VN")}
-      </p>
-    </div>
-  </Link>
-);
+import { DashboardSidebar } from "@/components/features/dashboard-sidebar";
+import { DashboardFeed } from "@/components/features/dashboard-feed";
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
@@ -33,99 +16,53 @@ export default async function DashboardPage() {
   const userId = session.user.id;
 
   // Promise.all for parallel query
-  const [myUpcomingRegistrations, interestedEvents, recentPosts] =
-    await Promise.all([
-      // Take 3 upcoming events user registered
-      prisma.registration.findMany({
-        where: {
-          userId: userId,
-          event: { startDateTime: { gte: new Date() } },
+  const [myUpcomingRegistrations, interestedEvents] = await Promise.all([
+    // Take upcoming events user registered
+    prisma.registration.findMany({
+      where: {
+        userId: userId,
+        event: {
+          startDateTime: { gte: new Date() },
+          status: "PUBLISHED",
+          isDeleted: false, // Only show non-deleted events
         },
-        take: 3,
-        orderBy: { event: { startDateTime: "asc" } },
-        include: { event: { include: { creator: true } } },
-      }),
+      },
+      take: 10,
+      orderBy: { event: { startDateTime: "asc" } },
+      include: { event: { include: { creator: true } } },
+    }),
 
-      // Take 5 events user is interested in
-      prisma.interestedEvent.findMany({
-        where: {
-          userId: userId,
-          event: {
-            status: "PUBLISHED",
-          },
+    // Take events user is interested in
+    prisma.interestedEvent.findMany({
+      where: {
+        userId: userId,
+        event: {
+          status: "PUBLISHED",
+          isDeleted: false, // Only show non-deleted events
         },
-        take: 5,
-        orderBy: { createdAt: "desc" },
-        include: { event: { include: { creator: true } } },
-      }),
-      // Take 5 newest post from different events
-      prisma.post.findMany({
-        where: {
-          event: {
-            status: "PUBLISHED",
-          },
-        },
-        take: 5,
-        orderBy: { createdAt: "desc" },
-        distinct: ["eventId"], // Take only 1 post from each event
-        include: { event: { include: { creator: true } } },
-      }),
-    ]);
+      },
+      take: 10,
+      orderBy: { createdAt: "desc" },
+      include: { event: { include: { creator: true } } },
+    }),
+  ]);
 
   const myUpcomingEvents = myUpcomingRegistrations.map((reg) => reg.event);
   const myInterestedEvents = interestedEvents.map((item) => item.event);
-  const eventsWithRecentActivity = recentPosts.map((post) => post.event);
 
   return (
-    <div className="max-w-6xl mx-auto p-4 md:p-8">
-      <h1 className="text-3xl font-bold mb-8">Bảng tin của bạn</h1>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* User's upcoming events*/}
-        <section className="space-y-4">
-          <h2 className="text-xl font-semibold border-b pb-2">
-            Sự kiện sắp tới của bạn
-          </h2>
-          {myUpcomingEvents.length > 0 ? (
-            myUpcomingEvents.map((event) => (
-              <DashboardEventItem key={event.id} event={event} />
-            ))
-          ) : (
-            <p className="text-sm text-gray-500">
-              Bạn không có sự kiện nào sắp diễn ra.
-            </p>
-          )}
-        </section>
+    <div className="flex min-h-screen">
+      {/* Collapsible Sidebar */}
+      <DashboardSidebar
+        upcomingEvents={myUpcomingEvents}
+        interestedEvents={myInterestedEvents}
+      />
 
-        {/* Interested events */}
-        <section className="space-y-4">
-          <h2 className="text-xl font-semibold border-b pb-2">
-            Sự kiện quan tâm
-          </h2>
-          {myInterestedEvents.length > 0 ? (
-            myInterestedEvents.map((event) => (
-              <DashboardEventItem key={event.id} event={event} />
-            ))
-          ) : (
-            <p className="text-sm text-gray-500">
-              Bạn chưa quan tâm sự kiện nào.
-            </p>
-          )}
-        </section>
-
-        {/* Recent posts */}
-        <section className="space-y-4">
-          <h2 className="text-xl font-semibold border-b pb-2">
-            Vừa có hoạt động mới
-          </h2>
-          {eventsWithRecentActivity.length > 0 ? (
-            eventsWithRecentActivity.map((event) => (
-              <DashboardEventItem key={event.id} event={event} />
-            ))
-          ) : (
-            <p className="text-sm text-gray-500">Chưa có hoạt động nào mới.</p>
-          )}
-        </section>
-      </div>
+      {/* Main Content - Posts Feed */}
+      <main className="flex-1 p-4 md:p-8 max-w-4xl mx-auto w-full">
+        <h1 className="text-3xl font-bold mb-6">Bảng tin</h1>
+        <DashboardFeed />
+      </main>
     </div>
   );
 }

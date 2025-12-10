@@ -10,7 +10,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { MessageCircle, Send, Trash2 } from "lucide-react";
 import Image from "next/image";
-import { Role } from "@prisma/client";
+import { Role, RegistrationStatus } from "@prisma/client";
 
 type Comment = {
   id: string;
@@ -24,15 +24,24 @@ type Comment = {
     id: string;
     name: string | null;
     imageUrl: string | null;
+    role: Role;
+    registrations?: {
+      status: RegistrationStatus;
+    }[];
   };
 };
 
 type PostCommentsProps = {
   postId: string;
   eventCreatorId?: string; // Pass event creator ID to check permissions
+  eventManagerIds?: string[]; // Pass event manager IDs
 };
 
-export const PostComments = ({ postId, eventCreatorId }: PostCommentsProps) => {
+export const PostComments = ({
+  postId,
+  eventCreatorId,
+  eventManagerIds = [],
+}: PostCommentsProps) => {
   const { data: session, status } = useSession();
   const router = useRouter();
 
@@ -43,6 +52,11 @@ export const PostComments = ({ postId, eventCreatorId }: PostCommentsProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [displayCount, setDisplayCount] = useState(5);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [fetchedEventCreatorId, setFetchedEventCreatorId] = useState<
+    string | undefined
+  >(eventCreatorId);
+  const [fetchedEventManagerIds, setFetchedEventManagerIds] =
+    useState<string[]>(eventManagerIds);
 
   // Fetch comments on mount
   useEffect(() => {
@@ -53,7 +67,14 @@ export const PostComments = ({ postId, eventCreatorId }: PostCommentsProps) => {
     setIsLoading(true);
     try {
       const response = await axios.get(`/api/posts/${postId}/comments`);
-      setComments(response.data);
+      setComments(response.data.comments || response.data);
+      // Update event creator and manager IDs if provided in response
+      if (response.data.eventCreatorId) {
+        setFetchedEventCreatorId(response.data.eventCreatorId);
+      }
+      if (response.data.eventManagerIds) {
+        setFetchedEventManagerIds(response.data.eventManagerIds);
+      }
     } catch (error) {
       console.error("Error fetching comments:", error);
       toast.error("Không thể tải bình luận");
@@ -179,14 +200,53 @@ export const PostComments = ({ postId, eventCreatorId }: PostCommentsProps) => {
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-2">
-                          <p className="text-sm font-medium text-gray-900">
-                            {comment.user.name || "Người dùng"}
-                          </p>
-                          {/* Delete button for admin/event manager */}
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <p className="text-sm font-medium text-gray-900">
+                              {comment.user.name || "Người dùng"}
+                            </p>
+                            {/* Show badge for admin */}
+                            {comment.user.role === "ADMIN" && (
+                              <span className="badge badge-error badge-xs">
+                                Quản trị viên
+                              </span>
+                            )}
+                            {/* Show badge for event creator */}
+                            {comment.user.id === fetchedEventCreatorId &&
+                              comment.user.role !== "ADMIN" && (
+                                <span className="badge badge-primary badge-xs">
+                                  Người tạo sự kiện
+                                </span>
+                              )}
+                            {/* Show badge for event manager */}
+                            {fetchedEventManagerIds.includes(comment.user.id) &&
+                              comment.user.id !== fetchedEventCreatorId &&
+                              comment.user.role !== "ADMIN" && (
+                                <span className="badge badge-secondary badge-xs">
+                                  Người quản lý sự kiện
+                                </span>
+                              )}
+                            {/* Show badge for registered volunteer */}
+                            {comment.user.registrations &&
+                              comment.user.registrations.length > 0 &&
+                              comment.user.registrations[0].status ===
+                                "APPROVED" &&
+                              comment.user.id !== fetchedEventCreatorId &&
+                              !fetchedEventManagerIds.includes(
+                                comment.user.id
+                              ) &&
+                              comment.user.role !== "ADMIN" && (
+                                <span className="badge badge-success badge-xs">
+                                  Tình nguyện viên
+                                </span>
+                              )}
+                          </div>
+                          {/* Delete button for admin/event creator/event manager */}
                           {!comment.isDeleted &&
                             (session?.user?.role === "ADMIN" ||
-                              (session?.user?.role === "EVENT_MANAGER" &&
-                                session?.user?.id === eventCreatorId)) && (
+                              session?.user?.id === fetchedEventCreatorId ||
+                              fetchedEventManagerIds.includes(
+                                session?.user?.id || ""
+                              )) && (
                               <button
                                 onClick={() => handleDeleteComment(comment.id)}
                                 className="text-error hover:bg-error/10 p-1 rounded transition-colors"

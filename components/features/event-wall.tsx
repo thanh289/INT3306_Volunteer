@@ -20,10 +20,16 @@ interface Post {
   deletedAt: string | null;
   deletedBy: string | null;
   deletedByRole: Role | null;
+  authorId: string;
   author: {
+    id: string;
     name: string | null;
     email: string | null;
     imageUrl: string | null;
+    role: Role;
+    registrations?: {
+      status: RegistrationStatus;
+    }[];
   };
   _count?: {
     likes: number;
@@ -39,6 +45,7 @@ type EventWallProps = {
   isRegistered: boolean;
   registrationStatus?: RegistrationStatus;
   eventStatus: EventStatus;
+  eventManagerIds: string[];
 };
 
 export const EventWall = ({
@@ -47,6 +54,7 @@ export const EventWall = ({
   isRegistered,
   registrationStatus,
   eventStatus,
+  eventManagerIds,
 }: EventWallProps) => {
   const { data: session, status } = useSession();
   const [posts, setPosts] = useState<Post[]>([]);
@@ -162,17 +170,14 @@ export const EventWall = ({
   const isAuthenticated = status === "authenticated";
   const isUserActive = session?.user?.status === "ACTIVE";
   const isEventPublished = eventStatus === "PUBLISHED";
-  const isRegistrationApproved = registrationStatus === "APPROVED";
   const isAdmin = session?.user?.role === "ADMIN";
   const isCreator = session?.user?.id === creatorId;
-  const isPrivileged = isAdmin || isCreator;
+  const isEventManager = eventManagerIds.includes(session?.user?.id || "");
+  const isPrivileged = isAdmin || isCreator || isEventManager;
 
-  // Condition: login & regist event & not being locked & event published (or if you're admin or the creator)
+  // Condition: login & not being locked & event published (or if you're admin or the creator/manager)
   const canPost =
-    isAuthenticated &&
-    isUserActive &&
-    isEventPublished &&
-    (isPrivileged || (isRegistered && isRegistrationApproved));
+    isAuthenticated && isUserActive && (isEventPublished || isPrivileged);
 
   // Determine what message to show
   const getAccessMessage = () => {
@@ -223,80 +228,7 @@ export const EventWall = ({
       };
     }
 
-    if (isPrivileged) return null;
-
-    if (!isRegistered) {
-      return {
-        type: "warning",
-        icon: (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-            />
-          </svg>
-        ),
-        message: "Bạn cần đăng ký sự kiện để tham gia kênh trao đổi.",
-      };
-    }
-
-    if (registrationStatus === "PENDING") {
-      return {
-        type: "warning",
-        icon: (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
-        ),
-        message:
-          "Đăng ký đang đọc đang chờ duyệt. Bạn sẽ có thể đăng bài sau khi được quản lý sự kiện duyệt.",
-      };
-    }
-
-    if (registrationStatus === "REJECTED") {
-      return {
-        type: "error",
-        icon: (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
-        ),
-        message:
-          "Đăng ký của bạn đã bị từ chối. Bạn không thể tham gia kênh trao đổi.",
-      };
-    }
-
-    if (!isEventPublished) {
+    if (!isEventPublished && !isPrivileged) {
       return {
         type: "info",
         icon: (
@@ -496,9 +428,41 @@ export const EventWall = ({
                       </div>
                     )}
                   </div>
-                  <div className="flex-1">
-                    <p className="font-semibold text-base-content">
-                      {post.author.name || post.author.email}
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-base-content flex items-center gap-2 flex-wrap">
+                      <span>{post.author.name || post.author.email}</span>
+                      {/* Show badge for admin */}
+                      {post.author.role === "ADMIN" && (
+                        <span className="badge badge-error badge-sm">
+                          Quản trị viên
+                        </span>
+                      )}
+                      {/* Show badge for event creator */}
+                      {post.authorId === creatorId &&
+                        post.author.role !== "ADMIN" && (
+                          <span className="badge badge-primary badge-sm">
+                            Người tạo sự kiện
+                          </span>
+                        )}
+                      {/* Show badge for event manager */}
+                      {eventManagerIds.includes(post.authorId) &&
+                        post.authorId !== creatorId &&
+                        post.author.role !== "ADMIN" && (
+                          <span className="badge badge-secondary badge-sm">
+                            Người quản lý sự kiện
+                          </span>
+                        )}
+                      {/* Show badge for registered participant */}
+                      {post.author.registrations &&
+                        post.author.registrations.length > 0 &&
+                        post.author.registrations[0].status === "APPROVED" &&
+                        post.authorId !== creatorId &&
+                        !eventManagerIds.includes(post.authorId) &&
+                        post.author.role !== "ADMIN" && (
+                          <span className="badge badge-success badge-sm">
+                            Tình nguyện viên
+                          </span>
+                        )}
                     </p>
                     <p className="text-xs text-base-content/60 flex items-center gap-1">
                       <svg
@@ -518,11 +482,11 @@ export const EventWall = ({
                       {new Date(post.createdAt).toLocaleString("vi-VN")}
                     </p>
                   </div>
-                  {/* Delete button for admin/event manager */}
+                  {/* Delete button for admin/event creator/event manager */}
                   {!post.isDeleted &&
                     (session?.user?.role === "ADMIN" ||
-                      (session?.user?.role === "EVENT_MANAGER" &&
-                        session?.user?.id === creatorId)) && (
+                      session?.user?.id === creatorId ||
+                      eventManagerIds.includes(session?.user?.id || "")) && (
                       <button
                         onClick={() => handleDeletePost(post.id)}
                         className="btn btn-ghost btn-sm text-error hover:bg-error/10"
@@ -559,7 +523,11 @@ export const EventWall = ({
                 {!post.isDeleted && (
                   <div className="flex items-start gap-3 pt-2 border-t">
                     <PostLikeButton postId={post.id} />
-                    <PostComments postId={post.id} eventCreatorId={creatorId} />
+                    <PostComments
+                      postId={post.id}
+                      eventCreatorId={creatorId}
+                      eventManagerIds={eventManagerIds}
+                    />
                   </div>
                 )}
               </div>

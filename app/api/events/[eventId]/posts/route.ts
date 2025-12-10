@@ -29,7 +29,17 @@ export async function GET(request: Request, { params }: RouteParams) {
       take,
       include: {
         author: {
-          select: { name: true, email: true, imageUrl: true },
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            imageUrl: true,
+            role: true,
+            registrations: {
+              where: { eventId },
+              select: { status: true },
+            },
+          },
         },
         _count: {
           select: {
@@ -102,7 +112,7 @@ export async function POST(request: Request, { params }: RouteParams) {
     // active account
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { status: true },
+      select: { status: true, role: true },
     });
 
     if (!user || user.status !== "ACTIVE") {
@@ -112,60 +122,34 @@ export async function POST(request: Request, { params }: RouteParams) {
       );
     }
 
-    // Use all for parallel: Get registration and event status
-    const [registration, event] = await Promise.all([
-      prisma.registration.findUnique({
-        where: { userId_eventId: { userId, eventId } },
-        select: { status: true },
-      }),
-      prisma.event.findUnique({
-        where: { id: eventId },
-        select: { status: true, title: true },
-      }),
-    ]);
+    // Get event info
+    const event = await prisma.event.findUnique({
+      where: { id: eventId },
+      select: {
+        status: true,
+        title: true,
+        creatorId: true,
+        eventManagers: {
+          select: { userId: true },
+        },
+      },
+    });
 
     if (!event) {
       return new NextResponse("Sự kiện không tồn tại", { status: 404 });
     }
 
-    if (!registration) {
-      return new NextResponse(
-        "Bạn cần đăng ký sự kiện để tham gia kênh trao đổi.",
-        { status: 403 }
-      );
-    }
+    // Check if user is admin, creator, or event manager
+    const isAdmin = user.role === "ADMIN";
+    const isCreator = userId === event.creatorId;
+    const isEventManager = event.eventManagers.some((m) => m.userId === userId);
+    const isPrivileged = isAdmin || isCreator || isEventManager;
 
-    if (registration.status !== "APPROVED") {
-      const statusMessages = {
-        PENDING:
-          "Đăng ký của bạn đang chờ duyệt. Bạn sẽ có thể đăng bài sau khi được quản lý sự kiện duyệt.",
-        REJECTED:
-          "Đăng ký của bạn đã bị từ chối. Bạn không thể tham gia kênh trao đổi.",
-        COMPLETED:
-          "Sự kiện đã kết thúc và bạn đã hoàn thành. Kênh trao đổi đã đóng.",
-      };
-
-      return new NextResponse(
-        `${
-          statusMessages[registration.status] || "Bạn không có quyền đăng bài."
-        }`,
-        { status: 403 }
-      );
-    }
-
-    if (event.status !== "PUBLISHED") {
-      const statusMessages = {
-        PENDING_APPROVAL:
-          "Sự kiện đang chờ duyệt. Kênh trao đổi sẽ mở sau khi sự kiện được công bố.",
-        REJECTED: "Sự kiện đã bị từ chối. Kênh trao đổi không khả dụng.",
-      };
-
-      return new NextResponse(
-        `Forbidden: ${
-          statusMessages[event.status] || "Sự kiện chưa được công bố."
-        }`,
-        { status: 403 }
-      );
+    // Only check event status if user is not privileged
+    if (event.status !== "PUBLISHED" && !isPrivileged) {
+      return new NextResponse("Forbidden: Sự kiện chưa được công bố.", {
+        status: 403,
+      });
     }
 
     const body = await request.json();
@@ -194,7 +178,17 @@ export async function POST(request: Request, { params }: RouteParams) {
       },
       include: {
         author: {
-          select: { name: true, email: true, imageUrl: true },
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            imageUrl: true,
+            role: true,
+            registrations: {
+              where: { eventId },
+              select: { status: true },
+            },
+          },
         },
       },
     });

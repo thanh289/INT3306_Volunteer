@@ -21,13 +21,16 @@ export async function DELETE(request: Request, context: RouteContext) {
 
     const { postId } = await context.params;
 
-    // Get the post with event info
+    // Get the post with event info and check if user is event manager
     const post = await prisma.post.findUnique({
       where: { id: postId },
       include: {
         event: {
           select: {
             creatorId: true,
+            eventManagers: {
+              where: { userId: session.user.id },
+            },
           },
         },
       },
@@ -37,15 +40,14 @@ export async function DELETE(request: Request, context: RouteContext) {
       return new NextResponse("Post not found", { status: 404 });
     }
 
-    // Check if user is admin or event manager of this event
+    // Check if user is admin, event creator, or event manager
     const isAdmin = session.user.role === "ADMIN";
-    const isEventManager =
-      session.user.role === "EVENT_MANAGER" &&
-      post.event.creatorId === session.user.id;
+    const isCreator = post.event.creatorId === session.user.id;
+    const isEventManager = post.event.eventManagers.length > 0;
 
-    if (!isAdmin && !isEventManager) {
+    if (!isAdmin && !isCreator && !isEventManager) {
       return new NextResponse(
-        "Forbidden: Only admins or event managers can delete posts",
+        "Forbidden: Only admins, event creators, or event managers can delete posts",
         { status: 403 }
       );
     }

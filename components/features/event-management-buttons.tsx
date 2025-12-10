@@ -1,64 +1,77 @@
-// Client component for event management buttons (Edit, Delete)
+// Client component for event management buttons (Edit, Delete, Cancel, Restore)
 // components/features/event-management-buttons.tsx
 
-'use client';
+"use client";
 
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import { Event } from '@prisma/client';
-import axios from 'axios';
-import toast from 'react-hot-toast';
-import Link from 'next/link';
+import { useSession } from "next-auth/react";
+import { Event } from "@prisma/client";
+import axios from "axios";
+import Link from "next/link";
+import { useState, useEffect } from "react";
 
 type Props = {
-    event: Event;
+  event: Event & {
+    isCancelled?: boolean;
+    cancelReason?: string | null;
+  };
 };
 
 export const EventManagementButtons = ({ event }: Props) => {
-    const { data: session } = useSession();
-    const router = useRouter();
+  const { data: session } = useSession();
+  const [isEventManager, setIsEventManager] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-    // it's a bit weird if admin can do these action, so we hide it even if it's admin
-    const canManage = session?.user && session.user.id === event.creatorId;
+  useEffect(() => {
+    const checkManagerStatus = async () => {
+      if (!session?.user?.id) {
+        setIsLoading(false);
+        return;
+      }
 
-    if (!canManage) {
-        return null; // show nothing if have no permit
-    }
-
-    const handleDelete = async () => {
-        if (window.confirm('Bạn có chắc chắn muốn xóa sự kiện này không? Hành động này không thể hoàn tác.')) {
-            try {
-                await axios.delete(`/api/events/${event.id}`);
-                toast.success('Xóa sự kiện thành công!');
-                router.push('/'); // back to home page
-                router.refresh();
-            } catch (error) {
-                toast.error('Xóa sự kiện thất bại.');
-                console.error(error);
-            }
-        }
+      try {
+        const response = await axios.get(`/api/events/${event.id}/managers`);
+        const managers = response.data;
+        const isManager = managers.some(
+          (m: any) => m.userId === session.user.id
+        );
+        setIsEventManager(isManager);
+      } catch (error) {
+        console.error("Failed to check manager status:", error);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
-    return (
-        <div className="flex items-center justify-center gap-4">
-            <Link
-                href={`/events/${event.id}/manage`}
-                className="px-4 py-2 text-sm font-medium text-white bg-gray-600 rounded-md hover:bg-gray-700"
-            >
-                Quản lý
-            </Link>
-            <Link
-                href={`/events/${event.id}/edit`}
-                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
-            >
-                Sửa
-            </Link>
-            <button
-                onClick={handleDelete}
-                className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700"
-            >
-                Xóa
-            </button>
-        </div>
-    );
+    checkManagerStatus();
+  }, [session?.user?.id, event.id]);
+
+  // Check if user can manage: admin, creator, or assigned event manager
+  const isAdmin = session?.user?.role === "ADMIN";
+  const isCreator = session?.user && session.user.id === event.creatorId;
+  const canManage = isAdmin || isCreator || isEventManager;
+
+  if (isLoading || !canManage) {
+    return null; // show nothing if have no permit or still loading
+  }
+
+  return (
+    <div className="flex items-center justify-center gap-3 flex-wrap">
+      <Link
+        href={`/events/${event.id}/manage`}
+        className="btn btn-ghost btn-sm gap-2"
+      >
+        Quản lý
+      </Link>
+
+      {/* Show Edit button only if event is not cancelled */}
+      {!event.isCancelled && canManage && (
+        <Link
+          href={`/events/${event.id}/edit`}
+          className="btn btn-primary btn-sm gap-2"
+        >
+          Sửa
+        </Link>
+      )}
+    </div>
+  );
 };

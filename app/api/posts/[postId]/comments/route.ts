@@ -15,6 +15,28 @@ export async function GET(request: Request, context: RouteContext) {
   try {
     const { postId } = await context.params;
 
+    // Get the post with event info
+    const post = await prisma.post.findUnique({
+      where: { id: postId },
+      select: {
+        eventId: true,
+        event: {
+          select: {
+            creatorId: true,
+            eventManagers: {
+              select: {
+                userId: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!post) {
+      return new NextResponse("Post not found", { status: 404 });
+    }
+
     const comments = await prisma.postComment.findMany({
       where: { postId },
       include: {
@@ -23,13 +45,23 @@ export async function GET(request: Request, context: RouteContext) {
             id: true,
             name: true,
             imageUrl: true,
+            role: true,
+            registrations: {
+              where: { eventId: post.eventId },
+              select: { status: true },
+            },
           },
         },
       },
       orderBy: { createdAt: "asc" },
     });
 
-    return NextResponse.json(comments);
+    // Add event creator and manager info to response
+    return NextResponse.json({
+      comments,
+      eventCreatorId: post.event.creatorId,
+      eventManagerIds: post.event.eventManagers.map((m) => m.userId),
+    });
   } catch (error) {
     console.error("LỖI KHI LẤY COMMENTS:", error);
     return new NextResponse("Lỗi hệ thống", { status: 500 });
@@ -58,9 +90,13 @@ export async function POST(request: Request, context: RouteContext) {
       });
     }
 
-    // Check if post exists
+    // Check if post exists and get event info
     const post = await prisma.post.findUnique({
       where: { id: postId },
+      select: {
+        id: true,
+        eventId: true,
+      },
     });
 
     if (!post) {
@@ -80,6 +116,11 @@ export async function POST(request: Request, context: RouteContext) {
             id: true,
             name: true,
             imageUrl: true,
+            role: true,
+            registrations: {
+              where: { eventId: post.eventId },
+              select: { status: true },
+            },
           },
         },
       },

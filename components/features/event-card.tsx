@@ -5,6 +5,7 @@ import { Event, User, EventStatus, RegistrationStatus } from "@prisma/client";
 import Link from "next/link";
 import Image from "next/image";
 import { FavoriteEventButton } from "./favorite-event-button";
+import { Ban } from "lucide-react";
 
 // Badge for manager
 const EventStatusBadge = ({ status }: { status: EventStatus }) => {
@@ -67,6 +68,8 @@ const RegistrationStatusBadge = ({
 // create an object with artribute creator
 type EventWithCreator = Event & {
   creator: User;
+  isCancelled?: boolean;
+  cancelReason?: string | null;
 };
 
 type EventCardProps = {
@@ -164,6 +167,23 @@ export const EventCard = ({
                 status={registrationStatus}
                 isEventPast={isEventPast}
               />
+            </div>
+          )}
+
+          {/* Cancelled badge overlay */}
+          {event.isCancelled && (
+            <div className="absolute bottom-3 left-3 right-3">
+              <div className="bg-error/90 backdrop-blur-md text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-xl border border-error">
+                <Ban className="h-5 w-5" />
+                <div className="flex-1">
+                  <div className="font-bold">Sự kiện đã bị hủy</div>
+                  {event.cancelReason && (
+                    <div className="text-xs opacity-90 line-clamp-1">
+                      {event.cancelReason}
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           )}
         </figure>

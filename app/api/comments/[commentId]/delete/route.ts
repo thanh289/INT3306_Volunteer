@@ -21,7 +21,7 @@ export async function DELETE(request: Request, context: RouteContext) {
 
     const { commentId } = await context.params;
 
-    // Get the comment with post and event info
+    // Get the comment with post and event info and check if user is event manager
     const comment = await prisma.postComment.findUnique({
       where: { id: commentId },
       include: {
@@ -30,6 +30,9 @@ export async function DELETE(request: Request, context: RouteContext) {
             event: {
               select: {
                 creatorId: true,
+                eventManagers: {
+                  where: { userId: session.user.id },
+                },
               },
             },
           },
@@ -41,15 +44,14 @@ export async function DELETE(request: Request, context: RouteContext) {
       return new NextResponse("Comment not found", { status: 404 });
     }
 
-    // Check if user is admin or event manager of this event
+    // Check if user is admin, event creator, or event manager
     const isAdmin = session.user.role === "ADMIN";
-    const isEventManager =
-      session.user.role === "EVENT_MANAGER" &&
-      comment.post.event.creatorId === session.user.id;
+    const isCreator = comment.post.event.creatorId === session.user.id;
+    const isEventManager = comment.post.event.eventManagers.length > 0;
 
-    if (!isAdmin && !isEventManager) {
+    if (!isAdmin && !isCreator && !isEventManager) {
       return new NextResponse(
-        "Forbidden: Only admins or event managers can delete comments",
+        "Forbidden: Only admins, event creators, or event managers can delete comments",
         { status: 403 }
       );
     }
