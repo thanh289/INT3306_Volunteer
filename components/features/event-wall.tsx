@@ -179,6 +179,10 @@ export const EventWall = ({
   const canPost =
     isAuthenticated && isUserActive && (isEventPublished || isPrivileged);
 
+  // Condition: can view posts (same as canPost but allows viewing without posting)
+  const canViewPosts =
+    isAuthenticated && isUserActive && (isEventPublished || isPrivileged);
+
   // Determine what message to show
   const getAccessMessage = () => {
     if (!isAuthenticated) {
@@ -350,241 +354,250 @@ export const EventWall = ({
         </form>
       )}
 
-      {/* Search and Sort Controls */}
-      <div className="flex flex-col sm:flex-row gap-3 mb-6">
-        {/* Search bar */}
-        <div className="relative flex-1">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
-          </svg>
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Tìm kiếm theo nội dung hoặc tên người đăng..."
-            className="input input-bordered w-full pl-10 pr-4"
-          />
-        </div>
+      {/* Search and Sort Controls - only show if user can view posts */}
+      {canViewPosts && (
+        <>
+          <div className="flex flex-col sm:flex-row gap-3 mb-6">
+            {/* Search bar */}
+            <div className="relative flex-1">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Tìm kiếm theo nội dung hoặc tên người đăng..."
+                className="input input-bordered w-full pl-10 pr-4"
+              />
+            </div>
 
-        {/* Sort dropdown */}
-        <select
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value as SortOption)}
-          className="select select-bordered w-full sm:w-auto text-base pr-10"
-        >
-          <option value="recent">Gần đây</option>
-          <option value="likes">Nhiều tym</option>
-          <option value="comments">Nhiều bình luận</option>
-        </select>
-      </div>
-
-      {/* Post list */}
-      <div className="space-y-4">
-        {isLoading ? (
-          <div className="flex flex-col gap-4">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="skeleton h-32 w-full"></div>
-            ))}
-          </div>
-        ) : filteredPosts.length > 0 ? (
-          filteredPosts.map((post) => (
-            <div
-              key={post.id}
-              className="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-shadow"
+            {/* Sort dropdown */}
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as SortOption)}
+              className="select select-bordered w-full sm:w-auto text-base pr-10"
             >
-              <div className="card-body">
-                <div className="flex items-center gap-4 mb-2">
-                  <div className="avatar placeholder w-8 h-8 relative rounded-full overflow-hidden">
-                    {post.author.imageUrl ? (
-                      <Image
-                        src={
-                          "/" +
-                          post.author.imageUrl
-                            .replace(/\\/g, "/")
-                            .replace(/^\/+/, "")
-                        }
-                        alt={post.author.name || post.author.email || "Avatar"}
-                        fill
-                        className="object-cover"
-                      />
+              <option value="recent">Gần đây</option>
+              <option value="likes">Nhiều tym</option>
+              <option value="comments">Nhiều bình luận</option>
+            </select>
+          </div>
+
+          {/* Post list */}
+          <div className="space-y-4">
+            {isLoading ? (
+              <div className="flex flex-col gap-4">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="skeleton h-32 w-full"></div>
+                ))}
+              </div>
+            ) : filteredPosts.length > 0 ? (
+              filteredPosts.map((post) => (
+                <div
+                  key={post.id}
+                  className="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-shadow"
+                >
+                  <div className="card-body">
+                    <div className="flex items-center gap-4 mb-2">
+                      <div className="avatar placeholder w-8 h-8 relative rounded-full overflow-hidden">
+                        {post.author.imageUrl ? (
+                          <Image
+                            src={
+                              "/" +
+                              post.author.imageUrl
+                                .replace(/\\/g, "/")
+                                .replace(/^\/+/, "")
+                            }
+                            alt={
+                              post.author.name || post.author.email || "Avatar"
+                            }
+                            fill
+                            className="object-cover"
+                          />
+                        ) : (
+                          <div className="bg-primary/10 w-full h-full flex items-center justify-center text-primary">
+                            <span className="text-sm font-semibold">
+                              {(post.author.name || post.author.email || "U")
+                                .charAt(0)
+                                .toUpperCase()}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-base-content flex items-center gap-2 flex-wrap">
+                          <span>{post.author.name || post.author.email}</span>
+                          {/* Show badge for admin */}
+                          {post.author.role === "ADMIN" && (
+                            <span className="badge badge-error badge-sm">
+                              Quản trị viên
+                            </span>
+                          )}
+                          {/* Show badge for event creator */}
+                          {post.authorId === creatorId &&
+                            post.author.role !== "ADMIN" && (
+                              <span className="badge badge-primary badge-sm">
+                                Người tạo sự kiện
+                              </span>
+                            )}
+                          {/* Show badge for event manager */}
+                          {eventManagerIds.includes(post.authorId) &&
+                            post.authorId !== creatorId &&
+                            post.author.role !== "ADMIN" && (
+                              <span className="badge badge-secondary badge-sm">
+                                Người quản lý sự kiện
+                              </span>
+                            )}
+                          {/* Show badge for registered participant */}
+                          {post.author.registrations &&
+                            post.author.registrations.length > 0 &&
+                            post.author.registrations[0].status ===
+                              "APPROVED" &&
+                            post.authorId !== creatorId &&
+                            !eventManagerIds.includes(post.authorId) &&
+                            post.author.role !== "ADMIN" && (
+                              <span className="badge badge-success badge-sm">
+                                Tình nguyện viên
+                              </span>
+                            )}
+                        </p>
+                        <p className="text-xs text-base-content/60 flex items-center gap-1">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-3 w-3"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
+                          </svg>
+                          {new Date(post.createdAt).toLocaleString("vi-VN")}
+                        </p>
+                      </div>
+                      {/* Delete button for admin/event creator/event manager */}
+                      {!post.isDeleted &&
+                        (session?.user?.role === "ADMIN" ||
+                          session?.user?.id === creatorId ||
+                          eventManagerIds.includes(
+                            session?.user?.id || ""
+                          )) && (
+                          <button
+                            onClick={() => handleDeletePost(post.id)}
+                            className="btn btn-ghost btn-sm text-error hover:bg-error/10"
+                            title="Xóa bài viết"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        )}
+                    </div>
+
+                    {/* Post content or deleted message */}
+                    {post.isDeleted ? (
+                      <div className="bg-gray-100 p-4 rounded-lg mb-3">
+                        <p className="text-gray-500 italic">
+                          Bài viết này đã bị xóa bởi{" "}
+                          {post.deletedByRole === "ADMIN"
+                            ? "Quản trị viên"
+                            : "Người quản lý sự kiện"}
+                          .
+                        </p>
+                        <p className="text-xs text-gray-400 mt-1">
+                          Thời gian xóa:{" "}
+                          {post.deletedAt &&
+                            new Date(post.deletedAt).toLocaleString("vi-VN")}
+                        </p>
+                      </div>
                     ) : (
-                      <div className="bg-primary/10 w-full h-full flex items-center justify-center text-primary">
-                        <span className="text-sm font-semibold">
-                          {(post.author.name || post.author.email || "U")
-                            .charAt(0)
-                            .toUpperCase()}
-                        </span>
+                      <p className="text-base-content whitespace-pre-wrap mb-3">
+                        {post.content}
+                      </p>
+                    )}
+
+                    {/* Like and Comment buttons - only show if not deleted */}
+                    {!post.isDeleted && (
+                      <div className="flex items-start gap-3 pt-2 border-t">
+                        <PostLikeButton postId={post.id} />
+                        <PostComments
+                          postId={post.id}
+                          eventCreatorId={creatorId}
+                          eventManagerIds={eventManagerIds}
+                        />
                       </div>
                     )}
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-base-content flex items-center gap-2 flex-wrap">
-                      <span>{post.author.name || post.author.email}</span>
-                      {/* Show badge for admin */}
-                      {post.author.role === "ADMIN" && (
-                        <span className="badge badge-error badge-sm">
-                          Quản trị viên
-                        </span>
-                      )}
-                      {/* Show badge for event creator */}
-                      {post.authorId === creatorId &&
-                        post.author.role !== "ADMIN" && (
-                          <span className="badge badge-primary badge-sm">
-                            Người tạo sự kiện
-                          </span>
-                        )}
-                      {/* Show badge for event manager */}
-                      {eventManagerIds.includes(post.authorId) &&
-                        post.authorId !== creatorId &&
-                        post.author.role !== "ADMIN" && (
-                          <span className="badge badge-secondary badge-sm">
-                            Người quản lý sự kiện
-                          </span>
-                        )}
-                      {/* Show badge for registered participant */}
-                      {post.author.registrations &&
-                        post.author.registrations.length > 0 &&
-                        post.author.registrations[0].status === "APPROVED" &&
-                        post.authorId !== creatorId &&
-                        !eventManagerIds.includes(post.authorId) &&
-                        post.author.role !== "ADMIN" && (
-                          <span className="badge badge-success badge-sm">
-                            Tình nguyện viên
-                          </span>
-                        )}
-                    </p>
-                    <p className="text-xs text-base-content/60 flex items-center gap-1">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-3 w-3"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      </svg>
-                      {new Date(post.createdAt).toLocaleString("vi-VN")}
-                    </p>
-                  </div>
-                  {/* Delete button for admin/event creator/event manager */}
-                  {!post.isDeleted &&
-                    (session?.user?.role === "ADMIN" ||
-                      session?.user?.id === creatorId ||
-                      eventManagerIds.includes(session?.user?.id || "")) && (
-                      <button
-                        onClick={() => handleDeletePost(post.id)}
-                        className="btn btn-ghost btn-sm text-error hover:bg-error/10"
-                        title="Xóa bài viết"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    )}
                 </div>
-
-                {/* Post content or deleted message */}
-                {post.isDeleted ? (
-                  <div className="bg-gray-100 p-4 rounded-lg mb-3">
-                    <p className="text-gray-500 italic">
-                      Bài viết này đã bị xóa bởi{" "}
-                      {post.deletedByRole === "ADMIN"
-                        ? "Quản trị viên"
-                        : "Người quản lý sự kiện"}
-                      .
-                    </p>
-                    <p className="text-xs text-gray-400 mt-1">
-                      Thời gian xóa:{" "}
-                      {post.deletedAt &&
-                        new Date(post.deletedAt).toLocaleString("vi-VN")}
-                    </p>
-                  </div>
-                ) : (
-                  <p className="text-base-content whitespace-pre-wrap mb-3">
-                    {post.content}
-                  </p>
-                )}
-
-                {/* Like and Comment buttons - only show if not deleted */}
-                {!post.isDeleted && (
-                  <div className="flex items-start gap-3 pt-2 border-t">
-                    <PostLikeButton postId={post.id} />
-                    <PostComments
-                      postId={post.id}
-                      eventCreatorId={creatorId}
-                      eventManagerIds={eventManagerIds}
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
-          ))
-        ) : (
-          <div className="card bg-base-100 border border-base-300 ">
-            <div className="card-body items-center text-center py-12 ">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-base-200 mb-4 ">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-8 w-8 text-base-content/40"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-                  />
-                </svg>
-              </div>
-              <p className="text-base-content/60">
-                {searchQuery.trim()
-                  ? "Không tìm thấy bài viết nào phù hợp với tìm kiếm của bạn."
-                  : `Chưa có bài viết nào. ${
-                      canPost ? "Hãy là người đầu tiên!" : ""
-                    }`}
-              </p>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Load More Button */}
-      {!isLoading && posts.length < totalCount && (
-        <div className="flex justify-center mt-6">
-          <button
-            onClick={handleLoadMore}
-            disabled={isLoadingMore}
-            className="btn btn-outline btn-primary"
-          >
-            {isLoadingMore ? (
-              <>
-                <span className="loading loading-spinner loading-sm"></span>
-                Đang tải...
-              </>
+              ))
             ) : (
-              <>
-                Ấn để tải {Math.min(10, totalCount - posts.length)} bài viết
-                tiếp theo
-              </>
+              <div className="card bg-base-100 border border-base-300 ">
+                <div className="card-body items-center text-center py-12 ">
+                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-base-200 mb-4 ">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-8 w-8 text-base-content/40"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                      />
+                    </svg>
+                  </div>
+                  <p className="text-base-content/60">
+                    {searchQuery.trim()
+                      ? "Không tìm thấy bài viết nào phù hợp với tìm kiếm của bạn."
+                      : `Chưa có bài viết nào. ${
+                          canPost ? "Hãy là người đầu tiên!" : ""
+                        }`}
+                  </p>
+                </div>
+              </div>
             )}
-          </button>
-        </div>
+          </div>
+
+          {/* Load More Button */}
+          {!isLoading && posts.length < totalCount && (
+            <div className="flex justify-center mt-6">
+              <button
+                onClick={handleLoadMore}
+                disabled={isLoadingMore}
+                className="btn btn-outline btn-primary"
+              >
+                {isLoadingMore ? (
+                  <>
+                    <span className="loading loading-spinner loading-sm"></span>
+                    Đang tải...
+                  </>
+                ) : (
+                  <>
+                    Ấn để tải {Math.min(10, totalCount - posts.length)} bài viết
+                    tiếp theo
+                  </>
+                )}
+              </button>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

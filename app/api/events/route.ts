@@ -89,6 +89,9 @@ export async function POST(request: Request) {
           ...validatedData,
           // attach the current id to creatorId
           creatorId: session.user.id,
+          // Auto-approve events created by admins
+          status:
+            session.user.role === "ADMIN" ? "PUBLISHED" : "PENDING_APPROVAL",
         },
       });
 

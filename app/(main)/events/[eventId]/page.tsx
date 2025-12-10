@@ -84,7 +84,11 @@ export default async function EventDetailPage({
     <div className="max-w-4xl mx-auto p-4 md:p-8">
       <div className="bg-white rounded-lg shadow-lg overflow-hidden">
         {/* Header with name and creator */}
-        <div className="bg-gradient-to-r from-primary to-secondary p-8 text-white">
+        <div className="bg-gradient-to-r from-primary to-secondary p-8 text-white relative">
+          {/* Favorite button in top right corner */}
+          <div className="absolute top-4 right-4">
+            <FavoriteEventButton eventId={event.id} />
+          </div>
           <div className="flex items-center gap-3 mb-2">
             <div className="avatar placeholder">
               <div className="bg-white/20 text-white rounded-full w-8 flex items-center justify-center">
@@ -222,20 +226,17 @@ export default async function EventDetailPage({
           </div>
 
           {/* Registry button */}
-          <div className="border-t pt-6 flex flex-col md:flex-row gap-4 justify-center items-center">
+          <div className="border-t pt-6 flex justify-center items-center">
             {canManage ? (
               <EventManagementButtons event={event} />
             ) : (
-              <>
-                <RegisterEventButton
-                  eventId={event.id}
-                  isInitiallyRegistered={isRegistered}
-                  isEventEnded={isEventEnded}
-                  isCancelled={event.isCancelled}
-                  cancelReason={event.cancelReason}
-                />
-                <FavoriteEventButton eventId={event.id} />
-              </>
+              <RegisterEventButton
+                eventId={event.id}
+                isInitiallyRegistered={isRegistered}
+                isEventEnded={isEventEnded}
+                isCancelled={event.isCancelled}
+                cancelReason={event.cancelReason}
+              />
             )}
           </div>
         </div>
