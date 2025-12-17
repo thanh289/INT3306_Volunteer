@@ -6,8 +6,10 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import prisma from "@/lib/prisma";
 
+const ITEMS_PER_PAGE = 12;
+
 // GET: Fetch all events the user is interested in
-export async function GET() {
+export async function GET(request: Request) {
   try {
     const session = await getServerSession(authOptions);
 
@@ -15,10 +17,34 @@ export async function GET() {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const interestedEvents = await prisma.interestedEvent.findMany({
-      where: {
-        userId: session.user.id,
+    const { searchParams } = new URL(request.url);
+    const page = parseInt(searchParams.get("page") || "1");
+    const filter = searchParams.get("filter") || "all"; // all, upcoming, past
+
+    // Build where clause
+    const whereClause: any = {
+      userId: session.user.id,
+      event: {
+        isDeleted: false,
       },
+    };
+
+    // Apply time filter
+    if (filter === "upcoming") {
+      whereClause.event.endDateTime = { gte: new Date() };
+    } else if (filter === "past") {
+      whereClause.event.endDateTime = { lt: new Date() };
+    }
+
+    // Get total count
+    const totalInterestedEvents = await prisma.interestedEvent.count({
+      where: whereClause,
+    });
+    const totalPages = Math.ceil(totalInterestedEvents / ITEMS_PER_PAGE);
+
+    // Get paginated interested events
+    const interestedEvents = await prisma.interestedEvent.findMany({
+      where: whereClause,
       include: {
         event: {
           include: {
@@ -38,9 +64,19 @@ export async function GET() {
       orderBy: {
         createdAt: "desc",
       },
+      take: ITEMS_PER_PAGE,
+      skip: (page - 1) * ITEMS_PER_PAGE,
     });
 
-    return NextResponse.json(interestedEvents);
+    return NextResponse.json({
+      interestedEvents,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalInterestedEvents,
+        itemsPerPage: ITEMS_PER_PAGE,
+      },
+    });
   } catch (error) {
     console.error("LỖI KHI LẤY SỰ KIỆN QUAN TÂM:", error);
     return new NextResponse("Lỗi hệ thống", { status: 500 });

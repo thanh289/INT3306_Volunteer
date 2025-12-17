@@ -4,10 +4,12 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import useSWR from "swr";
 import axios from "axios";
 import { User } from "@prisma/client";
 import { AdminUserActions } from "./admin-user-actions";
+import { Pagination } from "@/components/shared/pagination";
 
 const fetcher = (url: string) => axios.get(url).then((res) => res.data);
 
@@ -22,9 +24,11 @@ type ApiResponse = {
 };
 
 export const UserList = () => {
-  const [page, setPage] = useState(1);
-  const [search, setSearch] = useState("");
-  const [searchInput, setSearchInput] = useState("");
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const page = parseInt(searchParams.get("page") || "1");
+  const search = searchParams.get("search") || "";
+  const [searchInput, setSearchInput] = useState(search);
   const [isExporting, setIsExporting] = useState(false);
 
   const { data, isLoading, error, mutate } = useSWR<ApiResponse>(
@@ -34,8 +38,14 @@ export const UserList = () => {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    setPage(1);
-    setSearch(searchInput);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", "1");
+    if (searchInput) {
+      params.set("search", searchInput);
+    } else {
+      params.delete("search");
+    }
+    router.push(`/admin/user-management?${params.toString()}`);
   };
 
   const handleExport = async () => {
@@ -198,28 +208,12 @@ export const UserList = () => {
 
           {/* Pagination */}
           {data.pagination.totalPages > 1 && (
-            <div className="flex justify-center mt-6">
-              <div className="join">
-                <button
-                  className="join-item btn btn-sm"
-                  onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  disabled={page <= 1}
-                >
-                  «
-                </button>
-                <button className="join-item btn btn-sm">
-                  Trang {page} / {data.pagination.totalPages}
-                </button>
-                <button
-                  className="join-item btn btn-sm"
-                  onClick={() =>
-                    setPage((p) => Math.min(data.pagination.totalPages, p + 1))
-                  }
-                  disabled={page >= data.pagination.totalPages}
-                >
-                  »
-                </button>
-              </div>
+            <div className="mt-6">
+              <Pagination
+                currentPage={data.pagination.currentPage}
+                totalPages={data.pagination.totalPages}
+                baseUrl="/admin/user-management"
+              />
             </div>
           )}
         </>

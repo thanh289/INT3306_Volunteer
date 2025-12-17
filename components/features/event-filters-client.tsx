@@ -3,10 +3,11 @@
 
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Event, User } from "@prisma/client";
 import { EventCard } from "./event-card";
 import Image from "next/image";
+import Link from "next/link";
 
 type EventWithCreator = Event & { creator: User };
 
@@ -14,11 +15,38 @@ interface EventFiltersClientProps {
   events: EventWithCreator[];
 }
 
+const ITEMS_PER_PAGE = 12;
+
 export const EventFiltersClient = ({ events }: EventFiltersClientProps) => {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState<"startDateTime" | "title">(
     "startDateTime"
   );
+  const [currentPage, setCurrentPage] = useState(1);
+  const [carouselIndex, setCarouselIndex] = useState(0);
+
+  // Get 5 upcoming events for carousel
+  const upcomingEvents = useMemo(() => {
+    return events.slice(0, 5);
+  }, [events]);
+
+  // Auto-rotate carousel every 3 seconds - scroll 1 event at a time
+  useEffect(() => {
+    if (upcomingEvents.length <= 3) return;
+
+    const interval = setInterval(() => {
+      setCarouselIndex((prev) => {
+        // Maximum index where we can still show 3 items
+        const maxIndex = upcomingEvents.length - 3;
+        const nextIndex = prev + 1;
+
+        // Only wrap to beginning when we've passed the last valid position
+        return nextIndex > maxIndex ? 0 : nextIndex;
+      });
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [upcomingEvents.length]);
 
   // Client-side filtering and sorting
   const filteredAndSortedEvents = useMemo(() => {
@@ -45,6 +73,21 @@ export const EventFiltersClient = ({ events }: EventFiltersClientProps) => {
     return sorted;
   }, [events, selectedCategories, sortBy]);
 
+  // Client-side pagination
+  const totalPages = Math.ceil(filteredAndSortedEvents.length / ITEMS_PER_PAGE);
+  const paginatedEvents = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    return filteredAndSortedEvents.slice(
+      startIndex,
+      startIndex + ITEMS_PER_PAGE
+    );
+  }, [filteredAndSortedEvents, currentPage]);
+
+  // Reset to page 1 when filters change
+  useMemo(() => {
+    setCurrentPage(1);
+  }, [selectedCategories, sortBy]);
+
   const handleCategoryToggle = (category: string) => {
     setSelectedCategories((prev) =>
       prev.includes(category)
@@ -56,6 +99,7 @@ export const EventFiltersClient = ({ events }: EventFiltersClientProps) => {
   const handleClearFilters = () => {
     setSelectedCategories([]);
     setSortBy("startDateTime");
+    setCurrentPage(1);
   };
 
   const hasActiveFilters =
@@ -84,20 +128,197 @@ export const EventFiltersClient = ({ events }: EventFiltersClientProps) => {
               Tham gia các hoạt động tình nguyện để tạo ra sự khác biệt cho cộng
               đồng
             </p>
-
-            {/* Stats */}
-            <div className="stats shadow-lg mt-8 bg-base-100 border border-base-300">
-              <div className="stat place-items-center">
-                <div className="stat-title">Sự kiện sắp tới</div>
-                <div className="stat-value text-primary">
-                  {filteredAndSortedEvents.length}
-                </div>
-                <div className="stat-desc">Từ {events.length} sự kiện</div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
+
+      {/* Upcoming Events Carousel */}
+      {upcomingEvents.length > 0 && (
+        <div className="card bg-base-100 shadow-lg border border-base-300">
+          <div className="card-body">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="card-title text-2xl">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6 text-primary"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                  />
+                </svg>
+                Sự kiện sắp diễn ra
+              </h2>
+              <div className="flex gap-2">
+                {Array.from({
+                  length: Math.max(0, upcomingEvents.length - 2),
+                }).map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setCarouselIndex(idx)}
+                    className={`w-2 h-2 rounded-full transition-all ${
+                      idx === carouselIndex
+                        ? "bg-primary w-8"
+                        : "bg-base-300 hover:bg-base-400"
+                    }`}
+                  />
+                ))}
+              </div>
+            </div>
+
+            <div className="relative overflow-hidden">
+              <div
+                className="flex transition-transform duration-500 ease-in-out"
+                style={{
+                  transform: `translateX(-${carouselIndex * (100 / 3)}%)`,
+                }}
+              >
+                {upcomingEvents.map((event) => (
+                  <div key={event.id} className="min-w-[33.333%] px-2">
+                    <div className="h-full">
+                      {(() => {
+                        return (
+                          <Link
+                            key={event.id}
+                            href={`/events/${event.id}`}
+                            className="group"
+                          >
+                            <div className="card bg-base-100 border border-base-300 hover:border-primary hover:shadow-xl transition-all h-full">
+                              <figure className="relative h-48 overflow-hidden bg-base-200">
+                                {event.imageUrl ? (
+                                  <img
+                                    src={event.imageUrl}
+                                    alt={event.title}
+                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                                  />
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center">
+                                    <img
+                                      src="/images/placeholder.png"
+                                      alt="No image"
+                                      className="max-w-full max-h-full object-contain p-4"
+                                    />
+                                  </div>
+                                )}
+                              </figure>
+                              <div className="card-body p-4">
+                                <h3 className="card-title text-base line-clamp-2 group-hover:text-primary transition-colors">
+                                  {event.title}
+                                </h3>
+                                <div className="flex items-center gap-2 text-sm text-base-content/60">
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="h-4 w-4"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                    />
+                                  </svg>
+                                  {new Date(
+                                    event.startDateTime
+                                  ).toLocaleDateString("vi-VN")}
+                                </div>
+                                <div className="flex items-center gap-2 text-sm text-base-content/60">
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="h-4 w-4"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                                    />
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                                    />
+                                  </svg>
+                                  <span className="line-clamp-1">
+                                    {event.location}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          </Link>
+                        );
+                      })()}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Manual Navigation Arrows */}
+            {upcomingEvents.length > 3 && (
+              <div className="flex justify-between mt-4">
+                <button
+                  onClick={() =>
+                    setCarouselIndex((prev) =>
+                      prev === 0 ? upcomingEvents.length - 3 : prev - 1
+                    )
+                  }
+                  className="btn btn-circle btn-sm btn-ghost border border-base-300"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 19l-7-7 7-7"
+                    />
+                  </svg>
+                </button>
+                <button
+                  onClick={() =>
+                    setCarouselIndex((prev) =>
+                      prev >= upcomingEvents.length - 3 ? 0 : prev + 1
+                    )
+                  }
+                  className="btn btn-circle btn-sm btn-ghost border border-base-300"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Filters */}
       <div className="card bg-base-100 shadow-lg border border-base-300">
@@ -194,8 +415,31 @@ export const EventFiltersClient = ({ events }: EventFiltersClientProps) => {
         </div>
       </div>
 
+      {/* Clear Filters Button */}
+      {hasActiveFilters && (
+        <div className="flex justify-center">
+          <button onClick={handleClearFilters} className="btn btn-ghost gap-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+            Xóa bộ lọc
+          </button>
+        </div>
+      )}
+
       {/* Events Grid */}
-      {filteredAndSortedEvents.length === 0 ? (
+      {paginatedEvents.length === 0 ? (
         <div className="card bg-base-100 shadow-lg border border-base-300">
           <div className="card-body items-center text-center py-16">
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-base-200 mb-4">
@@ -224,11 +468,163 @@ export const EventFiltersClient = ({ events }: EventFiltersClientProps) => {
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredAndSortedEvents.map((event) => (
-            <EventCard key={event.id} event={event} />
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {paginatedEvents.map((event) => (
+              <EventCard key={event.id} event={event} />
+            ))}
+          </div>
+
+          {/* Client-side Pagination */}
+          {totalPages > 1 && (
+            <div className="flex justify-center items-center gap-2 mt-8">
+              {/* Previous Button */}
+              <button
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage <= 1}
+                className={`btn btn-circle btn-sm border border-base-300 ${
+                  currentPage <= 1 ? "btn-disabled" : "btn-ghost"
+                }`}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 19l-7-7 7-7"
+                  />
+                </svg>
+              </button>
+
+              {/* Page 1 */}
+              <button
+                onClick={() => setCurrentPage(1)}
+                className={`btn btn-circle btn-sm border ${
+                  currentPage === 1
+                    ? "btn-success text-white border-success"
+                    : "btn-ghost border-base-300"
+                }`}
+              >
+                1
+              </button>
+
+              {/* Left Ellipsis */}
+              {currentPage > 3 && (
+                <span className="px-2 text-base-content/40">...</span>
+              )}
+
+              {/* Middle Pages */}
+              {currentPage > 2 && currentPage < totalPages && (
+                <>
+                  {currentPage > 3 && (
+                    <button
+                      onClick={() => setCurrentPage(currentPage - 1)}
+                      className="btn btn-circle btn-sm btn-ghost border border-base-300"
+                    >
+                      {currentPage - 1}
+                    </button>
+                  )}
+                  <button className="btn btn-circle btn-sm btn-success text-white border border-success">
+                    {currentPage}
+                  </button>
+                  {currentPage < totalPages - 2 && (
+                    <button
+                      onClick={() => setCurrentPage(currentPage + 1)}
+                      className="btn btn-circle btn-sm btn-ghost border border-base-300"
+                    >
+                      {currentPage + 1}
+                    </button>
+                  )}
+                </>
+              )}
+
+              {/* Show page 2 if current is 1 or 2 */}
+              {totalPages > 1 && currentPage <= 2 && (
+                <button
+                  onClick={() => setCurrentPage(2)}
+                  className={`btn btn-circle btn-sm border ${
+                    currentPage === 2
+                      ? "btn-success text-white border-success"
+                      : "btn-ghost border-base-300"
+                  }`}
+                >
+                  2
+                </button>
+              )}
+
+              {/* Show page 3 if current is 1 */}
+              {totalPages > 2 && currentPage === 1 && (
+                <button
+                  onClick={() => setCurrentPage(3)}
+                  className="btn btn-circle btn-sm btn-ghost border border-base-300"
+                >
+                  3
+                </button>
+              )}
+
+              {/* Show page 4 if current is 1 and total > 5 */}
+              {totalPages > 5 && currentPage === 1 && (
+                <button
+                  onClick={() => setCurrentPage(4)}
+                  className="btn btn-circle btn-sm btn-ghost border border-base-300"
+                >
+                  4
+                </button>
+              )}
+
+              {/* Right Ellipsis */}
+              {currentPage < totalPages - 2 && totalPages > 3 && (
+                <span className="px-2 text-base-content/40">...</span>
+              )}
+
+              {/* Last Page */}
+              {totalPages > 1 && (
+                <button
+                  onClick={() => setCurrentPage(totalPages)}
+                  className={`btn btn-circle btn-sm border ${
+                    currentPage === totalPages
+                      ? "btn-success text-white border-success"
+                      : "btn-ghost border-base-300"
+                  }`}
+                >
+                  {totalPages}
+                </button>
+              )}
+
+              {/* Next Button */}
+              <button
+                onClick={() =>
+                  setCurrentPage((p) => Math.min(totalPages, p + 1))
+                }
+                disabled={currentPage >= totalPages}
+                className={`btn btn-circle btn-sm border border-base-300 ${
+                  currentPage >= totalPages ? "btn-disabled" : "btn-ghost"
+                }`}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+              </button>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

@@ -6,7 +6,9 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import prisma from "@/lib/prisma";
 
-export async function GET() {
+const ITEMS_PER_PAGE = 12;
+
+export async function GET(request: Request) {
   try {
     const session = await getServerSession(authOptions);
 
@@ -18,20 +20,55 @@ export async function GET() {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
+    const { searchParams } = new URL(request.url);
+    const page = parseInt(searchParams.get("page") || "1");
+    const filter = searchParams.get("filter") || "all"; // all, upcoming, past
+    const status = searchParams.get("status") || "all"; // all, published, pending, rejected
+
+    // Build where clause
+    const whereClause: any = {
+      creatorId: session.user.id,
+      isDeleted: false,
+    };
+
+    // Apply time filter
+    if (filter === "upcoming") {
+      whereClause.endDateTime = { gte: new Date() };
+    } else if (filter === "past") {
+      whereClause.endDateTime = { lt: new Date() };
+    }
+
+    // Apply status filter
+    if (status !== "all") {
+      whereClause.status = status.toUpperCase();
+    }
+
+    // Get total count
+    const totalEvents = await prisma.event.count({ where: whereClause });
+    const totalPages = Math.ceil(totalEvents / ITEMS_PER_PAGE);
+
+    // Get paginated events
     const events = await prisma.event.findMany({
-      where: {
-        creatorId: session.user.id,
-        isDeleted: false, // Only show non-deleted events
-      },
+      where: whereClause,
       include: {
         creator: true,
       },
       orderBy: {
         createdAt: "desc",
       },
+      take: ITEMS_PER_PAGE,
+      skip: (page - 1) * ITEMS_PER_PAGE,
     });
 
-    return NextResponse.json(events);
+    return NextResponse.json({
+      events,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalEvents,
+        itemsPerPage: ITEMS_PER_PAGE,
+      },
+    });
   } catch (error) {
     console.error("LỖI KHI LẤY SỰ KIỆN ĐÃ TẠO:", error);
     return new NextResponse("Lỗi hệ thống", { status: 500 });

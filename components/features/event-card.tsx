@@ -111,37 +111,38 @@ export const EventCard = ({
     ? "/" + event.creator.imageUrl.replace(/\\/g, "/").replace(/^\/+/, "")
     : null;
 
+  // Validate if imageUrl actually points to a file
+  const hasValidImage = event.imageUrl && event.imageUrl.trim() !== "";
+
   return (
     <Link href={`/events/${event.id}`} className="group">
       <div className="card bg-gradient-to-br from-blue-50 to-cyan-50 shadow-lg hover:shadow-2xl transition-all duration-300 border border-base-300 h-full group-hover:-translate-y-1 group-hover:border-primary/50">
         {/* Image placeholder */}
-        <figure className="relative h-48 bg-gradient-to-br from-primary/30 to-secondary/30">
-          {event.imageUrl ? (
-            <Image
+        <figure className="relative h-48 bg-base-200">
+          {hasValidImage ? (
+            <img
               src={"/" + event.imageUrl.replace(/\\/g, "/").replace(/^\/+/, "")}
               alt={event.title}
-              fill
-              className="object-cover"
-              unoptimized // only add for local filesystem
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                // Fallback to placeholder on error
+                e.currentTarget.style.display = "none";
+                const placeholder = e.currentTarget
+                  .nextElementSibling as HTMLElement;
+                if (placeholder) placeholder.style.display = "flex";
+              }}
             />
-          ) : (
-            <div className="flex items-center justify-center w-full h-full">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-20 w-20 text-primary/40"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                />
-              </svg>
-            </div>
-          )}
+          ) : null}
+          <div
+            className="w-full h-full bg-base-200 flex items-center justify-center"
+            style={{ display: hasValidImage ? "none" : "flex" }}
+          >
+            <img
+              src="/images/placeholder.png"
+              alt="No image"
+              className="max-w-full max-h-full object-contain p-4"
+            />
+          </div>
 
           {/* Category badge overlay */}
           <div

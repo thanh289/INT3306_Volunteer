@@ -4,11 +4,13 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import useSWR from "swr";
 import axios from "axios";
 import { Event, User, EventStatus, EventCategory } from "@prisma/client";
 import Link from "next/link";
 import { Download, Ban } from "lucide-react";
+import { Pagination } from "@/components/shared/pagination";
 
 const fetcher = (url: string) => axios.get(url).then((res) => res.data);
 
@@ -30,11 +32,13 @@ type ApiResponse = {
 };
 
 export const AdminAllEventsList = () => {
-  const [page, setPage] = useState(1);
-  const [search, setSearch] = useState("");
-  const [searchInput, setSearchInput] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>("ALL");
-  const [categoryFilter, setCategoryFilter] = useState<string>("ALL");
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const page = parseInt(searchParams.get("page") || "1");
+  const search = searchParams.get("search") || "";
+  const statusFilter = searchParams.get("status") || "ALL";
+  const categoryFilter = searchParams.get("category") || "ALL";
+  const [searchInput, setSearchInput] = useState(search);
   const [isExporting, setIsExporting] = useState(false);
 
   const buildQueryString = () => {
@@ -54,8 +58,25 @@ export const AdminAllEventsList = () => {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    setPage(1);
-    setSearch(searchInput);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", "1");
+    if (searchInput) {
+      params.set("search", searchInput);
+    } else {
+      params.delete("search");
+    }
+    router.push(`/admin/event-management?${params.toString()}`);
+  };
+
+  const handleFilterChange = (key: string, value: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", "1");
+    if (value !== "ALL") {
+      params.set(key, value);
+    } else {
+      params.delete(key);
+    }
+    router.push(`/admin/event-management?${params.toString()}`);
   };
 
   const handleExport = async () => {
@@ -154,9 +175,11 @@ export const AdminAllEventsList = () => {
             <button
               type="button"
               onClick={() => {
-                setSearch("");
                 setSearchInput("");
-                setPage(1);
+                const params = new URLSearchParams(searchParams.toString());
+                params.delete("search");
+                params.set("page", "1");
+                router.push(`/admin/event-management?${params.toString()}`);
               }}
               className="btn btn-ghost"
             >
@@ -170,10 +193,7 @@ export const AdminAllEventsList = () => {
           <select
             className="select select-bordered select-sm"
             value={statusFilter}
-            onChange={(e) => {
-              setStatusFilter(e.target.value);
-              setPage(1);
-            }}
+            onChange={(e) => handleFilterChange("status", e.target.value)}
           >
             <option value="ALL">Tất cả trạng thái</option>
             <option value="PUBLISHED">Đã đăng</option>
@@ -184,10 +204,7 @@ export const AdminAllEventsList = () => {
           <select
             className="select select-bordered select-sm"
             value={categoryFilter}
-            onChange={(e) => {
-              setCategoryFilter(e.target.value);
-              setPage(1);
-            }}
+            onChange={(e) => handleFilterChange("category", e.target.value)}
           >
             <option value="ALL">Tất cả thể loại</option>
             <option value="ENVIRONMENT">🌱 Môi trường</option>
@@ -290,28 +307,12 @@ export const AdminAllEventsList = () => {
 
           {/* Pagination */}
           {data.pagination.totalPages > 1 && (
-            <div className="flex justify-center mt-6">
-              <div className="join">
-                <button
-                  className="join-item btn btn-sm"
-                  onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  disabled={page <= 1}
-                >
-                  «
-                </button>
-                <button className="join-item btn btn-sm">
-                  Trang {page} / {data.pagination.totalPages}
-                </button>
-                <button
-                  className="join-item btn btn-sm"
-                  onClick={() =>
-                    setPage((p) => Math.min(data.pagination.totalPages, p + 1))
-                  }
-                  disabled={page >= data.pagination.totalPages}
-                >
-                  »
-                </button>
-              </div>
+            <div className="mt-6">
+              <Pagination
+                currentPage={data.pagination.currentPage}
+                totalPages={data.pagination.totalPages}
+                baseUrl="/admin/event-management"
+              />
             </div>
           )}
         </>
