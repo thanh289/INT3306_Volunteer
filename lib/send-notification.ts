@@ -25,12 +25,19 @@ export async function notifyRegistrationApproved(
       keys: { p256dh: sub.p256dh, auth: sub.auth },
     }));
 
-    await sendPushNotificationToMany(subscriptionsData, {
+    const result = await sendPushNotificationToMany(subscriptionsData, {
       title: "Đăng ký được duyệt!",
       body: `Đăng ký tham gia "${eventTitle}" của bạn đã được duyệt.`,
       url: `/events/${eventId}`,
       tag: `registration-approved-${eventId}`,
     });
+
+    // Cleanup expired subscriptions
+    if (result.expired.length > 0) {
+      await prisma.pushSubscription.deleteMany({
+        where: { endpoint: { in: result.expired } },
+      });
+    }
   } catch (error) {
     console.error("Error sending registration approved:", error);
   }
@@ -57,12 +64,19 @@ export async function notifyRegistrationRejected(
       keys: { p256dh: sub.p256dh, auth: sub.auth },
     }));
 
-    await sendPushNotificationToMany(subscriptionsData, {
+    const result = await sendPushNotificationToMany(subscriptionsData, {
       title: "Đăng ký bị từ chối",
       body: `Rất tiếc, đăng ký tham gia "${eventTitle}" của bạn đã bị từ chối.`,
       url: `/events/${eventId}`,
       tag: `registration-rejected-${eventId}`,
     });
+
+    // Cleanup expired subscriptions
+    if (result.expired.length > 0) {
+      await prisma.pushSubscription.deleteMany({
+        where: { endpoint: { in: result.expired } },
+      });
+    }
   } catch (error) {
     console.error("Error sending registration rejected:", error);
   }
@@ -89,12 +103,19 @@ export async function notifyRegistrationCompleted(
       keys: { p256dh: sub.p256dh, auth: sub.auth },
     }));
 
-    await sendPushNotificationToMany(subscriptionsData, {
+    const result = await sendPushNotificationToMany(subscriptionsData, {
       title: "Hoàn thành sự kiện!",
       body: `Bạn đã hoàn thành tham gia sự kiện "${eventTitle}". Cảm ơn sự đóng góp của bạn!`,
       url: `/events/${eventId}`,
       tag: `registration-completed-${eventId}`,
     });
+
+    // Cleanup expired subscriptions
+    if (result.expired.length > 0) {
+      await prisma.pushSubscription.deleteMany({
+        where: { endpoint: { in: result.expired } },
+      });
+    }
   } catch (error) {
     console.error("Error sending registration completed:", error);
   }
@@ -121,12 +142,19 @@ export async function notifyEventPublished(
       keys: { p256dh: sub.p256dh, auth: sub.auth },
     }));
 
-    await sendPushNotificationToMany(subscriptionsData, {
+    const result = await sendPushNotificationToMany(subscriptionsData, {
       title: "Sự kiện đã được duyệt!",
       body: `Sự kiện "${eventTitle}" của bạn đã được duyệt và công bố.`,
       url: `/events/${eventId}`,
       tag: `event-published-${eventId}`,
     });
+
+    // Cleanup expired subscriptions
+    if (result.expired.length > 0) {
+      await prisma.pushSubscription.deleteMany({
+        where: { endpoint: { in: result.expired } },
+      });
+    }
   } catch (error) {
     console.error("Error sending event published:", error);
   }
@@ -153,12 +181,19 @@ export async function notifyEventRejected(
       keys: { p256dh: sub.p256dh, auth: sub.auth },
     }));
 
-    await sendPushNotificationToMany(subscriptionsData, {
+    const result = await sendPushNotificationToMany(subscriptionsData, {
       title: "Sự kiện bị từ chối",
       body: `Rất tiếc, sự kiện "${eventTitle}" của bạn đã bị từ chối.`,
       url: `/events/${eventId}`,
       tag: `event-rejected-${eventId}`,
     });
+
+    // Cleanup expired subscriptions
+    if (result.expired.length > 0) {
+      await prisma.pushSubscription.deleteMany({
+        where: { endpoint: { in: result.expired } },
+      });
+    }
   } catch (error) {
     console.error("Error sending event rejected:", error);
   }
@@ -208,12 +243,19 @@ export async function notifyEventStartingSoon(
       minute: "2-digit",
     });
 
-    await sendPushNotificationToMany(subscriptionsData, {
+    const result = await sendPushNotificationToMany(subscriptionsData, {
       title: "Sự kiện sắp diễn ra!",
       body: `Sự kiện "${eventTitle}" sẽ bắt đầu vào ${formattedDate}.`,
       url: `/events/${eventId}`,
       tag: `event-reminder-${eventId}`,
     });
+
+    // Cleanup expired subscriptions
+    if (result.expired.length > 0) {
+      await prisma.pushSubscription.deleteMany({
+        where: { endpoint: { in: result.expired } },
+      });
+    }
   } catch (error) {
     console.error("Error sending event reminder notification:", error);
   }
@@ -250,12 +292,19 @@ export async function notifyEventCancelled(
       keys: { p256dh: sub.p256dh, auth: sub.auth },
     }));
 
-    await sendPushNotificationToMany(subscriptionsData, {
+    const result = await sendPushNotificationToMany(subscriptionsData, {
       title: "Sự kiện đã bị hủy",
       body: `Rất tiếc, sự kiện "${eventTitle}" đã bị xoá bởi người tổ chức.`,
       url: "/",
       tag: `event-cancelled-${eventId}`,
     });
+
+    // Cleanup expired subscriptions
+    if (result.expired.length > 0) {
+      await prisma.pushSubscription.deleteMany({
+        where: { endpoint: { in: result.expired } },
+      });
+    }
   } catch (error) {
     console.error("Error sending event cancelled notification:", error);
   }

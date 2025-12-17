@@ -25,10 +25,15 @@ self.addEventListener('push', (event) => {
 
     if (event.data) {
         try {
-            data = event.data.json();
+            const text = event.data.text();
+            console.log('Raw push data:', text);
+            data = JSON.parse(text);
+            console.log('Parsed push data:', data);
         } catch (e) {
             console.error('Error parsing push data:', e);
         }
+    } else {
+        console.warn('No data in push event');
     }
 
     const options = {

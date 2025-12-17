@@ -84,15 +84,15 @@ export const PushNotificationSetting = () => {
                 return;
             }
 
-            // 2. Register service worker
-            const registration = await navigator.serviceWorker.register('/sw.js');
-            await navigator.serviceWorker.ready;
+            // 2. Get service worker registration (already registered globally)
+            const registration = await navigator.serviceWorker.ready;
 
             // 3. Subscribe to push
             const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
 
             if (!vapidPublicKey) {
-                toast.error('Cấu hình thông báo không hợp lệ');
+                console.error('VAPID public key not configured');
+                toast.error('Cấu hình thông báo không hợp lệ. Vui lòng liên hệ quản trị viên.');
                 setIsLoading(false);
                 return;
             }

@@ -6,6 +6,7 @@ import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import { AuthProvider } from "@/providers/auth-provider";
 import { CsrfProvider } from "@/providers/csrf-provider";
+import { ServiceWorkerProvider } from "@/providers/service-worker-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,9 +33,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <AuthProvider>
-          <CsrfProvider>{children}</CsrfProvider>
-        </AuthProvider>
+        <ServiceWorkerProvider>
+          <AuthProvider>
+            <CsrfProvider>{children}</CsrfProvider>
+          </AuthProvider>
+        </ServiceWorkerProvider>
         <Toaster
           position="top-right"
           toastOptions={{
