@@ -126,6 +126,9 @@ model Event {
     // Post moderation setting
     requirePostApproval Boolean @default(false)
 
+    // Registration form setting
+    requiresRegistrationForm Boolean @default(false)
+
     // Soft delete fields
     isDeleted     Boolean   @default(false)
     deletedAt     DateTime?
@@ -144,10 +147,11 @@ model Event {
     creator   User   @relation("EventCreator", fields: [creatorId], references: [id], onDelete: Cascade)
 
     // an event can has multiple user and post
-    registrations   Registration[]
-    posts           Post[]
-    interestedBy    InterestedEvent[]
-    eventManagers   EventManager[]
+    registrations        Registration[]
+    posts                Post[]
+    interestedBy         InterestedEvent[]
+    eventManagers        EventManager[]
+    registrationQuestions RegistrationQuestion[]
 
     @@index([status, startDateTime])
     @@index([creatorId, createdAt])
@@ -156,6 +160,36 @@ model Event {
     @@index([startDateTime])
     @@index([isDeleted])
     @@index([isCancelled])
+}
+
+model RegistrationQuestion {
+    id        String   @id @default(auto()) @map("_id") @db.ObjectId
+    question  String
+    isRequired Boolean @default(true)
+    order     Int     // To maintain question order
+    createdAt DateTime @default(now())
+
+    eventId String @db.ObjectId
+    event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+    answers RegistrationAnswer[]
+
+    @@index([eventId, order])
+}
+
+model RegistrationAnswer {
+    id        String   @id @default(auto()) @map("_id") @db.ObjectId
+    answer    String
+    createdAt DateTime @default(now())
+
+    questionId String               @db.ObjectId
+    question   RegistrationQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+    registrationId String       @db.ObjectId
+    registration   Registration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+
+    @@index([questionId])
+    @@index([registrationId])
 }
 
 model Registration {
@@ -170,6 +204,9 @@ model Registration {
     // Which event
     eventId String @db.ObjectId
     event   Event  @relation(fields: [eventId], references: [id])
+
+    // Registration form answers
+    answers RegistrationAnswer[]
 
     // an user can only registry an event once
     @@unique([userId, eventId])

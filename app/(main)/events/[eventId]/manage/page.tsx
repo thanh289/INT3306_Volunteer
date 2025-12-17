@@ -10,6 +10,7 @@ import { ParticipantList } from "@/components/features/participant-list";
 import { EventManagerManagement } from "@/components/features/event-manager-management";
 import { EventActions } from "@/components/features/event-actions";
 import { EventPostSettings } from "@/components/features/event-post-settings";
+import { RegistrationQuestionsManager } from "@/components/features/registration-questions-manager";
 
 type ManageEventPageProps = {
   params: Promise<{
@@ -62,6 +63,12 @@ export default async function ManageEventPage({
       <p className="text-xl text-gray-700 mb-8">{event.title}</p>
 
       <div className="space-y-6">
+        {/* Registration Questions Manager */}
+        <RegistrationQuestionsManager
+          eventId={eventId}
+          initialEnabled={event.requiresRegistrationForm}
+        />
+
         {/* Event Manager Management */}
         <EventManagerManagement
           eventId={eventId}

@@ -22,6 +22,9 @@ export const CreateEventForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [registrationQuestions, setRegistrationQuestions] = useState<
+    { question: string; isRequired: boolean }[]
+  >([]);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -31,6 +34,7 @@ export const CreateEventForm = () => {
     maxAttendees: "50",
     category: EventCategory.COMMUNITY,
     requirePostApproval: false,
+    requiresRegistrationForm: false,
   });
 
   const handleChange = (
@@ -63,6 +67,25 @@ export const CreateEventForm = () => {
     setImagePreview(null);
   };
 
+  const addQuestion = () => {
+    setRegistrationQuestions([
+      ...registrationQuestions,
+      { question: "", isRequired: true },
+    ]);
+  };
+
+  const removeQuestion = (index: number) => {
+    setRegistrationQuestions(
+      registrationQuestions.filter((_, i) => i !== index)
+    );
+  };
+
+  const updateQuestion = (index: number, field: string, value: any) => {
+    const updated = [...registrationQuestions];
+    updated[index] = { ...updated[index], [field]: value };
+    setRegistrationQuestions(updated);
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
@@ -74,6 +97,13 @@ export const CreateEventForm = () => {
       });
       if (imageFile) {
         submitData.append("image", imageFile);
+      }
+      // Add registration questions as JSON (only if form is enabled)
+      if (formData.requiresRegistrationForm) {
+        submitData.append(
+          "registrationQuestions",
+          JSON.stringify(registrationQuestions)
+        );
       }
 
       const response = await axios.post("/api/events", submitData, {
@@ -478,6 +508,132 @@ export const CreateEventForm = () => {
           </span>
         </label>
       </div>
+
+      {/* Registration Form Checkbox */}
+      <div className="form-control">
+        <label className="label cursor-pointer justify-start gap-3">
+          <input
+            type="checkbox"
+            name="requiresRegistrationForm"
+            checked={formData.requiresRegistrationForm}
+            onChange={(e) => {
+              const checked = e.target.checked;
+              setFormData((prev) => ({
+                ...prev,
+                requiresRegistrationForm: checked,
+              }));
+              // Clear questions if unchecking
+              if (!checked) {
+                setRegistrationQuestions([]);
+              }
+            }}
+            className="checkbox checkbox-primary"
+          />
+          <span className="label-text">
+            <span className="font-semibold">Yêu cầu form đăng ký</span>
+            <span className="block text-sm text-base-content/60 mt-1">
+              Tình nguyện viên sẽ cần trả lời các câu hỏi khi đăng ký sự kiện
+            </span>
+          </span>
+        </label>
+      </div>
+
+      {/* Registration Questions */}
+      {formData.requiresRegistrationForm && (
+        <div className="form-control">
+          <label className="label">
+            <span className="label-text font-semibold flex items-center gap-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5 text-primary"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              Câu hỏi đăng ký (tùy chọn)
+            </span>
+            <span className="label-text-alt text-base-content/60">
+              Thêm câu hỏi để tìm hiểu thêm về người đăng ký
+            </span>
+          </label>
+
+          <div className="space-y-3">
+            {registrationQuestions.map((q, index) => (
+              <div
+                key={index}
+                className="p-4 border border-base-300 rounded-lg space-y-2"
+              >
+                <div className="flex items-start gap-2">
+                  <span className="text-sm font-semibold text-base-content/70 mt-3">
+                    {index + 1}.
+                  </span>
+                  <div className="flex-1 space-y-2">
+                    <input
+                      type="text"
+                      value={q.question}
+                      onChange={(e) =>
+                        updateQuestion(index, "question", e.target.value)
+                      }
+                      placeholder="Nhập câu hỏi..."
+                      className="input input-bordered input-sm w-full"
+                      required
+                    />
+                    <label className="label cursor-pointer justify-start gap-2 py-1">
+                      <input
+                        type="checkbox"
+                        checked={q.isRequired}
+                        onChange={(e) =>
+                          updateQuestion(index, "isRequired", e.target.checked)
+                        }
+                        className="checkbox checkbox-xs checkbox-primary"
+                      />
+                      <span className="label-text text-xs">
+                        Bắt buộc trả lời
+                      </span>
+                    </label>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => removeQuestion(index)}
+                    className="btn btn-ghost btn-xs btn-circle text-error"
+                  >
+                    ✕
+                  </button>
+                </div>
+              </div>
+            ))}
+
+            <button
+              type="button"
+              onClick={addQuestion}
+              className="btn btn-outline btn-sm gap-2 w-full"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 4v16m8-8H4"
+                />
+              </svg>
+              Thêm câu hỏi
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Info Alert */}
       <div className="alert alert-info shadow-lg">

@@ -3,12 +3,19 @@
 
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import axios, { isAxiosError } from "axios";
 import toast from "react-hot-toast";
 import { Role } from "@prisma/client";
+import { RegistrationModal } from "./registration-modal";
+
+type Question = {
+  id: string;
+  question: string;
+  isRequired: boolean;
+};
 
 type RegisterEventButtonProps = {
   eventId: string;
@@ -16,6 +23,7 @@ type RegisterEventButtonProps = {
   isEventEnded: boolean;
   isCancelled?: boolean;
   cancelReason?: string | null;
+  requiresRegistrationForm?: boolean;
 };
 
 export const RegisterEventButton = ({
@@ -24,12 +32,34 @@ export const RegisterEventButton = ({
   isEventEnded,
   isCancelled,
   cancelReason,
+  requiresRegistrationForm = false,
 }: RegisterEventButtonProps) => {
   const { data: session, status } = useSession();
   const router = useRouter();
 
   const [isRegistered, setIsRegistered] = useState(isInitiallyRegistered);
-  const [isPending, startTransition] = useTransition(); // deal with loading state
+  const [isPending, startTransition] = useTransition();
+  const [showModal, setShowModal] = useState(false);
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [loadingQuestions, setLoadingQuestions] = useState(false);
+
+  // Fetch registration questions when user wants to register
+  useEffect(() => {
+    if (showModal && !isRegistered) {
+      setLoadingQuestions(true);
+      axios
+        .get(`/api/events/${eventId}/registration-questions`)
+        .then((res) => setQuestions(res.data))
+        .catch((err) => {
+          console.error("Failed to load questions:", err);
+          setQuestions([]);
+        })
+        .finally(() => setLoadingQuestions(false));
+    } else if (!showModal) {
+      // Reset loading state when modal closes
+      setLoadingQuestions(false);
+    }
+  }, [showModal, isRegistered, eventId]);
 
   // This button just for user
   if (
@@ -45,28 +75,56 @@ export const RegisterEventButton = ({
       return;
     }
 
-    startTransition(async () => {
-      try {
-        if (isRegistered) {
+    if (isRegistered) {
+      // Unregister
+      startTransition(async () => {
+        try {
           await axios.delete(`/api/events/${eventId}/register`);
           toast.success("Hủy đăng ký thành công!");
           setIsRegistered(false);
-        } else {
-          await axios.post(`/api/events/${eventId}/register`);
-          toast.success("Đã gửi yêu cầu đăng ký đến quản lý sự kiện!");
-          setIsRegistered(true);
+          router.refresh();
+        } catch (error) {
+          if (isAxiosError(error)) {
+            toast.error(error.response?.data || "Có lỗi xảy ra.");
+          } else {
+            toast.error("Có lỗi không mong muốn xảy ra.");
+            console.error(error);
+          }
         }
-
-        router.refresh();
-      } catch (error) {
-        if (isAxiosError(error)) {
-          toast.error(error.response?.data || "Có lỗi xảy ra.");
-        } else {
-          toast.error("Có lỗi không mong muốn xảy ra.");
-          console.error(error);
-        }
+      });
+    } else {
+      // Register based on whether form is required
+      if (requiresRegistrationForm) {
+        // Show modal to register - set loading first to prevent flash
+        setLoadingQuestions(true);
+        setShowModal(true);
+      } else {
+        // Direct registration without form
+        startTransition(async () => {
+          try {
+            await axios.post(`/api/events/${eventId}/register`, {
+              answers: [],
+            });
+            toast.success("Đã gửi yêu cầu đăng ký đến quản lý sự kiện!");
+            setIsRegistered(true);
+            router.refresh();
+          } catch (error) {
+            if (isAxiosError(error)) {
+              toast.error(error.response?.data || "Có lỗi xảy ra.");
+            } else {
+              toast.error("Có lỗi không mong muốn xảy ra.");
+              console.error(error);
+            }
+          }
+        });
       }
-    });
+    }
+  };
+
+  const handleRegistrationSuccess = () => {
+    setShowModal(false);
+    setIsRegistered(true);
+    router.refresh();
   };
 
   if (status !== "authenticated") {
@@ -118,20 +176,40 @@ export const RegisterEventButton = ({
   }
 
   return (
-    <button
-      onClick={handleClick}
-      disabled={isPending}
-      className={`w-full md:w-auto px-8 py-3 text-lg font-medium text-white border border-transparent rounded-md shadow-sm disabled:opacity-50 ${
-        isRegistered
-          ? "bg-red-600 hover:bg-red-700"
-          : "bg-green-600 hover:bg-green-700"
-      }`}
-    >
-      {isPending
-        ? "Đang xử lý..."
-        : isRegistered
-        ? "Hủy đăng ký"
-        : "Đăng ký tham gia sự kiện này"}
-    </button>
+    <>
+      <button
+        onClick={handleClick}
+        disabled={isPending}
+        className={`w-full md:w-auto px-8 py-3 text-lg font-medium text-white border border-transparent rounded-md shadow-sm disabled:opacity-50 ${
+          isRegistered
+            ? "bg-red-600 hover:bg-red-700"
+            : "bg-green-600 hover:bg-green-700"
+        }`}
+      >
+        {isPending
+          ? "Đang xử lý..."
+          : isRegistered
+          ? "Hủy đăng ký"
+          : "Đăng ký tham gia sự kiện này"}
+      </button>
+
+      {/* Registration Modal */}
+      {showModal && (
+        <>
+          {loadingQuestions ? (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+              <div className="loading loading-spinner loading-lg text-primary"></div>
+            </div>
+          ) : (
+            <RegistrationModal
+              eventId={eventId}
+              questions={questions}
+              onClose={() => setShowModal(false)}
+              onSuccess={handleRegistrationSuccess}
+            />
+          )}
+        </>
+      )}
+    </>
   );
 };

@@ -92,7 +92,20 @@ export async function POST(request: Request) {
     const maxAttendees = parseInt(formData.get("maxAttendees") as string);
     const category = formData.get("category") as EventCategory;
     const requirePostApproval = formData.get("requirePostApproval") === "true";
+    const requiresRegistrationForm = formData.get("requiresRegistrationForm");
     const imageFile = formData.get("image") as File | null;
+    const registrationQuestionsStr = formData.get(
+      "registrationQuestions"
+    ) as string;
+
+    let registrationQuestions: { question: string; isRequired: boolean }[] = [];
+    if (registrationQuestionsStr) {
+      try {
+        registrationQuestions = JSON.parse(registrationQuestionsStr);
+      } catch (e) {
+        console.error("Error parsing registration questions:", e);
+      }
+    }
 
     const validatedData = createEventSchema.parse({
       title,
@@ -138,7 +151,7 @@ export async function POST(request: Request) {
       }
     }
 
-    // Use transaction to create event, registration, and event manager
+    // Use transaction to create event, registration questions, and event manager
     const result = await prisma.$transaction(async (tx) => {
       // Create the event
       const newEvent = await tx.event.create({
@@ -146,6 +159,7 @@ export async function POST(request: Request) {
           ...validatedData,
           imageUrl,
           requirePostApproval,
+          requiresRegistrationForm: requiresRegistrationForm === "true",
           // attach the current id to creatorId
           creatorId: session.user.id,
           // Auto-approve events created by admins
@@ -153,6 +167,18 @@ export async function POST(request: Request) {
             session.user.role === "ADMIN" ? "PUBLISHED" : "PENDING_APPROVAL",
         },
       });
+
+      // Create registration questions if any
+      if (registrationQuestions.length > 0) {
+        await tx.registrationQuestion.createMany({
+          data: registrationQuestions.map((q, index) => ({
+            eventId: newEvent.id,
+            question: q.question,
+            isRequired: q.isRequired,
+            order: index,
+          })),
+        });
+      }
 
       // Automatically add creator as event manager
       await tx.eventManager.create({

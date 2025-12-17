@@ -47,6 +47,16 @@ export async function POST(request: Request, { params }: RouteParams) {
       return new NextResponse("Cannot cancel a deleted event", { status: 400 });
     }
 
+    // Check if event is ongoing (current time is between start and end time)
+    const now = new Date();
+    const isOngoing = now >= event.startDateTime && now <= event.endDateTime;
+    
+    if (isOngoing) {
+      return new NextResponse("Không thể hủy sự kiện đang diễn ra", {
+        status: 400,
+      });
+    }
+
     // Check permissions: admin, creator, or assigned event manager
     const isAdmin = session.user.role === "ADMIN";
     const isCreator = event.creatorId === session.user.id;

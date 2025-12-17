@@ -247,6 +247,7 @@ export default async function EventDetailPage({
                 isEventEnded={isEventEnded}
                 isCancelled={event.isCancelled}
                 cancelReason={event.cancelReason}
+                requiresRegistrationForm={event.requiresRegistrationForm}
               />
             )}
           </div>

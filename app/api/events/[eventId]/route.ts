@@ -249,3 +249,55 @@ export async function PUT(request: Request, { params }: RouteParams) {
     return new NextResponse("Lỗi hệ thống", { status: 500 });
   }
 }
+
+// PATCH endpoint for simple updates like requiresRegistrationForm
+export async function PATCH(request: Request, { params }: RouteParams) {
+  try {
+    const session = await getServerSession(authOptions);
+    const { eventId } = await params;
+
+    if (!session?.user?.id) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
+    const event = await prisma.event.findUnique({
+      where: { id: eventId },
+      include: {
+        eventManagers: {
+          where: { userId: session.user.id },
+        },
+      },
+    });
+
+    if (!event) {
+      return new NextResponse("Event not found", { status: 404 });
+    }
+
+    // Check permissions: admin, creator, or assigned event manager
+    const isAdmin = session.user.role === "ADMIN";
+    const isCreator = event.creatorId === session.user.id;
+    const isEventManager = event.eventManagers.length > 0;
+
+    if (!isAdmin && !isCreator && !isEventManager) {
+      return new NextResponse("Forbidden", { status: 403 });
+    }
+
+    const body = await request.json();
+
+    // Allow updating requiresRegistrationForm
+    if (typeof body.requiresRegistrationForm === "boolean") {
+      const updatedEvent = await prisma.event.update({
+        where: { id: eventId },
+        data: {
+          requiresRegistrationForm: body.requiresRegistrationForm,
+        },
+      });
+      return NextResponse.json(updatedEvent);
+    }
+
+    return new NextResponse("Invalid request", { status: 400 });
+  } catch (error) {
+    console.error("Error updating event settings:", error);
+    return new NextResponse("Internal server error", { status: 500 });
+  }
+}

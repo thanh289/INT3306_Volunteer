@@ -27,6 +27,11 @@ export const EventActions = ({
 }: Props) => {
   const router = useRouter();
 
+  // Check if event is currently ongoing
+  const now = new Date();
+  const isOngoing =
+    now >= new Date(event.startDateTime) && now <= new Date(event.endDateTime);
+
   const handleCancel = async () => {
     const reason = window.prompt("Vui lòng nhập lý do hủy sự kiện (tùy chọn):");
 
@@ -126,6 +131,11 @@ export const EventActions = ({
                     Hủy tạm thời sự kiện này. Bạn có thể hoàn tác sau. Người
                     đăng ký sẽ nhận thông báo.
                   </p>
+                  {isOngoing && (
+                    <p className="text-sm text-warning mt-1">
+                      ⚠️ Không thể hủy sự kiện đang diễn ra
+                    </p>
+                  )}
                 </>
               )}
             </div>
@@ -141,6 +151,7 @@ export const EventActions = ({
               <button
                 onClick={handleCancel}
                 className="btn btn-warning gap-2 shrink-0"
+                disabled={isOngoing}
               >
                 <Ban className="h-4 w-4" />
                 Hủy sự kiện
