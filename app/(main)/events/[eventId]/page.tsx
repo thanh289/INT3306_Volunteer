@@ -83,6 +83,17 @@ export default async function EventDetailPage({
   return (
     <div className="max-w-4xl mx-auto p-4 md:p-8">
       <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+        {/* Event Image */}
+        {event.imageUrl && (
+          <div className="relative w-full h-64 md:h-96">
+            <img
+              src={"/" + event.imageUrl.replace(/\\/g, "/").replace(/^\/+/, "")}
+              alt={event.title}
+              className="w-full h-full object-cover"
+            />
+          </div>
+        )}
+
         {/* Header with name and creator */}
         <div className="bg-gradient-to-r from-primary to-secondary p-8 text-white relative">
           {/* Favorite button in top right corner */}

@@ -1,16 +1,13 @@
 // About Us page
 // app/(main)/about/page.tsx
 
-import { Metadata } from "next";
-import Image from "next/image";
+"use client";
 
-export const metadata: Metadata = {
-  title: "Về chúng tôi - VolunteerHub",
-  description:
-    "Tìm hiểu về VolunteerHub - nền tảng kết nối tình nguyện viên và tổ chức",
-};
+import Image from "next/image";
+import { useSession } from "next-auth/react";
 
 export default function AboutPage() {
+  const { status } = useSession();
   return (
     <div className="space-y-16">
       {/* Hero Section with Team Background */}
@@ -365,52 +362,55 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Call to Action */}
-      <section className="card bg-base-100 shadow-lg border border-base-300">
-        <div className="card-body items-center text-center py-12">
-          <h2 className="text-3xl font-bold mb-4">Tham gia cùng chúng tôi</h2>
-          <p className="text-lg text-base-content/70 max-w-2xl mb-8">
-            Hãy trở thành một phần của cộng đồng tình nguyện VolunteerHub. Cùng
-            nhau, chúng ta có thể tạo ra những thay đổi tích cực cho xã hội.
-          </p>
-          <div className="flex gap-4 flex-wrap justify-center">
-            <a href="/register" className="btn btn-primary btn-lg gap-2">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
-                />
-              </svg>
-              Đăng ký ngay
-            </a>
-            <a href="/" className="btn btn-outline btn-lg gap-2">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
-              Khám phá sự kiện
-            </a>
+      {/* Call to Action - Only show when not authenticated */}
+      {status === "unauthenticated" && (
+        <section className="card bg-base-100 shadow-lg border border-base-300">
+          <div className="card-body items-center text-center py-12">
+            <h2 className="text-3xl font-bold mb-4">Tham gia cùng chúng tôi</h2>
+            <p className="text-lg text-base-content/70 max-w-2xl mb-8">
+              Hãy trở thành một phần của cộng đồng tình nguyện VolunteerHub.
+              Cùng nhau, chúng ta có thể tạo ra những thay đổi tích cực cho xã
+              hội.
+            </p>
+            <div className="flex gap-4 flex-wrap justify-center">
+              <a href="/register" className="btn btn-primary btn-lg gap-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
+                  />
+                </svg>
+                Đăng ký ngay
+              </a>
+              <a href="/" className="btn btn-outline btn-lg gap-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+                Khám phá sự kiện
+              </a>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
     </div>
   );
 }

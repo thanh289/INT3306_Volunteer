@@ -181,12 +181,18 @@ model Registration {
 model Post {
     id        String   @id @default(auto()) @map("_id") @db.ObjectId
     content   String
+    imageUrl  String?
     createdAt DateTime @default(now())
 
     // Post approval status
     postStatus PostStatus @default(APPROVED)
     reviewedAt DateTime?
     reviewedBy String?    @db.ObjectId
+
+    // Pin post feature
+    isPinned Boolean  @default(false)
+    pinnedAt DateTime?
+    pinnedBy String?  @db.ObjectId
 
     // Soft delete fields
     isDeleted     Boolean   @default(false)

@@ -49,8 +49,9 @@ export const FavoriteEventButton = ({
   }, [eventId, status]);
 
   const handleClick = async (e: React.MouseEvent) => {
-    // Prevent event propagation if button is in a clickable card
+    // Prevent event propagation and default link behavior
     e.stopPropagation();
+    e.preventDefault();
 
     if (status === "unauthenticated") {
       toast.error("Bạn cần đăng nhập để sử dụng chức năng này!");

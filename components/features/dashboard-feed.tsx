@@ -27,6 +27,7 @@ import { Role, EventCategory } from "@prisma/client";
 interface Post {
   id: string;
   content: string;
+  imageUrl?: string | null;
   createdAt: string;
   isDeleted: boolean;
   deletedAt: string | null;
@@ -591,11 +592,29 @@ export const DashboardFeed = () => {
                   </div>
                 ) : (
                   <>
-                    <div className="bg-base-200/30 p-4 rounded-lg mb-3">
-                      <p className="text-base-content whitespace-pre-wrap leading-relaxed">
-                        {post.content}
-                      </p>
-                    </div>
+                    {post.content && (
+                      <div className="bg-base-200/30 p-4 rounded-lg mb-3">
+                        <p className="text-base-content whitespace-pre-wrap leading-relaxed">
+                          {post.content}
+                        </p>
+                      </div>
+                    )}
+                    {/* Post image */}
+                    {post.imageUrl && (
+                      <div className="relative w-full h-64 rounded-lg overflow-hidden mb-3 border border-base-300">
+                        <Image
+                          src={
+                            "/" +
+                            post.imageUrl
+                              .replace(/\\/g, "/")
+                              .replace(/^\/+/, "")
+                          }
+                          alt="Post image"
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                    )}
                   </>
                 )}
 

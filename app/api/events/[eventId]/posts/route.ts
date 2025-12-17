@@ -6,6 +6,9 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import prisma from "@/lib/prisma";
 import { z } from "zod"; // for schema validation
+import { writeFile, mkdir } from "fs/promises";
+import path from "path";
+import { existsSync } from "fs";
 
 type RouteParams = {
   params: Promise<{
@@ -96,30 +99,39 @@ export async function GET(request: Request, { params }: RouteParams) {
     let posts;
 
     if (sortBy === "likes") {
-      // Sort by number of likes (descending)
+      // Sort by number of likes (descending), with pinned posts first
       posts = await prisma.post.findMany({
         ...baseQuery,
-        orderBy: {
-          likes: {
-            _count: "desc",
+        orderBy: [
+          { isPinned: "desc" }, // Pinned posts first
+          {
+            likes: {
+              _count: "desc",
+            },
           },
-        },
+        ],
       });
     } else if (sortBy === "comments") {
-      // Sort by number of comments (descending)
+      // Sort by number of comments (descending), with pinned posts first
       posts = await prisma.post.findMany({
         ...baseQuery,
-        orderBy: {
-          comments: {
-            _count: "desc",
+        orderBy: [
+          { isPinned: "desc" }, // Pinned posts first
+          {
+            comments: {
+              _count: "desc",
+            },
           },
-        },
+        ],
       });
     } else {
-      // Default: sort by recent (createdAt desc)
+      // Default: sort by recent (createdAt desc), with pinned posts first
       posts = await prisma.post.findMany({
         ...baseQuery,
-        orderBy: { createdAt: "desc" },
+        orderBy: [
+          { isPinned: "desc" }, // Pinned posts first
+          { createdAt: "desc" }, // Then by most recent
+        ],
       });
     }
 
@@ -200,23 +212,66 @@ export async function POST(request: Request, { params }: RouteParams) {
       });
     }
 
-    const body = await request.json();
-    const validationResult = postSchema.safeParse(body);
+    const formData = await request.formData();
+    const content = (formData.get("content") as string) || "";
+    const imageFile = formData.get("image") as File | null;
 
-    if (!validationResult.success) {
-      return NextResponse.json(
-        {
-          error: "Validation failed",
-          details: validationResult.error.issues.map((issue) => ({
-            field: issue.path.join("."),
-            message: issue.message,
-          })),
-        },
-        { status: 400 }
-      );
+    // Validate content - either content or image must be present
+    if ((!content || content.trim().length === 0) && !imageFile) {
+      return new NextResponse("Bài viết phải có nội dung hoặc ảnh", {
+        status: 400,
+      });
     }
 
-    const { content } = validationResult.data;
+    if (content && content.length > 500) {
+      return new NextResponse("Nội dung quá dài (tối đa 500 ký tự)", {
+        status: 400,
+      });
+    }
+
+    // Handle image upload if present
+    let imageUrl: string | undefined;
+    if (imageFile && imageFile.size > 0) {
+      try {
+        const bytes = await imageFile.arrayBuffer();
+        const buffer = Buffer.from(bytes);
+
+        // Generate unique filename
+        const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+        const ext = path.extname(imageFile.name) || ".jpg";
+        const filename = `post-${uniqueSuffix}${ext}`;
+
+        // Create uploads directory if it doesn't exist
+        const uploadsDir = path.join(
+          process.cwd(),
+          "public",
+          "uploads",
+          "posts"
+        );
+        if (!existsSync(uploadsDir)) {
+          await mkdir(uploadsDir, { recursive: true });
+        }
+
+        // Save file
+        const filepath = path.join(uploadsDir, filename);
+        await writeFile(filepath, buffer);
+
+        imageUrl = `uploads/posts/${filename}`;
+      } catch (error) {
+        console.error("Error uploading post image:", error);
+        console.error("Image file details:", {
+          name: imageFile.name,
+          size: imageFile.size,
+          type: imageFile.type,
+        });
+        return new NextResponse(
+          `Không thể tải lên ảnh: ${
+            error instanceof Error ? error.message : "Unknown error"
+          }`,
+          { status: 500 }
+        );
+      }
+    }
 
     // Determine post status based on user role and event settings
     let postStatus = "APPROVED"; // Default for admin/creator/manager
@@ -228,6 +283,7 @@ export async function POST(request: Request, { params }: RouteParams) {
     const newPost = await prisma.post.create({
       data: {
         content,
+        imageUrl,
         eventId,
         authorId: userId,
         postStatus: postStatus as any,
@@ -255,6 +311,12 @@ export async function POST(request: Request, { params }: RouteParams) {
       return new NextResponse(JSON.stringify(error.issues), { status: 400 });
     }
     console.error("LỖI KHI TẠO BÀI VIẾT:", error);
+    if (error instanceof Error) {
+      console.error("Error stack:", error.stack);
+      return new NextResponse(`Lỗi hệ thống: ${error.message}`, {
+        status: 500,
+      });
+    }
     return new NextResponse("Lỗi hệ thống", { status: 500 });
   }
 }

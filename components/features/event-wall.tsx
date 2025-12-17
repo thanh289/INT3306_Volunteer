@@ -2,7 +2,7 @@
 // components/features/event-wall.tsx
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { RegistrationStatus, EventStatus, Role } from "@prisma/client";
@@ -10,12 +10,14 @@ import Image from "next/image";
 import toast from "react-hot-toast";
 import { PostLikeButton } from "./post-like-button";
 import { PostComments } from "./post-comments";
-import { Trash2, Check, X, Clock } from "lucide-react";
+import { Trash2, Check, X, Clock, Pin } from "lucide-react";
 
 interface Post {
   id: string;
   content: string;
+  imageUrl?: string | null;
   createdAt: string;
+  isPinned?: boolean;
   postStatus: "PENDING" | "APPROVED" | "REJECTED";
   reviewedAt: string | null;
   reviewedBy: string | null;
@@ -62,6 +64,8 @@ export const EventWall = ({
   const { data: session, status } = useSession();
   const [posts, setPosts] = useState<Post[]>([]);
   const [newPostContent, setNewPostContent] = useState("");
+  const [postImage, setPostImage] = useState<File | null>(null);
+  const [postImagePreview, setPostImagePreview] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [sortBy, setSortBy] = useState<SortOption>("recent");
@@ -82,27 +86,25 @@ export const EventWall = ({
     return content.includes(query) || authorName.includes(query);
   });
 
-  // Fetch posts with sort option
-
-  // Fetch posts with sort option
-  useEffect(() => {
-    const fetchPosts = async () => {
-      setIsLoading(true);
-      try {
-        const response = await axios.get(
-          `/api/events/${eventId}/posts?sortBy=${sortBy}&skip=0&take=10`
-        );
-        setPosts(response.data.posts);
-        setTotalCount(response.data.totalCount);
-      } catch (error) {
-        console.error("Failed to fetch posts:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchPosts();
+  // Fetch posts with sort option - extracted as a standalone function
+  const fetchPosts = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get(
+        `/api/events/${eventId}/posts?sortBy=${sortBy}&skip=0&take=10`
+      );
+      setPosts(response.data.posts);
+      setTotalCount(response.data.totalCount);
+    } catch (error) {
+      console.error("Failed to fetch posts:", error);
+    } finally {
+      setIsLoading(false);
+    }
   }, [eventId, sortBy]);
+
+  useEffect(() => {
+    fetchPosts();
+  }, [fetchPosts]);
 
   const handleLoadMore = async () => {
     setIsLoadingMore(true);
@@ -119,26 +121,56 @@ export const EventWall = ({
     }
   };
 
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("Ảnh không được vượt quá 5MB");
+        return;
+      }
+      setPostImage(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPostImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setPostImage(null);
+    setPostImagePreview(null);
+  };
+
   const handleSubmitPost = async (e: React.FormEvent) => {
     e.preventDefault(); // prevent form from reload
-    if (!newPostContent.trim()) return; // exit if no content is found
+    if (!newPostContent.trim() && !postImage) return; // exit if no content and no image
 
     setIsSubmitting(true);
     try {
-      const response = await axios.post(`/api/events/${eventId}/posts`, {
-        content: newPostContent,
-      });
-      // add post in at the head of the list to update the UI immediately
-      setPosts([response.data, ...posts]);
-      setTotalCount(totalCount + 1); // increment total count
-      setNewPostContent(""); // delete content in the form
-
-      // Show different message based on post status
-      if (response.data.postStatus === "PENDING") {
-        toast.success("Bài viết đã được gửi và đang chờ duyệt!");
-      } else {
-        toast.success("Đăng bài thành công!");
+      const formData = new FormData();
+      formData.append("content", newPostContent);
+      if (postImage) {
+        formData.append("image", postImage);
       }
+
+      await axios.post(`/api/events/${eventId}/posts`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      // Reset form and filters
+      setNewPostContent(""); // delete content in the form
+      setPostImage(null);
+      setPostImagePreview(null);
+      setSearchQuery(""); // reset search
+      setSortBy("recent"); // reset sort to default
+
+      // Reload posts to get fresh data with correct order
+      await fetchPosts();
+
+      toast.success("Đăng bài thành công!");
     } catch (error) {
       if (axios.isAxiosError(error)) {
         toast.error(error.response?.data || "Có lỗi xảy ra khi đăng bài");
@@ -172,6 +204,24 @@ export const EventWall = ({
     } catch (error) {
       console.error("Failed to delete post:", error);
       toast.error("Không thể xóa bài viết");
+    }
+  };
+
+  const handlePinPost = async (postId: string, isPinned: boolean) => {
+    try {
+      await axios.patch(`/api/posts/${postId}/pin`, {
+        isPinned: !isPinned,
+      });
+
+      // Refresh posts to get updated order
+      fetchPosts();
+
+      toast.success(
+        !isPinned ? "Bài viết đã được ghim!" : "Đã bỏ ghim bài viết!"
+      );
+    } catch (error) {
+      console.error("Failed to pin post:", error);
+      toast.error("Không thể thực hiện thao tác");
     }
   };
 
@@ -358,21 +408,26 @@ export const EventWall = ({
               </span>
             </div>
           </div>
-          <button
-            type="submit"
-            className="btn btn-primary mt-2"
-            disabled={isSubmitting || !newPostContent.trim()}
-          >
-            {isSubmitting ? (
-              <>
-                <span className="loading loading-spinner loading-sm"></span>
-                Đang đăng...
-              </>
-            ) : (
-              <>
+
+          {/* Image preview */}
+          {postImagePreview && (
+            <div className="relative mt-2 mb-2">
+              <div className="relative w-full h-48 rounded-lg overflow-hidden border border-base-300">
+                <Image
+                  src={postImagePreview}
+                  alt="Preview"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              <button
+                type="button"
+                onClick={handleRemoveImage}
+                className="btn btn-circle btn-sm btn-error absolute top-2 right-2"
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
+                  className="h-4 w-4"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -381,13 +436,71 @@ export const EventWall = ({
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth={2}
-                    d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+                    d="M6 18L18 6M6 6l12 12"
                   />
                 </svg>
-                Đăng bài
-              </>
-            )}
-          </button>
+              </button>
+            </div>
+          )}
+
+          <div className="flex gap-2 mt-2">
+            {/* Image upload button */}
+            <label className="btn btn-ghost btn-sm gap-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                />
+              </svg>
+              Thêm ảnh
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageSelect}
+                className="hidden"
+                disabled={isSubmitting}
+              />
+            </label>
+
+            <button
+              type="submit"
+              className="btn btn-primary"
+              disabled={isSubmitting || (!newPostContent.trim() && !postImage)}
+            >
+              {isSubmitting ? (
+                <>
+                  <span className="loading loading-spinner loading-sm"></span>
+                  Đang đăng...
+                </>
+              ) : (
+                <>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+                    />
+                  </svg>
+                  Đăng bài
+                </>
+              )}
+            </button>
+          </div>
         </form>
       )}
 
@@ -528,22 +641,55 @@ export const EventWall = ({
                           {new Date(post.createdAt).toLocaleString("vi-VN")}
                         </p>
                       </div>
-                      {/* Delete button for admin/event creator/event manager */}
+                      {/* Action buttons for admin/event creator/event manager */}
                       {!post.isDeleted &&
                         (session?.user?.role === "ADMIN" ||
                           session?.user?.id === creatorId ||
                           eventManagerIds.includes(
                             session?.user?.id || ""
                           )) && (
-                          <button
-                            onClick={() => handleDeletePost(post.id)}
-                            className="btn btn-ghost btn-sm text-error hover:bg-error/10"
-                            title="Xóa bài viết"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
+                          <div className="flex gap-1">
+                            {/* Pin button */}
+                            <button
+                              onClick={() =>
+                                handlePinPost(post.id, post.isPinned || false)
+                              }
+                              className={`btn btn-ghost btn-sm ${
+                                post.isPinned
+                                  ? "text-primary hover:bg-primary/10"
+                                  : "hover:bg-base-200"
+                              }`}
+                              title={
+                                post.isPinned ? "Bỏ ghim" : "Ghim bài viết"
+                              }
+                            >
+                              <Pin
+                                className={`w-4 h-4 ${
+                                  post.isPinned ? "fill-current" : ""
+                                }`}
+                              />
+                            </button>
+                            {/* Delete button */}
+                            <button
+                              onClick={() => handleDeletePost(post.id)}
+                              className="btn btn-ghost btn-sm text-error hover:bg-error/10"
+                              title="Xóa bài viết"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
                         )}
                     </div>
+
+                    {/* Pinned Badge */}
+                    {post.isPinned && (
+                      <div className="mb-3">
+                        <span className="badge badge-primary gap-2">
+                          <Pin className="w-3 h-3 fill-current" />
+                          Đã ghim
+                        </span>
+                      </div>
+                    )}
 
                     {/* Post Status Badge */}
                     {post.postStatus === "PENDING" && (
@@ -580,9 +726,27 @@ export const EventWall = ({
                         </p>
                       </div>
                     ) : (
-                      <p className="text-base-content whitespace-pre-wrap mb-3">
-                        {post.content}
-                      </p>
+                      <>
+                        <p className="text-base-content whitespace-pre-wrap mb-3">
+                          {post.content}
+                        </p>
+                        {/* Post image */}
+                        {post.imageUrl && (
+                          <div className="relative w-full h-64 rounded-lg overflow-hidden mb-3 border border-base-300">
+                            <Image
+                              src={
+                                "/" +
+                                post.imageUrl
+                                  .replace(/\\/g, "/")
+                                  .replace(/^\/+/, "")
+                              }
+                              alt="Post image"
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                        )}
+                      </>
                     )}
 
                     {/* Review buttons for pending posts */}

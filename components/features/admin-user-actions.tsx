@@ -118,7 +118,7 @@ export const AdminUserActions = ({
   // For action buttons column
   if (showActionsOnly) {
     if (isCurrentUser) {
-      return <span className="text-xs text-gray-400">Đây là bạn</span>;
+      return;
     }
 
     return (
@@ -137,25 +137,4 @@ export const AdminUserActions = ({
       </button>
     );
   }
-
-  // Legacy: show both (shouldn't be used anymore)
-  if (isCurrentUser) {
-    return <span className="text-xs text-gray-400">Đây là bạn</span>;
-  }
-
-  return (
-    <button
-      onClick={handleToggleLock}
-      disabled={isPending}
-      className={`btn btn-xs disabled:opacity-50 ${
-        user.status === "ACTIVE" ? "btn-error" : "btn-success"
-      }`}
-    >
-      {isPending
-        ? "Đang xử lý..."
-        : user.status === "ACTIVE"
-        ? "Khóa"
-        : "Mở khóa"}
-    </button>
-  );
 };

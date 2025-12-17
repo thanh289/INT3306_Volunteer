@@ -78,11 +78,12 @@ export const EventManagerManagement = ({
       const targetUser = userResponse.data.user;
 
       // Add as manager
-      const response = await axios.post(`/api/events/${eventId}/managers`, {
+      await axios.post(`/api/events/${eventId}/managers`, {
         userId: targetUser.id,
       });
 
-      setManagers([...managers, response.data]);
+      // Reload the managers list
+      await fetchManagers();
       setUserEmail("");
       setShowAddModal(false);
       toast.success(

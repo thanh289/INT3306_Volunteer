@@ -7,6 +7,9 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import prisma from "@/lib/prisma";
 import { EventCategory } from "@prisma/client";
 import { z } from "zod";
+import { writeFile, mkdir } from "fs/promises";
+import path from "path";
+import { existsSync } from "fs";
 
 const createEventSchema = z
   .object({
@@ -78,8 +81,62 @@ export async function POST(request: Request) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const body = await request.json();
-    const validatedData = createEventSchema.parse(body);
+    const formData = await request.formData();
+
+    // Extract and validate data
+    const title = formData.get("title") as string;
+    const description = formData.get("description") as string;
+    const location = formData.get("location") as string;
+    const startDateTime = formData.get("startDateTime") as string;
+    const endDateTime = formData.get("endDateTime") as string;
+    const maxAttendees = parseInt(formData.get("maxAttendees") as string);
+    const category = formData.get("category") as EventCategory;
+    const requirePostApproval = formData.get("requirePostApproval") === "true";
+    const imageFile = formData.get("image") as File | null;
+
+    const validatedData = createEventSchema.parse({
+      title,
+      description,
+      location,
+      startDateTime,
+      endDateTime,
+      maxAttendees,
+      category,
+    });
+
+    // Handle image upload if present
+    let imageUrl: string | undefined;
+    if (imageFile) {
+      try {
+        const bytes = await imageFile.arrayBuffer();
+        const buffer = Buffer.from(bytes);
+
+        // Generate unique filename
+        const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+        const ext = path.extname(imageFile.name);
+        const filename = `event-${uniqueSuffix}${ext}`;
+
+        // Create uploads directory if it doesn't exist
+        const uploadsDir = path.join(
+          process.cwd(),
+          "public",
+          "uploads",
+          "events"
+        );
+        if (!existsSync(uploadsDir)) {
+          await mkdir(uploadsDir, { recursive: true });
+        }
+
+        // Save file
+        const filepath = path.join(uploadsDir, filename);
+        await writeFile(filepath, buffer);
+
+        imageUrl = `uploads/events/${filename}`;
+      } catch (error) {
+        console.error("Error uploading image:", error);
+        return new NextResponse("Không thể tải lên ảnh", { status: 500 });
+      }
+    }
 
     // Use transaction to create event, registration, and event manager
     const result = await prisma.$transaction(async (tx) => {
@@ -87,20 +144,13 @@ export async function POST(request: Request) {
       const newEvent = await tx.event.create({
         data: {
           ...validatedData,
+          imageUrl,
+          requirePostApproval,
           // attach the current id to creatorId
           creatorId: session.user.id,
           // Auto-approve events created by admins
           status:
             session.user.role === "ADMIN" ? "PUBLISHED" : "PENDING_APPROVAL",
-        },
-      });
-
-      // Automatically create registration for the creator
-      await tx.registration.create({
-        data: {
-          userId: session.user.id,
-          eventId: newEvent.id,
-          status: "APPROVED", // Auto-approve the creator
         },
       });
 

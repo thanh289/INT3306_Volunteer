@@ -120,52 +120,35 @@ export async function POST(
       });
     }
 
-    // Use transaction to create event manager and registration
-    const result = await prisma.$transaction(async (tx) => {
-      // Create event manager
-      const newManager = await tx.eventManager.create({
-        data: {
-          userId,
-          eventId,
-          assignedBy: session.user.id,
-        },
-        include: {
-          user: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
-              imageUrl: true,
-            },
+    // Create event manager
+    const newManager = await prisma.eventManager.create({
+      data: {
+        userId,
+        eventId,
+        assignedBy: session.user.id,
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            imageUrl: true,
           },
         },
-      });
-
-      // Check if user is already registered
-      const existingRegistration = await tx.registration.findUnique({
-        where: {
-          userId_eventId: {
-            userId,
-            eventId,
-          },
-        },
-      });
-
-      // If not registered, create approved registration
-      if (!existingRegistration) {
-        await tx.registration.create({
-          data: {
-            userId,
-            eventId,
-            status: "APPROVED",
-          },
-        });
-      }
-
-      return newManager;
+      },
     });
 
-    return NextResponse.json(result, { status: 201 });
+    // Send notification to the new manager
+    await prisma.notification.create({
+      data: {
+        userId: userId,
+        message: `Bạn đã được chỉ định làm quản lý sự kiện "${event.title}".`,
+        href: `/events/${eventId}`,
+      },
+    });
+
+    return NextResponse.json(newManager, { status: 201 });
   } catch (error) {
     console.error("Error adding event manager:", error);
     return new NextResponse("Internal Server Error", { status: 500 });
