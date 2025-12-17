@@ -262,11 +262,10 @@ export const EventWall = ({
   const isEventManager = eventManagerIds.includes(session?.user?.id || "");
   const isPrivileged = isAdmin || isCreator || isEventManager;
 
-  // Condition: login & not being locked & event published (or if you're admin or the creator/manager)
-  const canPost =
-    isAuthenticated && isUserActive && (isEventPublished || isPrivileged);
+  // Condition: login & not being locked & event published (must be published for everyone, including admin)
+  const canPost = isAuthenticated && isUserActive && isEventPublished;
 
-  // Condition: can view posts (same as canPost but allows viewing without posting)
+  // Condition: can view posts (privileged users can view even if not published)
   const canViewPosts =
     isAuthenticated && isUserActive && (isEventPublished || isPrivileged);
 
@@ -355,6 +354,11 @@ export const EventWall = ({
     error: "alert-error",
     success: "alert-success",
   };
+
+  // Không hiển thị kênh trao đổi nếu event chưa được duyệt
+  if (!isEventPublished) {
+    return null;
+  }
 
   return (
     <div className="mt-12">
@@ -774,17 +778,19 @@ export const EventWall = ({
                         </div>
                       )}
 
-                    {/* Like and Comment buttons - only show if not deleted and approved */}
-                    {!post.isDeleted && post.postStatus === "APPROVED" && (
-                      <div className="flex items-start gap-3 pt-2 border-t">
-                        <PostLikeButton postId={post.id} />
-                        <PostComments
-                          postId={post.id}
-                          eventCreatorId={creatorId}
-                          eventManagerIds={eventManagerIds}
-                        />
-                      </div>
-                    )}
+                    {/* Like and Comment buttons - only show if not deleted, approved, and event is published */}
+                    {!post.isDeleted &&
+                      post.postStatus === "APPROVED" &&
+                      isEventPublished && (
+                        <div className="flex items-start gap-3 pt-2 border-t">
+                          <PostLikeButton postId={post.id} />
+                          <PostComments
+                            postId={post.id}
+                            eventCreatorId={creatorId}
+                            eventManagerIds={eventManagerIds}
+                          />
+                        </div>
+                      )}
                   </div>
                 </div>
               ))
