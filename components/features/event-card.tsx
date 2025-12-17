@@ -215,12 +215,12 @@ export const EventCard = ({
           </div>
 
           {/* Title */}
-          <h3 className="card-title text-lg line-clamp-2 group-hover:text-primary transition-colors">
+          <h3 className="card-title text-xl line-clamp-2 group-hover:text-primary transition-colors">
             {event.title}
           </h3>
 
           {/* Location */}
-          <div className="flex items-center gap-2 text-sm text-base-content/70">
+          <div className="flex items-center gap-2 text-sm text-base-content/80 font-medium">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-4 w-4"
@@ -245,7 +245,7 @@ export const EventCard = ({
           </div>
 
           {/* Date & Time */}
-          <div className="flex items-center gap-2 text-sm text-base-content/70">
+          <div className="flex items-center gap-2 text-sm text-base-content/80 font-medium mb-3">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-4 w-4"
@@ -265,25 +265,18 @@ export const EventCard = ({
             </span>
           </div>
 
-          {/* Footer - View Details */}
-          <div className="card-actions justify-end mt-4">
-            <button className="btn btn-primary btn-sm gap-2 group-hover:btn-active">
-              Xem chi tiết
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M13 7l5 5m0 0l-5 5m5-5H6"
-                />
-              </svg>
-            </button>
+          {/* Description */}
+          <div
+            className="text-sm text-base-content/70 line-clamp-2"
+            style={{
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
+          >
+            {event.description}
           </div>
         </div>
       </div>
