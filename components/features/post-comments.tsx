@@ -162,7 +162,9 @@ export const PostComments = ({
         <div className="mt-3 space-y-3 pt-3">
           {/* Comments list */}
           {isLoading ? (
-            <p className="text-sm text-base-content/60">Đang tải bình luận...</p>
+            <p className="text-sm text-base-content/60">
+              Đang tải bình luận...
+            </p>
           ) : comments.length > 0 ? (
             <>
               <div className="space-y-2">
@@ -304,7 +306,9 @@ export const PostComments = ({
               )}
             </>
           ) : (
-            <p className="text-sm text-base-content/60">Chưa có bình luận nào</p>
+            <p className="text-sm text-base-content/60">
+              Chưa có bình luận nào
+            </p>
           )}
 
           {/* Add comment form */}

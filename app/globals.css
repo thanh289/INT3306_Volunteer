@@ -21,9 +21,15 @@
 }
 
 /* Ensure rounding applies broadly */
-.card { border-radius: var(--rounded-box) !important; }
-.btn { border-radius: var(--rounded-btn) !important; }
-.badge { border-radius: var(--rounded-badge) !important; }
+.card {
+  border-radius: var(--rounded-box) !important;
+}
+.btn {
+  border-radius: var(--rounded-btn) !important;
+}
+.badge {
+  border-radius: var(--rounded-badge) !important;
+}
 
 body {
   background: var(--background);

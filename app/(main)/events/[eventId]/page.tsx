@@ -191,11 +191,15 @@ export default async function EventDetailPage({
               </h3>
               <div className="pl-7 space-y-2 text-base-content/80">
                 <p className="flex items-center gap-2">
-                  <span className="font-medium text-base-content">Bắt đầu:</span>
+                  <span className="font-medium text-base-content">
+                    Bắt đầu:
+                  </span>
                   <span>{formatDateTime(event.startDateTime)}</span>
                 </p>
                 <p className="flex items-center gap-2">
-                  <span className="font-medium text-base-content">Kết thúc:</span>
+                  <span className="font-medium text-base-content">
+                    Kết thúc:
+                  </span>
                   <span>{formatDateTime(event.endDateTime)}</span>
                 </p>
               </div>
@@ -226,11 +230,15 @@ export default async function EventDetailPage({
               </h3>
               <div className="pl-7 space-y-2 text-base-content/80">
                 <p className="flex items-center gap-2">
-                  <span className="font-medium text-base-content">Địa điểm:</span>
+                  <span className="font-medium text-base-content">
+                    Địa điểm:
+                  </span>
                   <span>{event.location}</span>
                 </p>
                 <p className="flex items-center gap-2">
-                  <span className="font-medium text-base-content">Số lượng tối đa:</span>
+                  <span className="font-medium text-base-content">
+                    Số lượng tối đa:
+                  </span>
                   <span>{event.maxAttendees} người</span>
                 </p>
               </div>
