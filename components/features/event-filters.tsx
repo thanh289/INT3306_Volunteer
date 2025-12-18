@@ -60,12 +60,100 @@ export const EventFilters = () => {
     router.push(pathname);
   };
 
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const currentParams = new URLSearchParams(
+      Array.from(searchParams.entries())
+    );
+
+    if (value) {
+      currentParams.set("search", value);
+    } else {
+      currentParams.delete("search");
+    }
+
+    router.push(`${pathname}?${currentParams.toString()}`);
+  };
+
   const hasActiveFilters =
-    searchParams.get("category") || searchParams.get("sortBy");
+    searchParams.get("category") ||
+    searchParams.get("sortBy") ||
+    searchParams.get("search");
 
   return (
     <div className="card bg-base-100 shadow-lg mb-8 border border-base-300">
       <div className="card-body">
+        {/* Search bar row */}
+        <div className="flex flex-col md:flex-row gap-4 mb-4">
+          {/* Search Input */}
+          <div className="form-control flex-1">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Tìm kiếm sự kiện..."
+                defaultValue={searchParams.get("search") || ""}
+                onChange={handleSearchChange}
+                className="input input-bordered w-full pl-10"
+              />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5 absolute left-3 top-1/2 -translate-y-1/2 text-base-content/40"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+            </div>
+          </div>
+
+          {/* Sort Filter */}
+          <div className="form-control w-full md:w-64">
+            <select
+              id="sortBy"
+              name="sortBy"
+              onChange={handleFilterChange}
+              value={searchParams.get("sortBy") || "startDateTime"}
+              className="select select-bordered w-full"
+            >
+              <option value="startDateTime">📅 Ngày bắt đầu</option>
+              <option value="title">🔤 Tên (A-Z)</option>
+            </select>
+          </div>
+
+          {/* Clear Filters Button */}
+          {hasActiveFilters && (
+            <div className="form-control flex-none">
+              <button
+                onClick={handleClearFilters}
+                className="btn btn-ghost btn-outline gap-2"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+                Xóa bộ lọc
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Category filter row */}
         <div className="flex flex-col md:flex-row gap-4">
           {/* Category Filter - Multi Select */}
           <div className="form-control flex-1">
@@ -119,68 +207,6 @@ export const EventFilters = () => {
               ))}
             </div>
           </div>
-
-          {/* Sort Filter */}
-          <div className="form-control flex-1">
-            <label className="label">
-              <span className="label-text font-semibold flex items-center gap-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 text-primary"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"
-                  />
-                </svg>
-                Sắp xếp theo
-              </span>
-            </label>
-            <select
-              id="sortBy"
-              name="sortBy"
-              onChange={handleFilterChange}
-              value={searchParams.get("sortBy") || "startDateTime"}
-              className="select select-bordered w-full pl-3"
-            >
-              <option value="startDateTime">📅 Ngày bắt đầu</option>
-              <option value="title">🔤 Tên (A-Z)</option>
-            </select>
-          </div>
-
-          {/* Clear Filters Button */}
-          {hasActiveFilters && (
-            <div className="form-control flex-none md:self-end">
-              <label className="label md:hidden">
-                <span className="label-text opacity-0">.</span>
-              </label>
-              <button
-                onClick={handleClearFilters}
-                className="btn btn-ghost btn-outline gap-2"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-                Xóa bộ lọc
-              </button>
-            </div>
-          )}
         </div>
 
         {/* Active Filters Display */}
@@ -189,6 +215,17 @@ export const EventFilters = () => {
             <span className="text-sm text-base-content/60">
               Bộ lọc đang áp dụng:
             </span>
+            {searchParams.get("search") && (
+              <div className="badge badge-info gap-2">
+                🔍 "{searchParams.get("search")}"
+                <button
+                  onClick={() => handleRemoveFilter("search")}
+                  className="hover:text-error"
+                >
+                  ×
+                </button>
+              </div>
+            )}
             {searchParams.get("category") && (
               <div className="badge badge-primary gap-2">
                 {searchParams.get("category") === "ENVIRONMENT" &&

@@ -22,6 +22,7 @@ export const EventFiltersClient = ({ events }: EventFiltersClientProps) => {
   const [sortBy, setSortBy] = useState<"startDateTime" | "title">(
     "startDateTime"
   );
+  const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [carouselIndex, setCarouselIndex] = useState(0);
 
@@ -52,6 +53,17 @@ export const EventFiltersClient = ({ events }: EventFiltersClientProps) => {
   const filteredAndSortedEvents = useMemo(() => {
     let filtered = events;
 
+    // Filter by search query
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(
+        (event) =>
+          event.title.toLowerCase().includes(query) ||
+          event.description.toLowerCase().includes(query) ||
+          event.location.toLowerCase().includes(query)
+      );
+    }
+
     // Filter by categories
     if (selectedCategories.length > 0) {
       filtered = filtered.filter((event) =>
@@ -71,7 +83,7 @@ export const EventFiltersClient = ({ events }: EventFiltersClientProps) => {
     });
 
     return sorted;
-  }, [events, selectedCategories, sortBy]);
+  }, [events, selectedCategories, sortBy, searchQuery]);
 
   // Client-side pagination
   const totalPages = Math.ceil(filteredAndSortedEvents.length / ITEMS_PER_PAGE);
@@ -86,7 +98,7 @@ export const EventFiltersClient = ({ events }: EventFiltersClientProps) => {
   // Reset to page 1 when filters change
   useMemo(() => {
     setCurrentPage(1);
-  }, [selectedCategories, sortBy]);
+  }, [selectedCategories, sortBy, searchQuery]);
 
   const handleCategoryToggle = (category: string) => {
     setSelectedCategories((prev) =>
@@ -99,11 +111,14 @@ export const EventFiltersClient = ({ events }: EventFiltersClientProps) => {
   const handleClearFilters = () => {
     setSelectedCategories([]);
     setSortBy("startDateTime");
+    setSearchQuery("");
     setCurrentPage(1);
   };
 
   const hasActiveFilters =
-    selectedCategories.length > 0 || sortBy !== "startDateTime";
+    selectedCategories.length > 0 ||
+    sortBy !== "startDateTime" ||
+    searchQuery.trim() !== "";
 
   return (
     <div className="space-y-6">
@@ -323,120 +338,135 @@ export const EventFiltersClient = ({ events }: EventFiltersClientProps) => {
       {/* Filters */}
       <div className="card bg-base-100 shadow-lg border border-base-300">
         <div className="card-body">
+          {/* Search bar, category dropdown, and sort on one row */}
           <div className="flex flex-col md:flex-row gap-4">
-            {/* Category Filter - Multi Select */}
+            {/* Search Bar */}
             <div className="form-control flex-1">
-              <label className="label">
-                <span className="label-text font-semibold flex items-center gap-2">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 text-primary"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="🔍 Tìm kiếm sự kiện..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="input input-bordered w-full pr-10"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery("")}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-base-content/40 hover:text-base-content"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
-                    />
-                  </svg>
-                  Danh mục
-                  {selectedCategories.length > 0 && (
-                    <span className="badge badge-primary badge-sm">
-                      {selectedCategories.length}
-                    </span>
-                  )}
-                </span>
+                    ✕
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Category Filter - Dropdown with checkboxes */}
+            <div className="dropdown dropdown-end w-full md:w-64">
+              <label
+                tabIndex={0}
+                className="btn btn-ghost w-full justify-between normal-case hover:bg-base-200"
+              >
+                <span>📂 Danh mục</span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
               </label>
-              <div className="flex flex-wrap gap-3 p-3 border border-base-300 rounded-lg bg-base-100">
+              <ul
+                tabIndex={0}
+                className="dropdown-content z-[1] menu p-2 shadow-lg bg-base-100 rounded-box w-64 mt-1 border border-base-300"
+              >
                 {[
                   { value: "ENVIRONMENT", label: "🌱 Môi trường" },
                   { value: "EDUCATION", label: "📚 Giáo dục" },
                   { value: "HEALTHCARE", label: "⚕️ Y tế - Sức khỏe" },
                   { value: "COMMUNITY", label: "🤝 Cộng đồng" },
                 ].map((category) => (
-                  <label
-                    key={category.value}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg cursor-pointer transition-all ${
-                      selectedCategories.includes(category.value)
-                        ? "bg-primary text-primary-content shadow-md"
-                        : "bg-base-200 hover:bg-base-300"
-                    }`}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={selectedCategories.includes(category.value)}
-                      onChange={() => handleCategoryToggle(category.value)}
-                      className="checkbox checkbox-sm"
-                    />
-                    <span className="text-sm font-medium">
-                      {category.label}
-                    </span>
-                  </label>
+                  <li key={category.value}>
+                    <label className="label cursor-pointer justify-start gap-3 p-3 hover:bg-base-200">
+                      <input
+                        type="checkbox"
+                        checked={selectedCategories.includes(category.value)}
+                        onChange={() => handleCategoryToggle(category.value)}
+                        className="checkbox checkbox-sm checkbox-primary"
+                      />
+                      <span className="label-text">{category.label}</span>
+                    </label>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </div>
 
-            {/* Sort Filter */}
-            <div className="form-control flex-1">
-              <label className="label">
-                <span className="label-text font-semibold flex items-center gap-2">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 text-primary"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"
-                    />
-                  </svg>
-                  Sắp xếp theo
-                </span>
-              </label>
-              <select
-                value={sortBy}
-                onChange={(e) =>
-                  setSortBy(e.target.value as "startDateTime" | "title")
-                }
-                className="select select-bordered w-full pl-3"
+            {/* Sort Filter - Dropdown style */}
+            <div className="dropdown dropdown-end w-full md:w-52">
+              <label
+                tabIndex={0}
+                className="btn btn-ghost w-full justify-between normal-case hover:bg-base-200"
               >
-                <option value="startDateTime">📅 Ngày bắt đầu</option>
-                <option value="title">🔤 Tên (A-Z)</option>
-              </select>
+                <span>
+                  {sortBy === "startDateTime"
+                    ? "📅 Ngày bắt đầu"
+                    : "🔤 Tên (A-Z)"}
+                </span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </label>
+              <ul
+                tabIndex={0}
+                className="dropdown-content z-[1] menu p-2 shadow-lg bg-base-100 rounded-box w-52 mt-1 border border-base-300"
+              >
+                <li>
+                  <button
+                    onClick={() => setSortBy("startDateTime")}
+                    className={`justify-start ${
+                      sortBy === "startDateTime"
+                        ? "active bg-primary text-primary-content"
+                        : ""
+                    }`}
+                  >
+                    📅 Ngày bắt đầu
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => setSortBy("title")}
+                    className={`justify-start ${
+                      sortBy === "title"
+                        ? "active bg-primary text-primary-content"
+                        : ""
+                    }`}
+                  >
+                    🔤 Tên (A-Z)
+                  </button>
+                </li>
+              </ul>
             </div>
           </div>
         </div>
       </div>
-
-      {/* Clear Filters Button */}
-      {hasActiveFilters && (
-        <div className="flex justify-center">
-          <button onClick={handleClearFilters} className="btn btn-ghost gap-2">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-            Xóa bộ lọc
-          </button>
-        </div>
-      )}
 
       {/* Events Grid */}
       {paginatedEvents.length === 0 ? (
