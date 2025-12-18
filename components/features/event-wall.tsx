@@ -397,12 +397,12 @@ export const EventWall = ({
       {/* Post form - only show if user can post */}
       {canPost && (
         <form onSubmit={handleSubmitPost} className="mb-8">
-          <div className="form-control">
+          <div className="bg-base-100 rounded-2xl shadow-md p-4 border-2 border-base-300">
             <textarea
               value={newPostContent}
               onChange={(e) => setNewPostContent(e.target.value)}
               placeholder="Bạn có câu hỏi hoặc muốn chia sẻ điều gì?"
-              className="textarea textarea-bordered h-24 resize-none"
+              className="textarea textarea-bordered h-24 resize-none w-full rounded-xl bg-base-100 focus:border-primary focus:outline-none"
               disabled={isSubmitting}
               maxLength={500}
             />
@@ -411,84 +411,26 @@ export const EventWall = ({
                 {newPostContent.length}/500 ký tự
               </span>
             </div>
-          </div>
 
-          {/* Image preview */}
-          {postImagePreview && (
-            <div className="relative mt-2 mb-2">
-              <div className="relative w-full h-48 rounded-lg overflow-hidden border border-base-300">
-                <Image
-                  src={postImagePreview}
-                  alt="Preview"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-              <button
-                type="button"
-                onClick={handleRemoveImage}
-                className="btn btn-circle btn-sm btn-error absolute top-2 right-2"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
+            {/* Image preview */}
+            {postImagePreview && (
+              <div className="relative mt-2 mb-2">
+                <div className="relative w-full h-48 rounded-lg overflow-hidden border border-base-300">
+                  <Image
+                    src={postImagePreview}
+                    alt="Preview"
+                    fill
+                    className="object-cover"
                   />
-                </svg>
-              </button>
-            </div>
-          )}
-
-          <div className="flex gap-2 mt-2">
-            {/* Image upload button */}
-            <label className="btn btn-ghost btn-sm gap-2">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                />
-              </svg>
-              Thêm ảnh
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageSelect}
-                className="hidden"
-                disabled={isSubmitting}
-              />
-            </label>
-
-            <button
-              type="submit"
-              className="btn btn-primary"
-              disabled={isSubmitting || (!newPostContent.trim() && !postImage)}
-            >
-              {isSubmitting ? (
-                <>
-                  <span className="loading loading-spinner loading-sm"></span>
-                  Đang đăng...
-                </>
-              ) : (
-                <>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleRemoveImage}
+                  className="btn btn-circle btn-sm btn-error absolute top-2 right-2"
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
+                    className="h-4 w-4"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -497,13 +439,73 @@ export const EventWall = ({
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth={2}
-                      d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+                      d="M6 18L18 6M6 6l12 12"
                     />
                   </svg>
-                  Đăng bài
-                </>
-              )}
-            </button>
+                </button>
+              </div>
+            )}
+
+            <div className="flex gap-2 mt-2">
+              {/* Image upload button */}
+              <label className="btn btn-ghost btn-sm gap-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
+                Thêm ảnh
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageSelect}
+                  className="hidden"
+                  disabled={isSubmitting}
+                />
+              </label>
+
+              <button
+                type="submit"
+                className="btn btn-primary"
+                disabled={
+                  isSubmitting || (!newPostContent.trim() && !postImage)
+                }
+              >
+                {isSubmitting ? (
+                  <>
+                    <span className="loading loading-spinner loading-sm"></span>
+                    Đang đăng...
+                  </>
+                ) : (
+                  <>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+                      />
+                    </svg>
+                    Đăng bài
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </form>
       )}
@@ -516,7 +518,7 @@ export const EventWall = ({
             <div className="relative flex-1">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400"
+                className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-primary"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -533,7 +535,7 @@ export const EventWall = ({
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Tìm kiếm theo nội dung hoặc tên người đăng..."
-                className="input input-bordered w-full pl-10 pr-4"
+                className="input input-bordered w-full pl-10 pr-4 rounded-xl bg-base-100 shadow-sm border-2 focus:border-primary focus:outline-none"
               />
             </div>
 
@@ -541,7 +543,7 @@ export const EventWall = ({
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as SortOption)}
-              className="select select-bordered w-full sm:w-auto text-base pr-10"
+              className="select select-bordered w-full sm:w-auto text-base pr-10 rounded-xl bg-base-100 shadow-sm border-2 focus:border-primary focus:outline-none"
             >
               <option value="recent">Gần đây</option>
               <option value="likes">Nhiều tym</option>

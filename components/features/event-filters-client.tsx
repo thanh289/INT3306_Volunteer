@@ -416,16 +416,31 @@ export const EventFiltersClient = ({ events }: EventFiltersClientProps) => {
                   Sắp xếp theo
                 </span>
               </label>
-              <select
-                value={sortBy}
-                onChange={(e) =>
-                  setSortBy(e.target.value as "startDateTime" | "title")
-                }
-                className="select select-bordered w-full pl-3"
-              >
-                <option value="startDateTime">📅 Ngày bắt đầu</option>
-                <option value="title">🔤 Tên (A-Z)</option>
-              </select>
+              <div className="relative">
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 pointer-events-none z-10">
+                  <Image
+                    src={
+                      sortBy === "startDateTime"
+                        ? "/images/calendar.png"
+                        : "/images/abc.png"
+                    }
+                    alt={sortBy === "startDateTime" ? "Calendar" : "ABC"}
+                    width={20}
+                    height={20}
+                    className="object-contain"
+                  />
+                </div>
+                <select
+                  value={sortBy}
+                  onChange={(e) =>
+                    setSortBy(e.target.value as "startDateTime" | "title")
+                  }
+                  className="select select-bordered w-full pl-10"
+                >
+                  <option value="startDateTime">Ngày bắt đầu</option>
+                  <option value="title">Tên (A-Z)</option>
+                </select>
+              </div>
             </div>
           </div>
         </div>

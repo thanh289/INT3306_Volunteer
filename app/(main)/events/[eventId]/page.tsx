@@ -81,196 +81,266 @@ export default async function EventDetailPage({
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-4 md:p-8 text-base-content">
-      <div className="bg-base-100 text-base-content rounded-lg shadow-lg overflow-hidden border border-base-300">
-        {/* Event Image */}
-        {event.imageUrl && (
-          <div className="relative w-full h-64 md:h-96">
-            <img
-              src={"/" + event.imageUrl.replace(/\\/g, "/").replace(/^\/+/, "")}
-              alt={event.title}
-              className="w-full h-full object-cover"
-            />
-          </div>
-        )}
+    <div className="min-h-screen bg-base-200">
+      {/* Event Image - Full width at top */}
+      <div className="relative w-full h-80 md:h-[400px] bg-base-300 overflow-hidden">
+        <img
+          src={
+            event.imageUrl
+              ? "/" + event.imageUrl.replace(/\\/g, "/").replace(/^\/+/, "")
+              : "/images/placeholder.png"
+          }
+          alt={event.title}
+          className="w-full h-full object-cover"
+        />
+      </div>
 
-        {/* Header with name and creator */}
-        <div className="bg-gradient-to-r from-primary to-secondary p-8 text-white relative">
-          {/* Favorite button in top right corner */}
-          <div className="absolute top-4 right-4">
-            <FavoriteEventButton eventId={event.id} />
-          </div>
-          <div className="flex items-center gap-3 mb-2">
-            <div className="avatar placeholder">
-              <div className="bg-white/20 text-white rounded-full w-8 flex items-center justify-center">
-                <span className="text-sm font-semibold">
-                  {event.creator.name?.charAt(0).toUpperCase() || "U"}
-                </span>
+      {/* Main Container */}
+      <div className="max-w-7xl mx-auto px-4 py-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Left Column - Title + Event Wall */}
+          <div className="lg:col-span-2 space-y-4">
+            {/* Title Section */}
+            <div className="bg-base-100 rounded-2xl shadow-md p-6 border border-base-300">
+              {/* Creator info */}
+              <div className="flex items-center gap-3 mb-4">
+                <div className="avatar placeholder">
+                  <div className="bg-primary text-white rounded-full w-10 flex items-center justify-center">
+                    <span className="text-sm font-semibold">
+                      {event.creator.name?.charAt(0).toUpperCase() || "U"}
+                    </span>
+                  </div>
+                </div>
+                <div>
+                  <p className="font-semibold text-base-content">
+                    {event.creator.name}
+                  </p>
+                  <p className="text-sm text-base-content/60">Người tạo</p>
+                </div>
               </div>
-            </div>
-            <p className="text-lg font-semibold">{event.creator.name}</p>
-          </div>
-          <h1 className="text-4xl font-bold mt-2">{event.title}</h1>
 
-          {/* Event status badge for managers/admins */}
-          {canManage && event.status !== "PUBLISHED" && (
-            <div className="mt-4">
-              <div
-                className={`badge ${
-                  event.status === "PENDING_APPROVAL"
-                    ? "badge-warning"
-                    : "badge-error"
-                } gap-2`}
-              >
-                {event.status === "PENDING_APPROVAL"
-                  ? "Đang chờ duyệt"
-                  : "Đã bị từ chối"}
-              </div>
-            </div>
-          )}
+              {/* Title */}
+              <h1 className="text-3xl md:text-4xl font-bold text-base-content mb-4">
+                {event.title}
+              </h1>
 
-          {/* Cancelled badge */}
-          {event.isCancelled && (
-            <div className="mt-4 bg-error/20 border-2 border-error text-white px-4 py-3 rounded-lg flex items-center gap-3">
-              <Ban className="h-6 w-6 flex-shrink-0" />
-              <div>
-                <div className="font-bold text-lg">Sự kiện đã bị hủy</div>
-                {event.cancelReason && (
-                  <div className="text-sm opacity-90 mt-1">
-                    Lý do: {event.cancelReason}
+              {/* Status badges */}
+              <div className="flex flex-wrap gap-2">
+                {canManage && event.status !== "PUBLISHED" && (
+                  <div
+                    className={`badge ${
+                      event.status === "PENDING_APPROVAL"
+                        ? "bg-amber-500 text-white border-amber-600 border-2"
+                        : "bg-rose-600 text-white border-rose-700 border-2"
+                    } gap-2 font-bold shadow-lg`}
+                  >
+                    {event.status === "PENDING_APPROVAL"
+                      ? "Đang chờ duyệt"
+                      : "Đã bị từ chối"}
+                  </div>
+                )}
+                {event.isCancelled && (
+                  <div className="badge bg-error text-white border-error border-2 font-bold shadow-lg">
+                    Đã hủy
                   </div>
                 )}
               </div>
-            </div>
-          )}
-        </div>
 
-        {/* Body with description*/}
-        <div className="p-8 space-y-6">
-          <div>
-            <h2 className="text-2xl font-semibold mb-2 flex items-center gap-2 text-base-content">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6 text-primary"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              Thông tin chi tiết
-            </h2>
-            <p className="text-lg leading-relaxed whitespace-pre-wrap text-base-content/90">
-              {event.description}
-            </p>
-          </div>
+              {/* Cancelled reason */}
+              {event.isCancelled && event.cancelReason && (
+                <div className="mt-4 bg-error/10 border border-error/30 text-base-content px-4 py-3 rounded-xl flex items-center gap-3">
+                  <Ban className="h-5 w-5 text-error flex-shrink-0" />
+                  <div className="text-sm">
+                    <span className="font-semibold">Lý do hủy:</span>{" "}
+                    {event.cancelReason}
+                  </div>
+                </div>
+              )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 border-t pt-6">
-            <div className="space-y-3">
-              <h3 className="text-lg font-bold flex items-center gap-2 text-base-content">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 text-primary"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                Thời gian
-              </h3>
-              <div className="pl-7 space-y-2 text-base-content/80">
-                <p className="flex items-center gap-2">
-                  <span className="font-medium text-base-content">
-                    Bắt đầu:
-                  </span>
-                  <span>{formatDateTime(event.startDateTime)}</span>
-                </p>
-                <p className="flex items-center gap-2">
-                  <span className="font-medium text-base-content">
-                    Kết thúc:
-                  </span>
-                  <span>{formatDateTime(event.endDateTime)}</span>
+              {/* Description */}
+              <div className="mt-6 pt-6 border-t border-base-300">
+                <h2 className="text-xl font-semibold mb-3 flex items-center gap-2 text-base-content">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 text-primary"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  Thông tin chi tiết
+                </h2>
+                <p className="text-base leading-relaxed whitespace-pre-wrap text-base-content/90">
+                  {event.description}
                 </p>
               </div>
             </div>
-            <div className="space-y-3">
-              <h3 className="text-lg font-bold flex items-center gap-2 text-base-content">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 text-primary"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                  />
-                </svg>
-                Địa điểm & Số lượng
-              </h3>
-              <div className="pl-7 space-y-2 text-base-content/80">
-                <p className="flex items-center gap-2">
-                  <span className="font-medium text-base-content">
-                    Địa điểm:
-                  </span>
-                  <span>{event.location}</span>
-                </p>
-                <p className="flex items-center gap-2">
-                  <span className="font-medium text-base-content">
-                    Số lượng tối đa:
-                  </span>
-                  <span>{event.maxAttendees} người</span>
-                </p>
-              </div>
-            </div>
+
+            {/* Event Wall */}
+            <EventWall
+              eventId={event.id}
+              creatorId={event.creatorId}
+              isRegistered={isRegistered}
+              registrationStatus={registration?.status}
+              eventStatus={event.status}
+              eventManagerIds={eventManagerIds}
+            />
           </div>
 
-          {/* Registry button */}
-          <div className="border-t pt-6 flex justify-center items-center">
-            {canManage ? (
-              <EventManagementButtons event={event} />
-            ) : (
-              <RegisterEventButton
-                eventId={event.id}
-                isInitiallyRegistered={isRegistered}
-                isEventEnded={isEventEnded}
-                isCancelled={event.isCancelled}
-                cancelReason={event.cancelReason}
-                requiresRegistrationForm={event.requiresRegistrationForm}
-              />
-            )}
+          {/* Right Sidebar - Sticky Event Info */}
+          <div className="lg:col-span-1">
+            <div className="sticky top-6 space-y-4">
+              {/* Event Details Card */}
+              <div className="bg-base-100 rounded-2xl shadow-md p-6 border border-base-300">
+                <h3 className="text-lg font-bold mb-4 text-base-content">
+                  Chi tiết sự kiện
+                </h3>
+
+                {/* Time */}
+                <div className="space-y-3 mb-6">
+                  <div className="flex items-start gap-3">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 text-primary mt-0.5 flex-shrink-0"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    <div className="flex-1">
+                      <p className="font-semibold text-base-content text-sm">
+                        Bắt đầu
+                      </p>
+                      <p className="text-sm text-base-content/80">
+                        {formatDateTime(event.startDateTime)}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 text-primary mt-0.5 flex-shrink-0"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    <div className="flex-1">
+                      <p className="font-semibold text-base-content text-sm">
+                        Kết thúc
+                      </p>
+                      <p className="text-sm text-base-content/80">
+                        {formatDateTime(event.endDateTime)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Location */}
+                <div className="space-y-3 mb-6">
+                  <div className="flex items-start gap-3">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 text-primary mt-0.5 flex-shrink-0"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
+                    </svg>
+                    <div className="flex-1">
+                      <p className="font-semibold text-base-content text-sm">
+                        Địa điểm
+                      </p>
+                      <p className="text-sm text-base-content/80">
+                        {event.location}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Max attendees */}
+                <div className="space-y-3 mb-6">
+                  <div className="flex items-start gap-3">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 text-primary mt-0.5 flex-shrink-0"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                      />
+                    </svg>
+                    <div className="flex-1">
+                      <p className="font-semibold text-base-content text-sm">
+                        Số lượng tối đa
+                      </p>
+                      <p className="text-sm text-base-content/80">
+                        {event.maxAttendees} người
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Action buttons */}
+                <div className="pt-4 border-t border-base-300">
+                  {canManage ? (
+                    <EventManagementButtons event={event} />
+                  ) : (
+                    <div className="flex flex-col gap-3">
+                      <RegisterEventButton
+                        eventId={event.id}
+                        isInitiallyRegistered={isRegistered}
+                        isEventEnded={isEventEnded}
+                        isCancelled={event.isCancelled}
+                        cancelReason={event.cancelReason}
+                        requiresRegistrationForm={
+                          event.requiresRegistrationForm
+                        }
+                      />
+                      <FavoriteEventButton eventId={event.id} />
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-
-      <EventWall
-        eventId={event.id}
-        creatorId={event.creatorId}
-        isRegistered={isRegistered}
-        registrationStatus={registration?.status}
-        eventStatus={event.status}
-        eventManagerIds={eventManagerIds}
-      />
     </div>
   );
 }

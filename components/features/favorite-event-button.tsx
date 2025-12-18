@@ -88,11 +88,7 @@ export const FavoriteEventButton = ({
       <button
         onClick={handleClick}
         disabled={isLoading || isChecking}
-        className={`p-2 rounded-full transition-all duration-200 disabled:opacity-50 group ${
-          isInterested
-            ? "bg-error/10 text-error hover:bg-error/20"
-            : "bg-base-200 text-base-content/70 hover:bg-base-300 hover:text-error"
-        }`}
+        className="p-2 transition-all duration-200 disabled:opacity-50 group"
         title={
           isInterested
             ? "Xóa khỏi danh sách quan tâm"
@@ -100,9 +96,11 @@ export const FavoriteEventButton = ({
         }
       >
         <Heart
-          className={`w-5 h-5 ${
-            isInterested ? "fill-current" : ""
-          } transition-transform duration-200 group-hover:scale-125`}
+          className={`w-6 h-6 transition-transform duration-200 group-hover:scale-125 ${
+            isInterested
+              ? "fill-red-500 text-red-500"
+              : "text-gray-600 hover:text-red-500"
+          }`}
         />
       </button>
     );
@@ -115,14 +113,14 @@ export const FavoriteEventButton = ({
       disabled={isLoading || isChecking}
       className={`flex items-center gap-2 px-6 py-3 font-medium border rounded-md shadow-sm transition-all duration-200 disabled:opacity-50 group ${
         isInterested
-          ? "bg-error/10 text-error border-error/30 hover:bg-error/20"
-          : "bg-base-100 text-base-content border-base-300 hover:bg-base-200"
+          ? "bg-red-50 text-red-600 border-red-200 hover:bg-red-100"
+          : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
       }`}
     >
       <Heart
-        className={`w-5 h-5 ${
-          isInterested ? "fill-current" : ""
-        } transition-transform duration-200 group-hover:scale-110`}
+        className={`w-5 h-5 transition-transform duration-200 group-hover:scale-110 ${
+          isInterested ? "fill-red-500 text-red-500" : "text-gray-600"
+        }`}
       />
       {isLoading ? "Đang xử lý..." : isInterested ? "Đã quan tâm" : "Quan tâm"}
     </button>

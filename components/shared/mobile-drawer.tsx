@@ -461,14 +461,6 @@ export const MobileDrawer = ({ children }: { children: React.ReactNode }) => {
                   Đăng nhập
                 </Link>
               </li>
-              <li>
-                <Link
-                  href="/register"
-                  className="btn btn-primary justify-start gap-3"
-                >
-                  Đăng ký
-                </Link>
-              </li>
             </ul>
           )}
         </div>

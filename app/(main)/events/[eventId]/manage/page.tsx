@@ -9,7 +9,7 @@ import Link from "next/link";
 import { ParticipantList } from "@/components/features/participant-list";
 import { EventManagerManagement } from "@/components/features/event-manager-management";
 import { EventActions } from "@/components/features/event-actions";
-import { EventPostSettings } from "@/components/features/event-post-settings";
+import { EventSettings } from "@/components/features/event-settings";
 import { RegistrationQuestionsManager } from "@/components/features/registration-questions-manager";
 
 type ManageEventPageProps = {
@@ -63,11 +63,16 @@ export default async function ManageEventPage({
       <p className="text-xl text-base-content/80 mb-8">{event.title}</p>
 
       <div className="space-y-6">
-        {/* Registration Questions Manager */}
-        <RegistrationQuestionsManager
-          eventId={eventId}
-          initialEnabled={event.requiresRegistrationForm}
-        />
+        {/* Event Settings (Registration Form & Post Approval) */}
+        <EventSettings event={event} />
+
+        {/* Registration Questions Manager - Only show if enabled */}
+        {event.requiresRegistrationForm && (
+          <RegistrationQuestionsManager
+            eventId={eventId}
+            initialEnabled={event.requiresRegistrationForm}
+          />
+        )}
 
         {/* Event Manager Management */}
         <EventManagerManagement
@@ -76,11 +81,8 @@ export default async function ManageEventPage({
           creatorId={event.creatorId}
         />
 
-        {/* Post Settings */}
-        <EventPostSettings event={event} />
-
         {/* Participant List */}
-        <div className="bg-base-100 text-base-content p-8 rounded-lg shadow-md border border-base-300">
+        <div className="bg-base-100 text-base-content p-8 rounded-2xl shadow-md border border-base-300">
           <ParticipantList eventId={eventId} />
         </div>
 

@@ -31,6 +31,22 @@
   border-radius: var(--rounded-badge) !important;
 }
 
+/* Round all input, textarea, and select fields */
+.input,
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="tel"],
+input[type="date"],
+input[type="number"],
+input[type="search"],
+textarea,
+.textarea,
+select,
+.select {
+  border-radius: 0.75rem !important;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);

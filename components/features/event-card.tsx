@@ -12,15 +12,21 @@ const EventStatusBadge = ({ status }: { status: EventStatus }) => {
   const statusConfig = {
     PENDING_APPROVAL: {
       text: "Chờ duyệt",
-      style: "bg-yellow-500 text-white shadow-lg",
+      style: "bg-amber-500 text-white border-amber-600 shadow-lg",
     },
-    PUBLISHED: { text: "Đã đăng", style: "bg-green-600 text-white shadow-lg" },
-    REJECTED: { text: "Bị từ chối", style: "bg-red-600 text-white shadow-lg" },
+    PUBLISHED: {
+      text: "Đã đăng",
+      style: "bg-emerald-600 text-white border-emerald-700 shadow-lg",
+    },
+    REJECTED: {
+      text: "Bị từ chối",
+      style: "bg-rose-600 text-white border-rose-700 shadow-lg",
+    },
   };
   const config = statusConfig[status];
   if (!config) return null;
   return (
-    <div className={`badge ${config.style} badge-md font-bold`}>
+    <div className={`badge ${config.style} badge-md font-bold border-2`}>
       {config.text}
     </div>
   );
@@ -40,29 +46,31 @@ const RegistrationStatusBadge = ({
   switch (status) {
     case "PENDING":
       text = "Chờ duyệt";
-      style = "bg-yellow-500 text-white shadow-lg";
+      style = "bg-amber-500 text-white border-amber-600 shadow-lg";
       break;
     case "APPROVED":
       if (isEventPast) {
         text = "Không hoàn thành";
-        style = "bg-gray-500 text-white shadow-lg";
+        style = "bg-slate-500 text-white border-slate-600 shadow-lg";
       } else {
         text = "Đã duyệt";
-        style = "bg-blue-600 text-white shadow-lg";
+        style = "bg-sky-600 text-white border-sky-700 shadow-lg";
       }
       break;
     case "REJECTED":
       text = "Bị từ chối";
-      style = "bg-red-600 text-white shadow-lg";
+      style = "bg-rose-600 text-white border-rose-700 shadow-lg";
       break;
     case "COMPLETED":
       text = "Đã hoàn thành";
-      style = "bg-green-600 text-white shadow-lg";
+      style = "bg-emerald-600 text-white border-emerald-700 shadow-lg";
       break;
   }
 
   if (!text) return null;
-  return <div className={`badge ${style} badge-md font-bold`}>{text}</div>;
+  return (
+    <div className={`badge ${style} badge-md font-bold border-2`}>{text}</div>
+  );
 };
 
 // create an object with artribute creator
