@@ -343,19 +343,14 @@ export const EventFiltersClient = ({ events }: EventFiltersClientProps) => {
                     />
                   </svg>
                   Danh mục
-                  {selectedCategories.length > 0 && (
-                    <span className="badge badge-primary badge-sm">
-                      {selectedCategories.length}
-                    </span>
-                  )}
                 </span>
               </label>
               <div className="flex flex-wrap gap-3 p-3 border border-base-300 rounded-lg bg-base-100">
                 {[
-                  { value: "ENVIRONMENT", label: "🌱 Môi trường" },
-                  { value: "EDUCATION", label: "📚 Giáo dục" },
-                  { value: "HEALTHCARE", label: "⚕️ Y tế - Sức khỏe" },
-                  { value: "COMMUNITY", label: "🤝 Cộng đồng" },
+                  { value: "ENVIRONMENT", label: "Môi trường", icon: "/images/environment.png" },
+                  { value: "EDUCATION", label: "Giáo dục", icon: "/images/education.png" },
+                  { value: "HEALTHCARE", label: "Y tế - Sức khỏe", icon: "/images/health.png" },
+                  { value: "COMMUNITY", label: "Cộng đồng", icon: "/images/community.png" },
                 ].map((category) => (
                   <label
                     key={category.value}
@@ -371,6 +366,7 @@ export const EventFiltersClient = ({ events }: EventFiltersClientProps) => {
                       onChange={() => handleCategoryToggle(category.value)}
                       className="checkbox checkbox-sm"
                     />
+                    <img src={category.icon} alt={category.label} className="w-5 h-5 object-contain" />
                     <span className="text-sm font-medium">
                       {category.label}
                     </span>

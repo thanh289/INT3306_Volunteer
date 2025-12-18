@@ -30,23 +30,23 @@ export const ParticipantList = ({ eventId }: { eventId: string }) => {
         <div className="overflow-x-auto">
             <h2 className="text-2xl font-semibold mb-6">Danh sách tình nguyện viên đã đăng ký ({registrations.length})</h2>
             <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+                <thead className="bg-base-200">
                     <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">STT</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Họ và tên</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ngày đăng ký</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Trạng thái</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Hành động</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-base-content/70 uppercase">STT</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-base-content/70 uppercase">Họ và tên</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-base-content/70 uppercase">Email</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-base-content/70 uppercase">Ngày đăng ký</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-base-content/70 uppercase">Trạng thái</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-base-content/70 uppercase">Hành động</th>
                     </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-base-100 divide-y divide-base-300">
                     {registrations.map((reg, index) => (
                         <tr key={reg.id}>
-                            <td className="px-6 py-4 text-sm text-gray-500">{index + 1}</td>
-                            <td className="px-6 py-4 text-sm font-medium text-gray-900">{reg.user.name}</td>
-                            <td className="px-6 py-4 text-sm text-gray-500">{reg.user.email}</td>
-                            <td className="px-6 py-4 text-sm text-gray-500">
+                            <td className="px-6 py-4 text-sm text-base-content/60">{index + 1}</td>
+                            <td className="px-6 py-4 text-sm font-medium text-base-content">{reg.user.name}</td>
+                            <td className="px-6 py-4 text-sm text-base-content/60">{reg.user.email}</td>
+                            <td className="px-6 py-4 text-sm text-base-content/60">
                                 {new Date(reg.createdAt).toLocaleDateString('vi-VN')}
                             </td>
                             <td className="px-6 py-4 text-sm"><StatusBadge status={reg.status} /></td>

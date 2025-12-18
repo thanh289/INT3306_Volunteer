@@ -1,6 +1,6 @@
 @import "tailwindcss";
 @plugin "daisyui" {
-  themes: [ "light", "dark"];
+  themes: [ "light"];
 }
 
 /* :root {
@@ -161,4 +161,35 @@ body {
 
 .animate-shimmer {
   animation: shimmer 2s infinite linear;
+}
+/* Force light theme - override any hardcoded grays */
+[data-theme="light"] .text-gray-500,
+[data-theme="light"] .text-gray-600,
+[data-theme="light"] .text-gray-700 {
+  color: oklch(var(--bc) / 0.6) !important;
+}
+
+[data-theme="light"] .text-gray-400 {
+  color: oklch(var(--bc) / 0.4) !important;
+}
+
+[data-theme="light"] .text-gray-900 {
+  color: oklch(var(--bc)) !important;
+}
+
+[data-theme="light"] .bg-gray-50,
+[data-theme="light"] .bg-gray-100 {
+  background-color: oklch(var(--b2)) !important;
+}
+
+[data-theme="light"] .bg-white {
+  background-color: oklch(var(--b1)) !important;
+}
+
+[data-theme="light"] .divide-gray-200 {
+  border-color: oklch(var(--bc) / 0.2) !important;
+}
+
+[data-theme="light"] .border-gray-300 {
+  border-color: oklch(var(--bc) / 0.2) !important;
 }

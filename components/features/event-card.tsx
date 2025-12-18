@@ -99,10 +99,10 @@ export const EventCard = ({
 
   // Category icons and colors
   const categoryConfig = {
-    ENVIRONMENT: { icon: "🌱", color: "text-success", bg: "bg-success/10" },
-    EDUCATION: { icon: "📚", color: "text-info", bg: "bg-info/10" },
-    HEALTHCARE: { icon: "⚕️", color: "text-error", bg: "bg-error/10" },
-    COMMUNITY: { icon: "🤝", color: "text-warning", bg: "bg-warning/10" },
+    ENVIRONMENT: { icon: "/images/environment.png", color: "text-success", bg: "bg-success/10" },
+    EDUCATION: { icon: "/images/education.png", color: "text-info", bg: "bg-info/10" },
+    HEALTHCARE: { icon: "/images/health.png", color: "text-error", bg: "bg-error/10" },
+    COMMUNITY: { icon: "/images/community.png", color: "text-warning", bg: "bg-warning/10" },
   };
 
   const categoryInfo =
@@ -148,7 +148,7 @@ export const EventCard = ({
           <div
             className={`absolute top-3 left-3 ${categoryInfo.bg} backdrop-blur-md px-4 py-2 rounded-full flex items-center gap-2 shadow-lg border border-white/20`}
           >
-            <span className="text-xl">{categoryInfo.icon}</span>
+            <img src={categoryInfo.icon} alt="Category" className="w-6 h-6 object-contain" />
           </div>
 
           {/* Favorite button overlay */}

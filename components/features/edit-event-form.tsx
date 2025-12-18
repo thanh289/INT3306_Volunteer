@@ -12,10 +12,10 @@ import { EventImageUpload } from "./event-image-upload";
 
 // Category configuration with icons and colors
 const categoryConfig = {
-  ENVIRONMENT: { label: "🌱 Môi trường", icon: "🌱", color: "text-green-600" },
-  EDUCATION: { label: "📚 Giáo dục", icon: "📚", color: "text-blue-600" },
-  HEALTHCARE: { label: "⚕️ Y tế", icon: "⚕️", color: "text-red-600" },
-  COMMUNITY: { label: "🤝 Cộng đồng", icon: "🤝", color: "text-purple-600" },
+  ENVIRONMENT: { label: "Môi trường", icon: "/images/environment.png", color: "text-green-600" },
+  EDUCATION: { label: "Giáo dục", icon: "/images/education.png", color: "text-blue-600" },
+  HEALTHCARE: { label: "Y tế", icon: "/images/health.png", color: "text-red-600" },
+  COMMUNITY: { label: "Cộng đồng", icon: "/images/community.png", color: "text-purple-600" },
 };
 
 // date format
@@ -228,7 +228,7 @@ export const EditEventForm = ({ event }: { event: Event }) => {
                         onChange={handleChange}
                         className="radio radio-primary radio-sm"
                       />
-                      <span className="text-3xl">{config.icon}</span>
+                      <img src={config.icon} alt={config.label} className="w-12 h-12 object-contain" />
                       <span className="text-sm font-medium">
                         {key === "ENVIRONMENT" && "Môi trường"}
                         {key === "EDUCATION" && "Giáo dục"}
