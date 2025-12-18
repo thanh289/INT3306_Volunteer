@@ -17,7 +17,7 @@ const fetcher = (url: string) => axios.get(url).then((res) => res.data);
 
 export const AdminEventList = () => {
   const [selectedEvent, setSelectedEvent] = useState<PendingEvent | null>(null);
-  
+
   const {
     data: pendingEvents,
     isLoading,
@@ -89,7 +89,12 @@ export const AdminEventList = () => {
                     <div className="w-10 h-10 rounded-full">
                       {event.creator.imageUrl ? (
                         <Image
-                          src={"/" + event.creator.imageUrl.replace(/\\/g, "/").replace(/^\/+/, "")}
+                          src={
+                            "/" +
+                            event.creator.imageUrl
+                              .replace(/\\/g, "/")
+                              .replace(/^\/+/, "")
+                          }
                           alt={event.creator.name || "Avatar"}
                           width={40}
                           height={40}
@@ -148,7 +153,10 @@ export const AdminEventList = () => {
                 </div>
 
                 {/* Actions */}
-                <div className="flex-shrink-0" onClick={(e) => e.stopPropagation()}>
+                <div
+                  className="flex-shrink-0"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <AdminEventActions eventId={event.id} onSuccess={mutate} />
                 </div>
               </div>
@@ -159,19 +167,30 @@ export const AdminEventList = () => {
 
       {/* Modal for Event Details */}
       {selectedEvent && (
-        <div className="modal modal-open" onClick={() => setSelectedEvent(null)}>
-          <div className="modal-box max-w-4xl max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="modal modal-open"
+          onClick={() => setSelectedEvent(null)}
+        >
+          <div
+            className="modal-box max-w-4xl max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
             <button
               className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 z-10"
               onClick={() => setSelectedEvent(null)}
             >
               ✕
             </button>
-            
+
             {/* Event Image */}
             <div className="relative w-full aspect-video rounded-lg overflow-hidden mb-4">
               <Image
-                src={"/" + (selectedEvent.imageUrl?.replace(/\\/g, "/").replace(/^\/+/, "") || "images/placeholder.png")}
+                src={
+                  "/" +
+                  (selectedEvent.imageUrl
+                    ?.replace(/\\/g, "/")
+                    .replace(/^\/+/, "") || "images/placeholder.png")
+                }
                 alt={selectedEvent.title}
                 fill
                 sizes="(max-width: 896px) 100vw, 896px"
@@ -185,16 +204,44 @@ export const AdminEventList = () => {
                 <h2 className="text-2xl font-bold">{selectedEvent.title}</h2>
                 <div className="badge badge-lg badge-primary gap-2">
                   {selectedEvent.category === "ENVIRONMENT" && (
-                    <><img src="/images/environment.png" alt="" className="w-5 h-5" /> Môi trường</>
+                    <>
+                      <img
+                        src="/images/environment.png"
+                        alt=""
+                        className="w-5 h-5"
+                      />{" "}
+                      Môi trường
+                    </>
                   )}
                   {selectedEvent.category === "EDUCATION" && (
-                    <><img src="/images/education.png" alt="" className="w-5 h-5" /> Giáo dục</>
+                    <>
+                      <img
+                        src="/images/education.png"
+                        alt=""
+                        className="w-5 h-5"
+                      />{" "}
+                      Giáo dục
+                    </>
                   )}
                   {selectedEvent.category === "HEALTHCARE" && (
-                    <><img src="/images/health.png" alt="" className="w-5 h-5" /> Y tế</>
+                    <>
+                      <img
+                        src="/images/health.png"
+                        alt=""
+                        className="w-5 h-5"
+                      />{" "}
+                      Y tế
+                    </>
                   )}
                   {selectedEvent.category === "COMMUNITY" && (
-                    <><img src="/images/community.png" alt="" className="w-5 h-5" /> Cộng đồng</>
+                    <>
+                      <img
+                        src="/images/community.png"
+                        alt=""
+                        className="w-5 h-5"
+                      />{" "}
+                      Cộng đồng
+                    </>
                   )}
                 </div>
               </div>
@@ -206,7 +253,12 @@ export const AdminEventList = () => {
                 <div className="w-12 h-12 rounded-full">
                   {selectedEvent.creator.imageUrl ? (
                     <Image
-                      src={"/" + selectedEvent.creator.imageUrl.replace(/\\/g, "/").replace(/^\/+/, "")}
+                      src={
+                        "/" +
+                        selectedEvent.creator.imageUrl
+                          .replace(/\\/g, "/")
+                          .replace(/^\/+/, "")
+                      }
                       alt={selectedEvent.creator.name || "Avatar"}
                       width={48}
                       height={48}
@@ -214,14 +266,17 @@ export const AdminEventList = () => {
                     />
                   ) : (
                     <div className="bg-primary/10 text-primary w-full h-full flex items-center justify-center text-xl font-semibold">
-                      {selectedEvent.creator.name?.charAt(0).toUpperCase() || "?"}
+                      {selectedEvent.creator.name?.charAt(0).toUpperCase() ||
+                        "?"}
                     </div>
                   )}
                 </div>
               </div>
               <div>
                 <p className="font-semibold">{selectedEvent.creator.name}</p>
-                <p className="text-sm text-base-content/60">{selectedEvent.creator.email}</p>
+                <p className="text-sm text-base-content/60">
+                  {selectedEvent.creator.email}
+                </p>
               </div>
             </div>
 
@@ -246,8 +301,13 @@ export const AdminEventList = () => {
                 <div>
                   <p className="font-medium">Thời gian</p>
                   <p className="text-sm text-base-content/70">
-                    {new Date(selectedEvent.startDateTime).toLocaleString("vi-VN")} -{" "}
-                    {new Date(selectedEvent.endDateTime).toLocaleString("vi-VN")}
+                    {new Date(selectedEvent.startDateTime).toLocaleString(
+                      "vi-VN"
+                    )}{" "}
+                    -{" "}
+                    {new Date(selectedEvent.endDateTime).toLocaleString(
+                      "vi-VN"
+                    )}
                   </p>
                 </div>
               </div>
@@ -276,7 +336,9 @@ export const AdminEventList = () => {
                 </svg>
                 <div>
                   <p className="font-medium">Địa điểm</p>
-                  <p className="text-sm text-base-content/70">{selectedEvent.location}</p>
+                  <p className="text-sm text-base-content/70">
+                    {selectedEvent.location}
+                  </p>
                 </div>
               </div>
 
@@ -309,17 +371,25 @@ export const AdminEventList = () => {
             <div className="mb-6">
               <h3 className="font-semibold text-lg mb-2">Mô tả</h3>
               <div className="prose max-w-none text-base-content/80">
-                <p className="whitespace-pre-wrap">{selectedEvent.description}</p>
+                <p className="whitespace-pre-wrap">
+                  {selectedEvent.description}
+                </p>
               </div>
             </div>
 
             {/* Actions */}
             <div className="flex gap-2 justify-end pt-4 border-t">
-              <AdminEventActions eventId={selectedEvent.id} onSuccess={() => {
-                mutate();
-                setSelectedEvent(null);
-              }} />
-              <button className="btn btn-ghost" onClick={() => setSelectedEvent(null)}>
+              <AdminEventActions
+                eventId={selectedEvent.id}
+                onSuccess={() => {
+                  mutate();
+                  setSelectedEvent(null);
+                }}
+              />
+              <button
+                className="btn btn-ghost"
+                onClick={() => setSelectedEvent(null)}
+              >
                 Đóng
               </button>
             </div>

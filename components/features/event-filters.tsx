@@ -95,10 +95,26 @@ export const EventFilters = () => {
             </label>
             <div className="flex flex-wrap gap-3 p-3 border border-base-300 rounded-lg bg-base-100">
               {[
-                { value: "ENVIRONMENT", label: "Môi trường", icon: "/images/environment.png" },
-                { value: "EDUCATION", label: "Giáo dục", icon: "/images/education.png" },
-                { value: "HEALTHCARE", label: "Y tế - Sức khỏe", icon: "/images/health.png" },
-                { value: "COMMUNITY", label: "Cộng đồng", icon: "/images/community.png" },
+                {
+                  value: "ENVIRONMENT",
+                  label: "Môi trường",
+                  icon: "/images/environment.png",
+                },
+                {
+                  value: "EDUCATION",
+                  label: "Giáo dục",
+                  icon: "/images/education.png",
+                },
+                {
+                  value: "HEALTHCARE",
+                  label: "Y tế - Sức khỏe",
+                  icon: "/images/health.png",
+                },
+                {
+                  value: "COMMUNITY",
+                  label: "Cộng đồng",
+                  icon: "/images/community.png",
+                },
               ].map((category) => (
                 <label
                   key={category.value}
@@ -114,7 +130,11 @@ export const EventFilters = () => {
                     onChange={() => handleCategoryToggle(category.value)}
                     className="checkbox checkbox-sm"
                   />
-                  <img src={category.icon} alt={category.label} className="w-5 h-5 object-contain" />
+                  <img
+                    src={category.icon}
+                    alt={category.label}
+                    className="w-5 h-5 object-contain"
+                  />
                   <span className="text-sm font-medium">{category.label}</span>
                 </label>
               ))}
@@ -193,16 +213,40 @@ export const EventFilters = () => {
             {searchParams.get("category") && (
               <div className="badge badge-primary gap-2">
                 {searchParams.get("category") === "ENVIRONMENT" && (
-                  <><img src="/images/environment.png" alt="" className="w-4 h-4" /> Môi trường</>
+                  <>
+                    <img
+                      src="/images/environment.png"
+                      alt=""
+                      className="w-4 h-4"
+                    />{" "}
+                    Môi trường
+                  </>
                 )}
                 {searchParams.get("category") === "EDUCATION" && (
-                  <><img src="/images/education.png" alt="" className="w-4 h-4" /> Giáo dục</>
+                  <>
+                    <img
+                      src="/images/education.png"
+                      alt=""
+                      className="w-4 h-4"
+                    />{" "}
+                    Giáo dục
+                  </>
                 )}
                 {searchParams.get("category") === "HEALTHCARE" && (
-                  <><img src="/images/health.png" alt="" className="w-4 h-4" /> Y tế</>
+                  <>
+                    <img src="/images/health.png" alt="" className="w-4 h-4" />{" "}
+                    Y tế
+                  </>
                 )}
                 {searchParams.get("category") === "COMMUNITY" && (
-                  <><img src="/images/community.png" alt="" className="w-4 h-4" /> Cộng đồng</>
+                  <>
+                    <img
+                      src="/images/community.png"
+                      alt=""
+                      className="w-4 h-4"
+                    />{" "}
+                    Cộng đồng
+                  </>
                 )}
               </div>
             )}

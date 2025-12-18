@@ -11,10 +11,26 @@ import { EventCategory } from "@prisma/client";
 import Image from "next/image";
 
 const categoryConfig = {
-  ENVIRONMENT: { icon: "/images/environment.png", label: "Môi trường", color: "text-success" },
-  EDUCATION: { icon: "/images/education.png", label: "Giáo dục", color: "text-info" },
-  HEALTHCARE: { icon: "/images/health.png", label: "Y tế - Sức khỏe", color: "text-error" },
-  COMMUNITY: { icon: "/images/community.png", label: "Cộng đồng", color: "text-warning" },
+  ENVIRONMENT: {
+    icon: "/images/environment.png",
+    label: "Môi trường",
+    color: "text-success",
+  },
+  EDUCATION: {
+    icon: "/images/education.png",
+    label: "Giáo dục",
+    color: "text-info",
+  },
+  HEALTHCARE: {
+    icon: "/images/health.png",
+    label: "Y tế - Sức khỏe",
+    color: "text-error",
+  },
+  COMMUNITY: {
+    icon: "/images/community.png",
+    label: "Cộng đồng",
+    color: "text-warning",
+  },
 };
 
 export const CreateEventForm = () => {
@@ -219,7 +235,11 @@ export const CreateEventForm = () => {
                   onChange={handleChange}
                   className="radio radio-primary radio-sm"
                 />
-                <img src={config.icon} alt={config.label} className="w-12 h-12 object-contain" />
+                <img
+                  src={config.icon}
+                  alt={config.label}
+                  className="w-12 h-12 object-contain"
+                />
                 <span className={`text-sm font-medium ${config.color}`}>
                   {config.label}
                 </span>

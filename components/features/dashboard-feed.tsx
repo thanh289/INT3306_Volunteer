@@ -62,7 +62,11 @@ interface Post {
 }
 
 const CATEGORIES = [
-  { value: "ENVIRONMENT", label: "Môi trường", icon: "/images/environment.png" },
+  {
+    value: "ENVIRONMENT",
+    label: "Môi trường",
+    icon: "/images/environment.png",
+  },
   { value: "EDUCATION", label: "Giáo dục", icon: "/images/education.png" },
   { value: "HEALTHCARE", label: "Y tế", icon: "/images/health.png" },
   { value: "COMMUNITY", label: "Cộng đồng", icon: "/images/community.png" },
@@ -389,7 +393,11 @@ export const DashboardFeed = () => {
                       className="checkbox checkbox-primary checkbox-sm"
                     />
                     <span className="text-sm flex items-center gap-2">
-                      <img src={category.icon} alt={category.label} className="w-4 h-4 object-contain" />
+                      <img
+                        src={category.icon}
+                        alt={category.label}
+                        className="w-4 h-4 object-contain"
+                      />
                       {category.label}
                     </span>
                   </label>

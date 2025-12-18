@@ -99,7 +99,11 @@ export const FavoriteEventButton = ({
             : "Thêm vào danh sách quan tâm"
         }
       >
-        <Heart className={`w-5 h-5 ${isInterested ? "fill-current" : ""} transition-transform duration-200 group-hover:scale-125`} />
+        <Heart
+          className={`w-5 h-5 ${
+            isInterested ? "fill-current" : ""
+          } transition-transform duration-200 group-hover:scale-125`}
+        />
       </button>
     );
   }
@@ -115,7 +119,11 @@ export const FavoriteEventButton = ({
           : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
       }`}
     >
-      <Heart className={`w-5 h-5 ${isInterested ? "fill-current" : ""} transition-transform duration-200 group-hover:scale-110`} />
+      <Heart
+        className={`w-5 h-5 ${
+          isInterested ? "fill-current" : ""
+        } transition-transform duration-200 group-hover:scale-110`}
+      />
       {isLoading ? "Đang xử lý..." : isInterested ? "Đã quan tâm" : "Quan tâm"}
     </button>
   );
