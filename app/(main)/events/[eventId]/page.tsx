@@ -81,8 +81,8 @@ export default async function EventDetailPage({
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-4 md:p-8">
-      <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+    <div className="max-w-4xl mx-auto p-4 md:p-8 text-base-content">
+      <div className="bg-base-100 text-base-content rounded-lg shadow-lg overflow-hidden border border-base-300">
         {/* Event Image */}
         {event.imageUrl && (
           <div className="relative w-full h-64 md:h-96">
@@ -146,9 +146,9 @@ export default async function EventDetailPage({
         </div>
 
         {/* Body with description*/}
-        <div className="p-8 space-y-6 text-gray-800">
+        <div className="p-8 space-y-6">
           <div>
-            <h2 className="text-2xl font-semibold mb-2 flex items-center gap-2">
+            <h2 className="text-2xl font-semibold mb-2 flex items-center gap-2 text-base-content">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-6 w-6 text-primary"
@@ -165,14 +165,14 @@ export default async function EventDetailPage({
               </svg>
               Thông tin chi tiết
             </h2>
-            <p className="text-lg leading-relaxed whitespace-pre-wrap">
+            <p className="text-lg leading-relaxed whitespace-pre-wrap text-base-content/90">
               {event.description}
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 border-t pt-6">
             <div className="space-y-3">
-              <h3 className="text-lg font-bold flex items-center gap-2">
+              <h3 className="text-lg font-bold flex items-center gap-2 text-base-content">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-5 w-5 text-primary"
@@ -189,19 +189,19 @@ export default async function EventDetailPage({
                 </svg>
                 Thời gian
               </h3>
-              <div className="pl-7 space-y-2">
+              <div className="pl-7 space-y-2 text-base-content/80">
                 <p className="flex items-center gap-2">
-                  <span className="font-medium">Bắt đầu:</span>
+                  <span className="font-medium text-base-content">Bắt đầu:</span>
                   <span>{formatDateTime(event.startDateTime)}</span>
                 </p>
                 <p className="flex items-center gap-2">
-                  <span className="font-medium">Kết thúc:</span>
+                  <span className="font-medium text-base-content">Kết thúc:</span>
                   <span>{formatDateTime(event.endDateTime)}</span>
                 </p>
               </div>
             </div>
             <div className="space-y-3">
-              <h3 className="text-lg font-bold flex items-center gap-2">
+              <h3 className="text-lg font-bold flex items-center gap-2 text-base-content">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-5 w-5 text-primary"
@@ -224,12 +224,13 @@ export default async function EventDetailPage({
                 </svg>
                 Địa điểm & Số lượng
               </h3>
-              <div className="pl-7 space-y-2">
+              <div className="pl-7 space-y-2 text-base-content/80">
                 <p className="flex items-center gap-2">
+                  <span className="font-medium text-base-content">Địa điểm:</span>
                   <span>{event.location}</span>
                 </p>
                 <p className="flex items-center gap-2">
-                  <span className="font-medium">Số lượng tối đa:</span>
+                  <span className="font-medium text-base-content">Số lượng tối đa:</span>
                   <span>{event.maxAttendees} người</span>
                 </p>
               </div>

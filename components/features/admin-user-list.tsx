@@ -159,9 +159,9 @@ export const UserList = () => {
       {/* User Table */}
       {data && data.users.length > 0 && (
         <>
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto rounded-box border border-base-300 shadow-sm bg-base-100">
             <table className="table table-zebra">
-              <thead>
+              <thead className="bg-base-200/80">
                 <tr>
                   <th>Họ và tên</th>
                   <th>Email</th>
@@ -172,7 +172,7 @@ export const UserList = () => {
               </thead>
               <tbody>
                 {data.users.map((user) => (
-                  <tr key={user.id}>
+                  <tr key={user.id} className="hover">
                     <td className="font-medium">{user.name}</td>
                     <td>{user.email}</td>
                     <td>

@@ -144,7 +144,7 @@ export const RegisteredEventList = () => {
             </div>
           </div>
         </div>
-        <p className="text-gray-500">Bạn chưa đăng ký sự kiện nào.</p>
+        <p className="text-base-content/60">Bạn chưa đăng ký sự kiện nào.</p>
       </div>
     );
   }

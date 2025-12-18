@@ -49,9 +49,9 @@ export default async function EditEventPage({ params }: EditEventPageProps) {
   }
 
   return (
-    <div className="max-w-2xl mx-auto p-4 md:p-8">
+    <div className="max-w-2xl mx-auto p-4 md:p-8 text-base-content">
       <h1 className="text-3xl font-bold mb-8">Chỉnh sửa sự kiện</h1>
-      <div className="bg-white p-8 rounded-lg shadow-md">
+      <div className="bg-base-100 text-base-content p-8 rounded-lg shadow-md border border-base-300">
         <EditEventForm event={event} />
       </div>
     </div>

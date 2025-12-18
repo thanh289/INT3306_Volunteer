@@ -26,7 +26,7 @@ export const ParticipantList = ({ eventId }: { eventId: string }) => {
   if (error) return <p>Không thể tải danh sách người tham gia.</p>;
   if (!registrations || registrations.length === 0) {
     return (
-      <p className="text-center py-8 text-gray-500">
+          <p className="text-center py-8 text-base-content/60">
         Chưa có ai đăng ký sự kiện này.
       </p>
     );

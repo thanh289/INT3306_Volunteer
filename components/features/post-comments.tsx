@@ -151,7 +151,7 @@ export const PostComments = ({
       {/* Comment toggle button */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 transition-all duration-200"
+        className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-base-200 text-base-content/80 hover:bg-base-300 transition-all duration-200"
       >
         <MessageCircle className="w-4 h-4" />
         <span className="text-sm font-medium">{comments.length}</span>
@@ -162,7 +162,7 @@ export const PostComments = ({
         <div className="mt-3 space-y-3 pt-3">
           {/* Comments list */}
           {isLoading ? (
-            <p className="text-sm text-gray-500">Đang tải bình luận...</p>
+            <p className="text-sm text-base-content/60">Đang tải bình luận...</p>
           ) : comments.length > 0 ? (
             <>
               <div className="space-y-2">
@@ -177,7 +177,7 @@ export const PostComments = ({
                   return (
                     <div
                       key={comment.id}
-                      className="flex gap-2 p-2 bg-gray-50 rounded"
+                      className="flex gap-2 p-2 bg-base-200 rounded"
                     >
                       <div className="flex-shrink-0">
                         {avatarUrl ? (
@@ -201,7 +201,7 @@ export const PostComments = ({
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-2">
                           <div className="flex items-center gap-2 flex-wrap">
-                            <p className="text-sm font-medium text-gray-900">
+                            <p className="text-sm font-medium text-base-content">
                               {comment.user.name || "Người dùng"}
                             </p>
                             {/* Show badge for admin */}
@@ -259,13 +259,13 @@ export const PostComments = ({
 
                         {comment.isDeleted ? (
                           <div className="mt-1">
-                            <p className="text-xs text-gray-500 italic">
+                            <p className="text-xs text-base-content/60 italic">
                               Bình luận này đã bị xóa bởi{" "}
                               {comment.deletedByRole === "ADMIN"
                                 ? "Quản trị viên"
                                 : "Người quản lý sự kiện"}
                             </p>
-                            <p className="text-xs text-gray-400">
+                            <p className="text-xs text-base-content/50">
                               {comment.deletedAt &&
                                 new Date(comment.deletedAt).toLocaleString(
                                   "vi-VN"
@@ -274,10 +274,10 @@ export const PostComments = ({
                           </div>
                         ) : (
                           <>
-                            <p className="text-sm text-gray-700 whitespace-pre-wrap break-words">
+                            <p className="text-sm text-base-content/80 whitespace-pre-wrap break-words">
                               {comment.content}
                             </p>
-                            <p className="text-xs text-gray-400 mt-1">
+                            <p className="text-xs text-base-content/50 mt-1">
                               {new Date(comment.createdAt).toLocaleString(
                                 "vi-VN"
                               )}
@@ -304,7 +304,7 @@ export const PostComments = ({
               )}
             </>
           ) : (
-            <p className="text-sm text-gray-500">Chưa có bình luận nào</p>
+            <p className="text-sm text-base-content/60">Chưa có bình luận nào</p>
           )}
 
           {/* Add comment form */}
@@ -332,7 +332,7 @@ export const PostComments = ({
                   <Send className="w-5 h-5" />
                 </button>
               </form>
-              <div className="text-xs text-gray-500 text-right px-2">
+              <div className="text-xs text-base-content/60 text-right px-2">
                 {newComment.length}/500 ký tự
               </div>
             </div>

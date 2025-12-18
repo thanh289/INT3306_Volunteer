@@ -52,7 +52,7 @@ export default async function ManageEventPage({
   }
 
   return (
-    <div className="max-w-6xl mx-auto p-4 md:p-8">
+    <div className="max-w-6xl mx-auto p-4 md:p-8 text-base-content">
       <Link
         href={`/events/${eventId}`}
         className="text-indigo-600 hover:underline"
@@ -60,7 +60,7 @@ export default async function ManageEventPage({
         &larr; Quay lại trang sự kiện
       </Link>
       <h1 className="text-3xl font-bold mt-4">Quản lý sự kiện</h1>
-      <p className="text-xl text-gray-700 mb-8">{event.title}</p>
+      <p className="text-xl text-base-content/80 mb-8">{event.title}</p>
 
       <div className="space-y-6">
         {/* Registration Questions Manager */}
@@ -80,7 +80,7 @@ export default async function ManageEventPage({
         <EventPostSettings event={event} />
 
         {/* Participant List */}
-        <div className="bg-white p-8 rounded-lg shadow-md">
+        <div className="bg-base-100 text-base-content p-8 rounded-lg shadow-md border border-base-300">
           <ParticipantList eventId={eventId} />
         </div>
 

@@ -90,8 +90,8 @@ export const FavoriteEventButton = ({
         disabled={isLoading || isChecking}
         className={`p-2 rounded-full transition-all duration-200 disabled:opacity-50 group ${
           isInterested
-            ? "bg-red-100 text-red-600 hover:bg-red-200"
-            : "bg-gray-100 text-gray-400 hover:bg-gray-200 hover:text-red-400"
+            ? "bg-error/10 text-error hover:bg-error/20"
+            : "bg-base-200 text-base-content/70 hover:bg-base-300 hover:text-error"
         }`}
         title={
           isInterested
@@ -115,8 +115,8 @@ export const FavoriteEventButton = ({
       disabled={isLoading || isChecking}
       className={`flex items-center gap-2 px-6 py-3 font-medium border rounded-md shadow-sm transition-all duration-200 disabled:opacity-50 group ${
         isInterested
-          ? "bg-red-50 text-red-600 border-red-300 hover:bg-red-100"
-          : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+          ? "bg-error/10 text-error border-error/30 hover:bg-error/20"
+          : "bg-base-100 text-base-content border-base-300 hover:bg-base-200"
       }`}
     >
       <Heart

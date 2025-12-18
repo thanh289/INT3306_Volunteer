@@ -110,7 +110,7 @@ export const RegistrationActions = ({ registration }: Props) => {
           <button
             onClick={() => handleUpdateStatus(RegistrationStatus.APPROVED)}
             disabled={isPending}
-            className="text-gray-600 hover:text-gray-900 text-xs"
+            className="text-base-content/70 hover:text-base-content text-xs"
           >
             Hủy hoàn thành
           </button>

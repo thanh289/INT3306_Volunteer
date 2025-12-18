@@ -3,24 +3,27 @@
   themes: [ "light"];
 }
 
-/* :root {
+:root {
+  /* Base text and background so content stays visible in both themes */
   --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --foreground: #0f172a;
+  /* App-wide rounding for DaisyUI components */
+  --rounded-box: 1rem; /* cards, modals */
+  --rounded-btn: 0.75rem; /* buttons */
+  --rounded-badge: 0.75rem; /* badges */
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #0f172a;
+    --foreground: #f8fafc;
   }
-} */
+}
+
+/* Ensure rounding applies broadly */
+.card { border-radius: var(--rounded-box) !important; }
+.btn { border-radius: var(--rounded-btn) !important; }
+.badge { border-radius: var(--rounded-badge) !important; }
 
 body {
   background: var(--background);

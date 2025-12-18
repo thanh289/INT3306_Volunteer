@@ -715,15 +715,15 @@ export const EventWall = ({
 
                     {/* Post content or deleted message */}
                     {post.isDeleted ? (
-                      <div className="bg-gray-100 p-4 rounded-lg mb-3">
-                        <p className="text-gray-500 italic">
+                      <div className="bg-base-200 p-4 rounded-lg mb-3">
+                        <p className="text-base-content/60 italic">
                           Bài viết này đã bị xóa bởi{" "}
                           {post.deletedByRole === "ADMIN"
                             ? "Quản trị viên"
                             : "Người quản lý sự kiện"}
                           .
                         </p>
-                        <p className="text-xs text-gray-400 mt-1">
+                        <p className="text-xs text-base-content/50 mt-1">
                           Thời gian xóa:{" "}
                           {post.deletedAt &&
                             new Date(post.deletedAt).toLocaleString("vi-VN")}

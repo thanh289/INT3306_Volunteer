@@ -96,7 +96,7 @@ export const EventActions = ({
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md border-l-4 border-error">
+    <div className="bg-base-100 text-base-content p-6 rounded-lg shadow-md border-l-4 border-error border border-base-300/70">
       <h2 className="text-xl font-bold mb-4 text-error flex items-center gap-2">
         <Ban className="h-6 w-6" />
         Hành động nguy hiểm
