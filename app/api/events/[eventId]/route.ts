@@ -6,6 +6,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import prisma from "@/lib/prisma";
 import { z } from "zod";
+import { notifyEventPublished, notifyEventRejected } from "@/lib/send-notification";
 import { EventCategory, EventStatus } from "@prisma/client";
 
 type RouteParams = {
@@ -201,8 +202,20 @@ export async function PUT(request: Request, { params }: RouteParams) {
       let message = "";
       if (body.status === "PUBLISHED") {
         message = `Sự kiện "${updatedEvent.title}" của bạn đã được duyệt và đăng công khai.`;
+        // Send push notification
+        await notifyEventPublished(
+          updatedEvent.creatorId,
+          updatedEvent.title,
+          updatedEvent.id
+        );
       } else if (body.status === "REJECTED") {
         message = `Sự kiện "${updatedEvent.title}" của bạn đã bị từ chối.`;
+        // Send push notification
+        await notifyEventRejected(
+          updatedEvent.creatorId,
+          updatedEvent.title,
+          updatedEvent.id
+        );
       }
 
       if (message) {
