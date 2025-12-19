@@ -9,6 +9,7 @@ import useSWR from "swr";
 import axios from "axios";
 import { Event, User, EventStatus, EventCategory } from "@prisma/client";
 import Link from "next/link";
+import Image from "next/image";
 import { Download, Ban } from "lucide-react";
 import { Pagination } from "@/components/shared/pagination";
 
@@ -151,12 +152,19 @@ export const AdminAllEventsList = () => {
             {/* Search Form */}
             <form onSubmit={handleSearch} className="flex-1 flex gap-2">
               <div className="relative flex-1">
+                <Image
+                  src="/images/search.png"
+                  alt="Search"
+                  width={18}
+                  height={18}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 opacity-70"
+                />
                 <input
                   type="text"
-                  placeholder="🔍 Tìm kiếm sự kiện..."
+                  placeholder="Tìm kiếm sự kiện..."
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
-                  className="input input-bordered w-full pr-10"
+                  className="input input-bordered w-full pl-10 pr-10"
                 />
                 {searchInput && (
                   <button
@@ -392,12 +400,12 @@ export const AdminAllEventsList = () => {
         </div>
       )}
 
-      {/* Events Table */}
+      {/* Events Table with horizontal scroll on small screens */}
       {data && data.events.length > 0 && (
         <>
-          <div className="overflow-x-auto">
-            <table className="table table-zebra">
-              <thead>
+          <div className="overflow-x-auto rounded-box border border-base-300 bg-base-100 shadow-sm">
+            <table className="table table-zebra text-sm min-w-[960px]">
+              <thead className="bg-base-200/80">
                 <tr>
                   <th>Tên sự kiện</th>
                   <th>Người tạo</th>
@@ -428,7 +436,9 @@ export const AdminAllEventsList = () => {
                         </span>
                       )}
                     </td>
-                    <td>{event.creator.name || event.creator.email}</td>
+                    <td className="whitespace-nowrap">
+                      {event.creator.name || event.creator.email}
+                    </td>
                     <td>
                       <span className="text-sm">
                         {getCategoryLabel(event.category)}
@@ -443,12 +453,12 @@ export const AdminAllEventsList = () => {
                         {getStatusBadge(event.status).text}
                       </span>
                     </td>
-                    <td className="text-sm">
+                    <td className="text-sm whitespace-nowrap">
                       {new Date(event.startDateTime).toLocaleDateString(
                         "vi-VN"
                       )}
                     </td>
-                    <td className="text-sm">
+                    <td className="text-sm whitespace-nowrap">
                       {event._count?.registrations || 0} / {event.maxAttendees}
                     </td>
                   </tr>

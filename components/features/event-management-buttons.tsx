@@ -58,7 +58,7 @@ export const EventManagementButtons = ({ event }: Props) => {
     <div className="flex items-center justify-center gap-3 flex-wrap">
       <Link
         href={`/events/${event.id}/manage`}
-        className="btn btn-ghost btn-sm gap-2"
+        className="btn btn-primary btn-sm gap-2"
       >
         Quản lý
       </Link>

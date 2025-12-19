@@ -7,6 +7,7 @@
 import React, { useState, useMemo } from "react";
 import useSWR from "swr";
 import axios from "axios";
+import Image from "next/image";
 import { EventCard } from "./event-card";
 import { Event, User } from "@prisma/client";
 import { EventListSkeleton } from "@/components/shared/skeleton";
@@ -103,12 +104,19 @@ export const CreatedEventList = () => {
             {/* Search Bar */}
             <div className="flex-1">
               <div className="relative">
+                <Image
+                  src="/images/search.png"
+                  alt="Search"
+                  width={18}
+                  height={18}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 opacity-70"
+                />
                 <input
                   type="text"
-                  placeholder="🔍 Tìm kiếm sự kiện..."
+                  placeholder="Tìm kiếm sự kiện..."
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
-                  className="input input-bordered w-full pr-10"
+                  className="input input-bordered w-full pl-10 pr-10"
                 />
                 {searchInput && (
                   <button

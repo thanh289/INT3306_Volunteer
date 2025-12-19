@@ -3,9 +3,10 @@
 
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, Calendar, Heart } from "lucide-react";
+import { ChevronLeft, ChevronRight, Calendar, Heart, Menu } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { Event, User } from "@prisma/client";
 
 type EventWithCreator = Event & { creator: User };
@@ -20,6 +21,25 @@ export const DashboardSidebar = ({
   interestedEvents,
 }: DashboardSidebarProps) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const pathname = usePathname();
+
+  // Persist collapse state across navigations
+  useEffect(() => {
+    const saved = localStorage.getItem("dashboardSidebarCollapsed");
+    if (saved !== null) {
+      setIsCollapsed(saved === "true");
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("dashboardSidebarCollapsed", String(isCollapsed));
+  }, [isCollapsed]);
+
+  // If route changes while this component is mounted, collapse the sidebar
+  useEffect(() => {
+    setIsCollapsed(true);
+    localStorage.setItem("dashboardSidebarCollapsed", "true");
+  }, [pathname]);
 
   return (
     <>
@@ -42,6 +62,15 @@ export const DashboardSidebar = ({
                   <Link
                     key={event.id}
                     href={`/events/${event.id}`}
+                    onClick={() => {
+                      setIsCollapsed(true);
+                      try {
+                        localStorage.setItem(
+                          "dashboardSidebarCollapsed",
+                          "true"
+                        );
+                      } catch {}
+                    }}
                     className="block p-3 border border-base-300 rounded-lg hover:bg-base-200 transition-colors"
                   >
                     <p className="font-semibold text-sm text-primary line-clamp-2">
@@ -81,6 +110,15 @@ export const DashboardSidebar = ({
                   <Link
                     key={event.id}
                     href={`/events/${event.id}`}
+                    onClick={() => {
+                      setIsCollapsed(true);
+                      try {
+                        localStorage.setItem(
+                          "dashboardSidebarCollapsed",
+                          "true"
+                        );
+                      } catch {}
+                    }}
                     className="block p-3 border border-base-300 rounded-lg hover:bg-base-200 transition-colors"
                   >
                     <p className="font-semibold text-sm text-primary line-clamp-2">
@@ -111,12 +149,12 @@ export const DashboardSidebar = ({
       <button
         onClick={() => setIsCollapsed(!isCollapsed)}
         className={`fixed top-1/2 -translate-y-1/2 ${
-          isCollapsed ? "left-2" : "left-[19rem]"
-        } z-50 btn btn-circle btn-sm btn-primary shadow-lg transition-all duration-300`}
+          isCollapsed ? "left-3" : "left-[19rem]"
+        } z-[120] btn btn-circle btn-sm bg-primary text-white border border-primary shadow-xl transition-all duration-300`}
         title={isCollapsed ? "Mở thanh bên" : "Đóng thanh bên"}
       >
         {isCollapsed ? (
-          <ChevronRight className="w-4 h-4" />
+          <Menu className="w-4 h-4" />
         ) : (
           <ChevronLeft className="w-4 h-4" />
         )}

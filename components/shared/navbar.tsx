@@ -57,11 +57,11 @@ export const Navbar = () => {
         <div className="flex-1">
           <Link
             href="/"
-            className="btn btn-ghost normal-case text-xl gap-2 hover:scale-105 transition-all duration-300"
+            className="btn btn-ghost normal-case text-xl gap-2 hover:scale-105 transition-all duration-300 px-3 py-2 h-auto min-h-0 bg-transparent hover:bg-transparent border-none shadow-none"
           >
             <div
-              className={`relative transition-all duration-300 ${
-                isScrolled ? "w-10 h-10" : "w-14 h-14"
+              className={`relative transition-all duration-300 overflow-hidden rounded-full ${
+                isScrolled ? "w-10 h-10" : "w-12 h-12"
               }`}
             >
               <Image

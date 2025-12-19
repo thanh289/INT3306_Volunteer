@@ -13,7 +13,6 @@ import { PostLikeButton } from "./post-like-button";
 import { PostComments } from "./post-comments";
 import {
   Trash2,
-  Search,
   Filter,
   Clock,
   Heart as HeartIcon,
@@ -226,7 +225,13 @@ export const DashboardFeed = () => {
       <div className="flex gap-3 items-center flex-wrap">
         {/* Search Bar */}
         <form onSubmit={handleSearch} className="relative flex-1 min-w-[250px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-primary" />
+          <Image
+            src="/images/search.png"
+            alt="Search"
+            width={18}
+            height={18}
+            className="absolute left-3 top-1/2 -translate-y-1/2 opacity-70"
+          />
           <input
             type="text"
             value={searchInput}

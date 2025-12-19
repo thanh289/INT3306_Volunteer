@@ -258,14 +258,17 @@ export const PushNotificationSetting = () => {
           </div>
         </div>
 
-        {/* Toggle Switch */}
-        <input
-          type="checkbox"
-          className="toggle toggle-success"
-          checked={isSubscribed}
-          onChange={handleToggle}
+        {/* Toggle button for better visibility */}
+        <button
+          onClick={handleToggle}
           disabled={isLoading || permission === "denied"}
-        />
+          className={`btn btn-sm font-semibold ${
+            isSubscribed ? "btn-success text-white" : "btn-outline btn-primary"
+          }`}
+          aria-pressed={isSubscribed}
+        >
+          {isSubscribed ? "Đang bật" : "Bật thông báo"}
+        </button>
       </div>
 
       {/* Permission denied warning */}

@@ -5,6 +5,7 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import Image from "next/image";
 
 export const EventFilters = () => {
   const router = useRouter();
@@ -95,6 +96,13 @@ export const EventFilters = () => {
           {/* Search Input */}
           <div className="form-control flex-1">
             <div className="relative">
+              <Image
+                src="/images/search.png"
+                alt="Search"
+                width={18}
+                height={18}
+                className="absolute left-3 top-1/2 -translate-y-1/2 opacity-70"
+              />
               <input
                 type="text"
                 placeholder="Tìm kiếm sự kiện..."
@@ -102,20 +110,6 @@ export const EventFilters = () => {
                 onChange={handleSearchChange}
                 className="input input-bordered w-full pl-10"
               />
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 absolute left-3 top-1/2 -translate-y-1/2 text-base-content/40"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
             </div>
           </div>
 

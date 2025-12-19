@@ -161,7 +161,7 @@ export const UserList = () => {
       {data && data.users.length > 0 && (
         <>
           <div className="overflow-x-auto rounded-box border border-base-300 shadow-sm bg-base-100">
-            <table className="table table-zebra">
+            <table className="table table-zebra text-sm min-w-[720px]">
               <thead className="bg-base-200/80">
                 <tr>
                   <th>Họ và tên</th>
@@ -175,7 +175,7 @@ export const UserList = () => {
                 {data.users.map((user) => (
                   <tr key={user.id} className="hover">
                     <td className="font-medium">{user.name}</td>
-                    <td>{user.email}</td>
+                    <td className="whitespace-nowrap">{user.email}</td>
                     <td>
                       <AdminUserActions
                         user={user}

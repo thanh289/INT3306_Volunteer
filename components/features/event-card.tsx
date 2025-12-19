@@ -142,7 +142,7 @@ export const EventCard = ({
     <Link href={`/events/${event.id}`} className="group">
       <div className="card rounded-xl overflow-hidden bg-gradient-to-br from-blue-50 to-cyan-50 shadow-lg hover:shadow-2xl transition-all duration-300 border border-base-300 h-full group-hover:-translate-y-1 group-hover:border-primary/50">
         {/* Image placeholder */}
-        <figure className="relative h-48 bg-base-200 overflow-hidden">
+        <figure className="relative h-36 sm:h-48 bg-base-200 overflow-hidden">
           {hasValidImage && event.imageUrl ? (
             <img
               src={"/" + event.imageUrl.replace(/\\/g, "/").replace(/^\/+/, "")}
@@ -170,28 +170,28 @@ export const EventCard = ({
 
           {/* Category badge overlay */}
           <div
-            className={`absolute top-3 left-3 ${categoryInfo.bg} backdrop-blur-md px-4 py-2 rounded-full flex items-center gap-2 shadow-lg border border-white/20`}
+            className={`absolute top-2 left-2 sm:top-3 sm:left-3 ${categoryInfo.bg} backdrop-blur-md px-2 py-1 sm:px-4 sm:py-2 rounded-full flex items-center gap-2 shadow-lg border border-white/20`}
           >
             <img
               src={categoryInfo.icon}
               alt="Category"
-              className="w-6 h-6 object-contain"
+              className="w-4 h-4 sm:w-6 sm:h-6 object-contain"
             />
           </div>
 
           {/* Favorite button overlay */}
-          <div className="absolute top-3 right-3 z-10">
+          <div className="absolute top-2 right-2 sm:top-3 sm:right-3 z-10">
             <FavoriteEventButton eventId={event.id} compact />
           </div>
 
           {/* Status badge overlay */}
           {showStatus && (
-            <div className="absolute top-12 right-3">
+            <div className="absolute top-10 right-2 sm:top-12 sm:right-3">
               <EventStatusBadge status={event.status} />
             </div>
           )}
           {registrationStatus && (
-            <div className="absolute top-12 right-3">
+            <div className="absolute top-10 right-2 sm:top-12 sm:right-3">
               <RegistrationStatusBadge
                 status={registrationStatus}
                 isEventPast={isEventPast}
@@ -217,9 +217,9 @@ export const EventCard = ({
           )}
         </figure>
 
-        <div className="card-body">
+        <div className="card-body p-4 sm:p-6">
           {/* Creator */}
-          <div className="flex items-center gap-2 text-sm text-base-content/60">
+          <div className="flex items-center gap-2 text-xs sm:text-sm text-base-content/60">
             <div className="avatar">
               {creatorAvatar ? (
                 <div className="w-6 h-6 rounded-full overflow-hidden">
@@ -243,12 +243,12 @@ export const EventCard = ({
           </div>
 
           {/* Title */}
-          <h3 className="card-title text-xl line-clamp-2 group-hover:text-primary transition-colors">
+          <h3 className="card-title text-base sm:text-xl line-clamp-2 group-hover:text-primary transition-colors">
             {event.title}
           </h3>
 
           {/* Location */}
-          <div className="flex items-center gap-2 text-sm text-base-content/80 font-medium">
+          <div className="flex items-center gap-2 text-xs sm:text-sm text-base-content/80 font-medium">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-4 w-4"
@@ -273,7 +273,7 @@ export const EventCard = ({
           </div>
 
           {/* Date & Time */}
-          <div className="flex items-center gap-2 text-sm text-base-content/80 font-medium mb-3">
+          <div className="flex items-center gap-2 text-xs sm:text-sm text-base-content/80 font-medium mb-2 sm:mb-3">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-4 w-4"
@@ -295,7 +295,7 @@ export const EventCard = ({
 
           {/* Description */}
           <div
-            className="text-sm text-base-content/70 line-clamp-2"
+            className="text-xs sm:text-sm text-base-content/70 line-clamp-2"
             style={{
               display: "-webkit-box",
               WebkitLineClamp: 2,

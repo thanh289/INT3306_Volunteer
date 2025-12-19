@@ -83,7 +83,7 @@ export default async function EventDetailPage({
   };
 
   return (
-    <div className="min-h-screen bg-base-200">
+    <div className="min-h-screen bg-base-200 -mx-4 -mt-4 md:-mx-6 md:-mt-6 lg:-mx-8 lg:-mt-8">
       {/* Event Image - Full width at top */}
       <div className="relative w-full h-80 md:h-[400px] bg-base-300 overflow-hidden">
         <Image
@@ -103,7 +103,7 @@ export default async function EventDetailPage({
       <div className="max-w-7xl mx-auto px-4 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column - Title + Event Wall */}
-          <div className="lg:col-span-2 space-y-4">
+          <div className="lg:col-span-2 space-y-4 order-2 lg:order-1">
             {/* Title Section */}
             <div className="bg-base-100 rounded-2xl shadow-md p-6 border border-base-300">
               {/* Creator info */}
@@ -198,8 +198,8 @@ export default async function EventDetailPage({
           </div>
 
           {/* Right Sidebar - Sticky Event Info */}
-          <div className="lg:col-span-1">
-            <div className="sticky top-6 space-y-4">
+          <div className="lg:col-span-1 order-1 lg:order-2">
+            <div className="lg:sticky lg:top-6 space-y-4">
               {/* Event Details Card */}
               <div className="bg-base-100 rounded-2xl shadow-md p-6 border border-base-300">
                 <h3 className="text-lg font-bold mb-4 text-base-content">
@@ -340,11 +340,11 @@ export default async function EventDetailPage({
                         d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
                       />
                     </svg>
-                    <div className="flex-1">
+                    <div className="flex-1 min-w-0">
                       <p className="font-semibold text-base-content text-sm">
                         Số lượng tối đa
                       </p>
-                      <p className="text-sm text-base-content/80">
+                      <p className="text-sm text-base-content/80 break-words">
                         {event.maxAttendees} người
                       </p>
                     </div>

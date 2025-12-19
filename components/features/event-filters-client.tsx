@@ -121,7 +121,7 @@ export const EventFiltersClient = ({ events }: EventFiltersClientProps) => {
     searchQuery.trim() !== "";
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 overflow-visible">
       {/* Hero Section */}
       <div className="hero bg-gradient-to-br from-primary/10 via-base-100 to-secondary/10 rounded-2xl border border-base-300">
         <div className="hero-content text-center py-12">
@@ -149,7 +149,7 @@ export const EventFiltersClient = ({ events }: EventFiltersClientProps) => {
 
       {/* Upcoming Events Carousel */}
       {upcomingEvents.length > 0 && (
-        <div className="card bg-base-100 shadow-lg border border-base-300">
+        <div className="card bg-base-100 shadow-lg border border-base-300 rounded-2xl">
           <div className="card-body">
             <div className="flex items-center justify-between mb-4">
               <h2 className="card-title text-2xl">
@@ -203,7 +203,7 @@ export const EventFiltersClient = ({ events }: EventFiltersClientProps) => {
                             href={`/events/${event.id}`}
                             className="group"
                           >
-                            <div className="card bg-base-100 border border-base-300 hover:border-primary hover:shadow-xl transition-all h-full">
+                            <div className="card bg-base-100 border border-base-300 hover:border-primary hover:shadow-xl transition-all h-full rounded-2xl overflow-hidden">
                               <figure className="relative h-48 overflow-hidden bg-base-200">
                                 {event.imageUrl ? (
                                   <img
@@ -336,36 +336,43 @@ export const EventFiltersClient = ({ events }: EventFiltersClientProps) => {
       )}
 
       {/* Filters */}
-      <div className="card bg-base-100 shadow-lg border border-base-300">
-        <div className="card-body">
-          {/* Search bar, category dropdown, and sort on one row */}
-          <div className="flex flex-col md:flex-row gap-4">
-            {/* Search Bar */}
-            <div className="form-control flex-1">
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="🔍 Tìm kiếm sự kiện..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="input input-bordered w-full pr-10"
-                />
-                {searchQuery && (
-                  <button
-                    onClick={() => setSearchQuery("")}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-base-content/40 hover:text-base-content"
-                  >
-                    ✕
-                  </button>
-                )}
-              </div>
+      <div className="card bg-base-100 shadow-lg border border-base-300 rounded-2xl overflow-visible relative z-20">
+        <div className="card-body overflow-visible">
+          {/* Search bar on first row */}
+          <div className="form-control w-full">
+            <div className="relative">
+              <Image
+                src="/images/search.png"
+                alt="Search"
+                width={18}
+                height={18}
+                className="absolute left-3 top-1/2 -translate-y-1/2 opacity-70"
+              />
+              <input
+                type="text"
+                placeholder="Tìm kiếm sự kiện..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="input input-bordered w-full pl-10 pr-10 rounded-xl"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-base-content/40 hover:text-base-content"
+                >
+                  ✕
+                </button>
+              )}
             </div>
+          </div>
 
+          {/* Category dropdown and sort on second row */}
+          <div className="flex flex-col sm:flex-row gap-4 overflow-visible">
             {/* Category Filter - Dropdown with checkboxes */}
-            <div className="dropdown dropdown-end w-full md:w-64">
+            <div className="dropdown dropdown-end dropdown-bottom w-full sm:w-auto sm:flex-1 relative z-30">
               <label
                 tabIndex={0}
-                className="btn btn-ghost w-full justify-between normal-case hover:bg-base-200"
+                className="btn btn-ghost w-full justify-between normal-case hover:bg-base-200 rounded-xl"
               >
                 <span>📂 Danh mục</span>
                 <svg
@@ -385,7 +392,7 @@ export const EventFiltersClient = ({ events }: EventFiltersClientProps) => {
               </label>
               <ul
                 tabIndex={0}
-                className="dropdown-content z-[1] menu p-2 shadow-lg bg-base-100 rounded-box w-64 mt-1 border border-base-300"
+                className="dropdown-content menu p-2 shadow-xl bg-base-100 rounded-2xl w-full sm:w-64 mt-2 border border-base-300 max-h-96 overflow-auto absolute left-0 top-full z-[120]"
               >
                 {[
                   {
@@ -417,6 +424,13 @@ export const EventFiltersClient = ({ events }: EventFiltersClientProps) => {
                         onChange={() => handleCategoryToggle(category.value)}
                         className="checkbox checkbox-sm checkbox-primary"
                       />
+                      <Image
+                        src={category.icon}
+                        alt={category.label}
+                        width={20}
+                        height={20}
+                        className="w-5 h-5 object-contain"
+                      />
                       <span className="label-text">{category.label}</span>
                     </label>
                   </li>
@@ -425,15 +439,30 @@ export const EventFiltersClient = ({ events }: EventFiltersClientProps) => {
             </div>
 
             {/* Sort Filter - Dropdown style */}
-            <div className="dropdown dropdown-end w-full md:w-52">
+            <div className="dropdown dropdown-end dropdown-bottom w-full sm:w-auto sm:flex-1 relative z-30">
               <label
                 tabIndex={0}
-                className="btn btn-ghost w-full justify-between normal-case hover:bg-base-200"
+                className="btn btn-ghost w-full justify-between normal-case hover:bg-base-200 rounded-xl"
               >
-                <span>
-                  {sortBy === "startDateTime"
-                    ? "📅 Ngày bắt đầu"
-                    : "🔤 Tên (A-Z)"}
+                <span className="flex items-center gap-2">
+                  <Image
+                    src={
+                      sortBy === "startDateTime"
+                        ? "/images/calendar.png"
+                        : "/images/abc.png"
+                    }
+                    alt={
+                      sortBy === "startDateTime"
+                        ? "Sắp xếp theo ngày"
+                        : "Sắp xếp theo tên"
+                    }
+                    width={18}
+                    height={18}
+                    className="w-4 h-4 object-contain"
+                  />
+                  <span>
+                    {sortBy === "startDateTime" ? "Ngày bắt đầu" : "Tên (A-Z)"}
+                  </span>
                 </span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -452,30 +481,44 @@ export const EventFiltersClient = ({ events }: EventFiltersClientProps) => {
               </label>
               <ul
                 tabIndex={0}
-                className="dropdown-content z-[1] menu p-2 shadow-lg bg-base-100 rounded-box w-52 mt-1 border border-base-300"
+                className="dropdown-content menu p-2 shadow-xl bg-base-100 rounded-2xl w-full sm:w-52 mt-2 border border-base-300 max-h-96 overflow-auto absolute left-0 top-full z-[120]"
               >
                 <li>
                   <button
                     onClick={() => setSortBy("startDateTime")}
-                    className={`justify-start ${
+                    className={`justify-start flex items-center gap-2 ${
                       sortBy === "startDateTime"
                         ? "active bg-primary text-primary-content"
                         : ""
                     }`}
                   >
-                    📅 Ngày bắt đầu
+                    <Image
+                      src="/images/calendar.png"
+                      alt="Sắp xếp theo ngày"
+                      width={18}
+                      height={18}
+                      className="w-4 h-4 object-contain"
+                    />
+                    Ngày bắt đầu
                   </button>
                 </li>
                 <li>
                   <button
                     onClick={() => setSortBy("title")}
-                    className={`justify-start ${
+                    className={`justify-start flex items-center gap-2 ${
                       sortBy === "title"
                         ? "active bg-primary text-primary-content"
                         : ""
                     }`}
                   >
-                    🔤 Tên (A-Z)
+                    <Image
+                      src="/images/abc.png"
+                      alt="Sắp xếp theo tên"
+                      width={18}
+                      height={18}
+                      className="w-4 h-4 object-contain"
+                    />
+                    Tên (A-Z)
                   </button>
                 </li>
               </ul>
@@ -515,7 +558,7 @@ export const EventFiltersClient = ({ events }: EventFiltersClientProps) => {
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {paginatedEvents.map((event) => (
               <EventCard key={event.id} event={event} />
             ))}

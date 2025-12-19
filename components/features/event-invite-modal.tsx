@@ -115,13 +115,22 @@ export const EventInviteModal = ({
 
         {/* Search input */}
         <div className="form-control mb-4">
-          <input
-            type="text"
-            placeholder="🔍 Tìm kiếm theo tên hoặc email..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="input input-bordered"
-          />
+          <div className="relative">
+            <Image
+              src="/images/search.png"
+              alt="Search"
+              width={18}
+              height={18}
+              className="absolute left-3 top-1/2 -translate-y-1/2 opacity-70"
+            />
+            <input
+              type="text"
+              placeholder="Tìm kiếm theo tên hoặc email..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="input input-bordered pl-10"
+            />
+          </div>
         </div>
 
         {/* Users list */}

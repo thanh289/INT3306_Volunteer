@@ -126,18 +126,30 @@ export default function AboutPage() {
 
       {/* Stats Section */}
       <section className="bg-base-200/50 border-y border-base-300 py-12">
-        <div className="grid grid-cols-3 gap-8 text-center max-w-4xl mx-auto">
+        <div className="grid grid-cols-3 gap-6 sm:gap-8 text-center max-w-4xl mx-auto">
           <div>
-            <div className="text-4xl font-bold text-primary mb-2">1,000+</div>
-            <div className="text-base-content/70">Tình nguyện viên</div>
+            <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary mb-1 sm:mb-2">
+              1,000+
+            </div>
+            <div className="text-xs sm:text-sm text-base-content/70 leading-tight">
+              Tình nguyện viên
+            </div>
           </div>
           <div>
-            <div className="text-4xl font-bold text-primary mb-2">500+</div>
-            <div className="text-base-content/70">Sự kiện</div>
+            <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary mb-1 sm:mb-2">
+              500+
+            </div>
+            <div className="text-xs sm:text-sm text-base-content/70 leading-tight">
+              Sự kiện
+            </div>
           </div>
           <div>
-            <div className="text-4xl font-bold text-primary mb-2">10,000+</div>
-            <div className="text-base-content/70">Giờ tình nguyện</div>
+            <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary mb-1 sm:mb-2">
+              10,000+
+            </div>
+            <div className="text-xs sm:text-sm text-base-content/70 leading-tight">
+              Giờ tình nguyện
+            </div>
           </div>
         </div>
       </section>

@@ -21,20 +21,27 @@ export const MobileDrawer = ({ children }: { children: React.ReactNode }) => {
     ? "/" + session.user.imageUrl.replace(/\\/g, "/").replace(/^\/+/, "")
     : null;
 
+  const closeDrawer = () => {
+    const drawer = document.getElementById(
+      "mobile-drawer"
+    ) as HTMLInputElement | null;
+    if (drawer) drawer.checked = false;
+  };
+
   // Automatically close the drawer when size of the desktop back to normal
   useEffect(() => {
     const handleResize = () => {
-      const drawer = document.getElementById(
-        "mobile-drawer"
-      ) as HTMLInputElement | null;
-      if (drawer && window.innerWidth >= 1024) {
-        drawer.checked = false;
-      }
+      if (window.innerWidth >= 1024) closeDrawer();
     };
 
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  // Close drawer whenever route changes
+  useEffect(() => {
+    closeDrawer();
+  }, [pathname]);
 
   // use drawer component from daisyUI to get the side bar
   return (
@@ -44,7 +51,13 @@ export const MobileDrawer = ({ children }: { children: React.ReactNode }) => {
       <div className="drawer-side z-50">
         {/* Blur overlay using drawer-overlay */}
         <label htmlFor="mobile-drawer" className="drawer-overlay"></label>
-        <div className="menu p-4 w-80 min-h-full bg-base-100 text-base-content">
+        <div
+          className="menu p-4 w-80 min-h-full bg-base-100 text-base-content"
+          onClick={(e) => {
+            const target = e.target as HTMLElement;
+            if (target.closest("a")) closeDrawer();
+          }}
+        >
           {/* Logo in drawer */}
           <div className="mb-4 flex items-center gap-3 px-4">
             <div className="relative w-10 h-10">

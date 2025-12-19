@@ -233,7 +233,7 @@ export const RegistrationQuestionsManager = ({
                         <textarea
                           value={editText}
                           onChange={(e) => setEditText(e.target.value)}
-                          className="textarea textarea-bordered flex-1"
+                          className="textarea textarea-bordered flex-1 px-4 py-3"
                           rows={2}
                           autoFocus
                         />
@@ -250,14 +250,14 @@ export const RegistrationQuestionsManager = ({
                       <div className="flex gap-2">
                         <button
                           onClick={() => handleSave(q.id)}
-                          className="btn btn-primary btn-sm gap-1"
+                          className="btn btn-primary btn-md gap-1"
                         >
                           <Save className="h-4 w-4" />
                           Lưu
                         </button>
                         <button
                           onClick={handleCancel}
-                          className="btn btn-ghost btn-sm gap-1"
+                          className="btn btn-outline btn-secondary btn-md gap-1"
                         >
                           <X className="h-4 w-4" />
                           Hủy
@@ -268,14 +268,14 @@ export const RegistrationQuestionsManager = ({
                     // View mode
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1">
-                        <div className="flex items-start gap-2">
+                        <div className="flex items-start gap-3">
                           <span className="text-sm font-semibold text-base-content/70">
                             {index + 1}.
                           </span>
                           <div>
                             <p className="font-medium">{q.question}</p>
                             {q.isRequired && (
-                              <span className="badge badge-sm badge-primary mt-1">
+                              <span className="badge badge-primary px-3 py-1 text-xs mt-1">
                                 Bắt buộc
                               </span>
                             )}
@@ -285,14 +285,14 @@ export const RegistrationQuestionsManager = ({
                       <div className="flex gap-1">
                         <button
                           onClick={() => handleEdit(q)}
-                          className="btn btn-ghost btn-xs btn-square"
+                          className="btn btn-outline btn-primary btn-sm btn-square"
                           title="Sửa"
                         >
                           <Edit2 className="h-4 w-4" />
                         </button>
                         <button
                           onClick={() => handleDelete(q.id)}
-                          className="btn btn-ghost btn-xs btn-square text-error"
+                          className="btn btn-outline btn-error btn-sm btn-square"
                           title="Xóa"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -314,7 +314,7 @@ export const RegistrationQuestionsManager = ({
                       value={newQuestion}
                       onChange={(e) => setNewQuestion(e.target.value)}
                       placeholder="Nhập câu hỏi..."
-                      className="textarea textarea-bordered flex-1"
+                      className="textarea textarea-bordered flex-1 px-4 py-3"
                       rows={2}
                       autoFocus
                     />
@@ -331,7 +331,7 @@ export const RegistrationQuestionsManager = ({
                   <div className="flex gap-2">
                     <button
                       onClick={handleAdd}
-                      className="btn btn-primary btn-sm gap-1"
+                      className="btn btn-primary btn-md gap-1"
                     >
                       <Save className="h-4 w-4" />
                       Thêm
@@ -342,7 +342,7 @@ export const RegistrationQuestionsManager = ({
                         setNewQuestion("");
                         setNewRequired(true);
                       }}
-                      className="btn btn-ghost btn-sm gap-1"
+                      className="btn btn-outline btn-secondary btn-md gap-1"
                     >
                       <X className="h-4 w-4" />
                       Hủy
@@ -356,7 +356,7 @@ export const RegistrationQuestionsManager = ({
             {!isAdding && (
               <button
                 onClick={() => setIsAdding(true)}
-                className="btn btn-outline btn-sm gap-2 mt-4"
+                className="btn btn-outline btn-primary btn-md gap-2 mt-4"
               >
                 <Plus className="h-4 w-4" />
                 Thêm câu hỏi
