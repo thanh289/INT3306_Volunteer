@@ -172,9 +172,6 @@ export const RegistrationQuestionsManager = ({
           {/* Enable/Disable Toggle */}
           <div className="form-control">
             <label className="label cursor-pointer gap-2">
-              <span className="label-text font-semibold">
-                {isEnabled ? "Đang bật" : "Đã tắt"}
-              </span>
               <input
                 type="checkbox"
                 className="toggle toggle-primary"

@@ -6,7 +6,6 @@
 import { useState } from 'react';
 import axios from 'axios';
 import Link from 'next/link';
-import toast from 'react-hot-toast';
 import AuthContainer from '@/components/auth/AuthContainer';
 import AuthInput from '@/components/auth/AuthInput';
 import { validateEmail } from '@/lib/validations/auth';

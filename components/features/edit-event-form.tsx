@@ -76,6 +76,22 @@ export const EditEventForm = ({ event }: { event: Event }) => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    // Kiểm tra xem có thay đổi gì không
+    const hasChanges =
+      formData.title !== event.title ||
+      formData.description !== event.description ||
+      formData.location !== event.location ||
+      formData.startDateTime !== formatDateForInput(event.startDateTime) ||
+      formData.endDateTime !== formatDateForInput(event.endDateTime) ||
+      formData.maxAttendees !== event.maxAttendees.toString() ||
+      formData.category !== event.category;
+
+    if (!hasChanges) {
+      toast.error("Bạn chưa thay đổi gì cả!");
+      return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -120,9 +136,8 @@ export const EditEventForm = ({ event }: { event: Event }) => {
             <button type="button" className="btn btn-ghost btn-sm btn-circle">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className={`h-5 w-5 transition-transform ${
-                  showImageUpload ? "rotate-180" : ""
-                }`}
+                className={`h-5 w-5 transition-transform ${showImageUpload ? "rotate-180" : ""
+                  }`}
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -229,11 +244,10 @@ export const EditEventForm = ({ event }: { event: Event }) => {
                 {Object.entries(categoryConfig).map(([key, config]) => (
                   <label
                     key={key}
-                    className={`card border-2 cursor-pointer transition-all hover:shadow-md ${
-                      formData.category === key
-                        ? "border-primary bg-primary/5 shadow-md"
-                        : "border-base-300 hover:border-primary/50"
-                    }`}
+                    className={`card border-2 cursor-pointer transition-all hover:shadow-md ${formData.category === key
+                      ? "border-primary bg-primary/5 shadow-md"
+                      : "border-base-300 hover:border-primary/50"
+                      }`}
                   >
                     <div className="card-body p-4 items-center text-center">
                       <input

@@ -19,7 +19,17 @@ export const EventImageUpload = ({ eventId, currentImageUrl, eventTitle }: Event
     const router = useRouter();
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [isUploading, setIsUploading] = useState(false);
-    const [previewUrl, setPreviewUrl] = useState<string | null>(currentImageUrl);
+
+    // Format image URL to ensure correct path
+    const formatImageUrl = (url: string | null) => {
+        if (!url) return null;
+        // If it's already a data URL (preview), return as is
+        if (url.startsWith('data:')) return url;
+        // Format the path with leading slash and forward slashes
+        return "/" + url.replace(/\\/g, "/").replace(/^\/+/, "");
+    };
+
+    const [previewUrl, setPreviewUrl] = useState<string | null>(formatImageUrl(currentImageUrl));
 
     const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -60,7 +70,7 @@ export const EventImageUpload = ({ eventId, currentImageUrl, eventTitle }: Event
             });
 
             toast.success('Cập nhật ảnh sự kiện thành công!');
-            setPreviewUrl(response.data.imageUrl);
+            setPreviewUrl(formatImageUrl(response.data.imageUrl));
             router.refresh();
 
         } catch (error) {
@@ -71,7 +81,7 @@ export const EventImageUpload = ({ eventId, currentImageUrl, eventTitle }: Event
                 toast.error('Có lỗi xảy ra khi tải ảnh lên');
             }
             // revert
-            setPreviewUrl(currentImageUrl);
+            setPreviewUrl(formatImageUrl(currentImageUrl));
 
         } finally {
             setIsUploading(false);
