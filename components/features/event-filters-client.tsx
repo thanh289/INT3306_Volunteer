@@ -388,10 +388,26 @@ export const EventFiltersClient = ({ events }: EventFiltersClientProps) => {
                 className="dropdown-content z-[1] menu p-2 shadow-lg bg-base-100 rounded-box w-64 mt-1 border border-base-300"
               >
                 {[
-                  { value: "ENVIRONMENT", label: "🌱 Môi trường" },
-                  { value: "EDUCATION", label: "📚 Giáo dục" },
-                  { value: "HEALTHCARE", label: "⚕️ Y tế - Sức khỏe" },
-                  { value: "COMMUNITY", label: "🤝 Cộng đồng" },
+                  {
+                    value: "ENVIRONMENT",
+                    label: "Môi trường",
+                    icon: "/images/environment.png",
+                  },
+                  {
+                    value: "EDUCATION",
+                    label: "Giáo dục",
+                    icon: "/images/education.png",
+                  },
+                  {
+                    value: "HEALTHCARE",
+                    label: "Y tế - Sức khỏe",
+                    icon: "/images/health.png",
+                  },
+                  {
+                    value: "COMMUNITY",
+                    label: "Cộng đồng",
+                    icon: "/images/community.png",
+                  },
                 ].map((category) => (
                   <li key={category.value}>
                     <label className="label cursor-pointer justify-start gap-3 p-3 hover:bg-base-200">

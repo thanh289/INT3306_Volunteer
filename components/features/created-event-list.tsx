@@ -113,7 +113,7 @@ export const CreatedEventList = () => {
             Bị từ chối
           </button>
         </div>
-        <p className="text-gray-500">Bạn chưa tạo sự kiện nào.</p>
+        <p className="text-base-content/60">Bạn chưa tạo sự kiện nào.</p>
       </div>
     );
   }

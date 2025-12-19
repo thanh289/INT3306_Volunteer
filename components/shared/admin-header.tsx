@@ -5,32 +5,20 @@ import Link from "next/link";
 
 export const AdminHeader = () => {
   return (
-    <header className="bg-gray-800 text-white shadow-md">
-      <div className="container mx-auto px-6 py-3 flex justify-between items-center">
-        <h1 className="text-xl font-bold">Admin Panel</h1>
-        <nav className="flex items-center gap-4">
-          <Link
-            href="/admin/event-approval"
-            className="text-sm hover:text-gray-300"
-          >
+    <header className="bg-base-100 text-base-content border-b border-base-300 backdrop-blur supports-[backdrop-filter]:bg-base-100/90 sticky top-0 z-40">
+      <div className="container mx-auto px-4 md:px-6 py-3 flex justify-between items-center">
+        <h1 className="text-lg md:text-xl font-bold">Bảng điều khiển Admin</h1>
+        <nav className="flex items-center gap-2 md:gap-3">
+          <Link href="/admin/event-approval" className="btn btn-ghost btn-sm">
             Duyệt sự kiện
           </Link>
-          <Link
-            href="/admin/event-management"
-            className="text-sm hover:text-gray-300"
-          >
+          <Link href="/admin/event-management" className="btn btn-ghost btn-sm">
             Quản lý sự kiện
           </Link>
-          <Link
-            href="/admin/user-management"
-            className="text-sm hover:text-gray-300"
-          >
+          <Link href="/admin/user-management" className="btn btn-ghost btn-sm">
             Quản lý người dùng
           </Link>
-          <Link
-            href="/"
-            className="px-4 py-2 text-sm font-medium rounded-md hover:bg-gray-700"
-          >
+          <Link href="/" className="btn btn-primary btn-sm">
             Về trang chủ
           </Link>
         </nav>

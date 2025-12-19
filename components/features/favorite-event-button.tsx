@@ -88,18 +88,20 @@ export const FavoriteEventButton = ({
       <button
         onClick={handleClick}
         disabled={isLoading || isChecking}
-        className={`p-2 rounded-full transition-all duration-200 disabled:opacity-50 ${
-          isInterested
-            ? "bg-red-100 text-red-600 hover:bg-red-200"
-            : "bg-gray-100 text-gray-400 hover:bg-gray-200 hover:text-red-400"
-        }`}
+        className="p-2 transition-all duration-200 disabled:opacity-50 group"
         title={
           isInterested
             ? "Xóa khỏi danh sách quan tâm"
             : "Thêm vào danh sách quan tâm"
         }
       >
-        <Heart className={`w-5 h-5 ${isInterested ? "fill-current" : ""}`} />
+        <Heart
+          className={`w-6 h-6 transition-transform duration-200 group-hover:scale-125 ${
+            isInterested
+              ? "fill-red-500 text-red-500"
+              : "text-gray-600 hover:text-red-500"
+          }`}
+        />
       </button>
     );
   }
@@ -109,13 +111,17 @@ export const FavoriteEventButton = ({
     <button
       onClick={handleClick}
       disabled={isLoading || isChecking}
-      className={`flex items-center gap-2 px-6 py-3 font-medium border rounded-md shadow-sm transition-all duration-200 disabled:opacity-50 ${
+      className={`flex items-center gap-2 px-6 py-3 font-medium border rounded-md shadow-sm transition-all duration-200 disabled:opacity-50 group ${
         isInterested
-          ? "bg-red-50 text-red-600 border-red-300 hover:bg-red-100"
+          ? "bg-red-50 text-red-600 border-red-200 hover:bg-red-100"
           : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
       }`}
     >
-      <Heart className={`w-5 h-5 ${isInterested ? "fill-current" : ""}`} />
+      <Heart
+        className={`w-5 h-5 transition-transform duration-200 group-hover:scale-110 ${
+          isInterested ? "fill-red-500 text-red-500" : "text-gray-600"
+        }`}
+      />
       {isLoading ? "Đang xử lý..." : isInterested ? "Đã quan tâm" : "Quan tâm"}
     </button>
   );

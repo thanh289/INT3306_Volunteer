@@ -1,8 +1,9 @@
 // Simple footer component
 // components/shared/footer.tsx
 
-import Link from "next/link";
 import Image from "next/image";
+
+const SOCIAL_URL = "https://www.facebook.com/duonganh.tuan.39904/";
 
 export const Footer = () => {
   return (
@@ -17,6 +18,7 @@ export const Footer = () => {
                   src="/images/logo.webp"
                   alt="VolunteerHub Logo"
                   fill
+                  sizes="32px"
                   className="object-contain"
                 />
               </div>
@@ -37,9 +39,11 @@ export const Footer = () => {
           {/* Social Media Icons */}
           <div className="flex gap-3">
             <a
-              href="#"
+              href={SOCIAL_URL}
               className="btn btn-circle btn-ghost btn-sm"
               aria-label="Facebook"
+              target="_blank"
+              rel="noreferrer noopener"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -51,9 +55,11 @@ export const Footer = () => {
               </svg>
             </a>
             <a
-              href="#"
+              href={SOCIAL_URL}
               className="btn btn-circle btn-ghost btn-sm"
               aria-label="Twitter"
+              target="_blank"
+              rel="noreferrer noopener"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -65,9 +71,11 @@ export const Footer = () => {
               </svg>
             </a>
             <a
-              href="#"
+              href={SOCIAL_URL}
               className="btn btn-circle btn-ghost btn-sm"
               aria-label="LinkedIn"
+              target="_blank"
+              rel="noreferrer noopener"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -79,9 +87,11 @@ export const Footer = () => {
               </svg>
             </a>
             <a
-              href="#"
+              href={SOCIAL_URL}
               className="btn btn-circle btn-ghost btn-sm"
               aria-label="YouTube"
+              target="_blank"
+              rel="noreferrer noopener"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -93,9 +103,11 @@ export const Footer = () => {
               </svg>
             </a>
             <a
-              href="#"
+              href={SOCIAL_URL}
               className="btn btn-circle btn-ghost btn-sm"
               aria-label="Instagram"
+              target="_blank"
+              rel="noreferrer noopener"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"

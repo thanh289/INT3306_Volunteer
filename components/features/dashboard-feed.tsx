@@ -62,10 +62,14 @@ interface Post {
 }
 
 const CATEGORIES = [
-  { value: "ENVIRONMENT", label: "Môi trường", icon: "🌱" },
-  { value: "EDUCATION", label: "Giáo dục", icon: "📚" },
-  { value: "HEALTHCARE", label: "Y tế", icon: "🏥" },
-  { value: "COMMUNITY", label: "Cộng đồng", icon: "🤝" },
+  {
+    value: "ENVIRONMENT",
+    label: "Môi trường",
+    icon: "/images/environment.png",
+  },
+  { value: "EDUCATION", label: "Giáo dục", icon: "/images/education.png" },
+  { value: "HEALTHCARE", label: "Y tế", icon: "/images/health.png" },
+  { value: "COMMUNITY", label: "Cộng đồng", icon: "/images/community.png" },
 ];
 
 type SortOption = "recent" | "likes" | "comments" | "upcoming" | "interested";
@@ -221,13 +225,13 @@ export const DashboardFeed = () => {
       <div className="flex gap-3 items-center flex-wrap">
         {/* Search Bar */}
         <form onSubmit={handleSearch} className="relative flex-1 min-w-[250px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-primary" />
           <input
             type="text"
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             placeholder="Tìm kiếm... (Nhấn Enter)"
-            className="input input-bordered w-full pl-10 pr-4"
+            className="input input-bordered w-full pl-10 pr-4 rounded-xl bg-base-100 shadow-sm border-2 focus:border-primary focus:outline-none"
           />
         </form>
 
@@ -388,8 +392,13 @@ export const DashboardFeed = () => {
                       onChange={() => handleCategoryToggle(category.value)}
                       className="checkbox checkbox-primary checkbox-sm"
                     />
-                    <span className="text-sm">
-                      {category.icon} {category.label}
+                    <span className="text-sm flex items-center gap-2">
+                      <img
+                        src={category.icon}
+                        alt={category.label}
+                        className="w-4 h-4 object-contain"
+                      />
+                      {category.label}
                     </span>
                   </label>
                 ))}

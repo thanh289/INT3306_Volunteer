@@ -40,7 +40,7 @@ export const EventPostSettings = ({ event }: Props) => {
   };
 
   return (
-    <div className="bg-white p-8 rounded-lg shadow-md">
+    <div className="bg-base-100 text-base-content p-8 rounded-lg shadow-md border border-base-300">
       <h2 className="text-2xl font-bold mb-4">Cài đặt bài đăng</h2>
       <div className="space-y-4">
         <div className="form-control">

@@ -132,10 +132,10 @@ export const AdminAllEventsList = () => {
 
   const getCategoryLabel = (category: EventCategory) => {
     const labels = {
-      ENVIRONMENT: "🌱 Môi trường",
-      EDUCATION: "📚 Giáo dục",
-      HEALTHCARE: "🏥 Y tế",
-      COMMUNITY: "🤝 Cộng đồng",
+      ENVIRONMENT: "Môi trường",
+      EDUCATION: "Giáo dục",
+      HEALTHCARE: "Y tế",
+      COMMUNITY: "Cộng đồng",
     };
     return labels[category] || category;
   };
@@ -207,10 +207,10 @@ export const AdminAllEventsList = () => {
             onChange={(e) => handleFilterChange("category", e.target.value)}
           >
             <option value="ALL">Tất cả thể loại</option>
-            <option value="ENVIRONMENT">🌱 Môi trường</option>
-            <option value="EDUCATION">📚 Giáo dục</option>
-            <option value="HEALTHCARE">🏥 Y tế</option>
-            <option value="COMMUNITY">🤝 Cộng đồng</option>
+            <option value="ENVIRONMENT">Môi trường</option>
+            <option value="EDUCATION">Giáo dục</option>
+            <option value="HEALTHCARE">Y tế</option>
+            <option value="COMMUNITY">Cộng đồng</option>
           </select>
 
           <div className="ml-auto">

@@ -63,7 +63,7 @@ export const ProfileForm = ({ user }: { user: User }) => {
       <div>
         <label
           htmlFor="email"
-          className="block text-sm font-medium text-gray-700"
+          className="block text-sm font-medium text-base-content"
         >
           Email
         </label>
@@ -73,13 +73,13 @@ export const ProfileForm = ({ user }: { user: User }) => {
           id="email"
           disabled
           value={user.email}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-100"
+          className="mt-1 block w-full rounded-md border border-base-300 shadow-sm bg-base-200 text-base-content"
         />
       </div>
       <div>
         <label
           htmlFor="name"
-          className="block text-sm font-medium text-gray-700"
+          className="block text-sm font-medium text-base-content"
         >
           Họ và tên
         </label>
@@ -90,14 +90,14 @@ export const ProfileForm = ({ user }: { user: User }) => {
           required
           value={formData.name}
           onChange={handleChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+          className="mt-1 block w-full rounded-md border border-base-300 shadow-sm bg-base-100 text-base-content"
         />
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <label
             htmlFor="dateOfBirth"
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm font-medium text-base-content"
           >
             Ngày sinh
           </label>
@@ -107,13 +107,13 @@ export const ProfileForm = ({ user }: { user: User }) => {
             id="dateOfBirth"
             value={formData.dateOfBirth}
             onChange={handleChange}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+            className="mt-1 block w-full rounded-md border border-base-300 shadow-sm bg-base-100 text-base-content"
           />
         </div>
         <div>
           <label
             htmlFor="gender"
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm font-medium text-base-content"
           >
             Giới tính
           </label>
@@ -122,7 +122,7 @@ export const ProfileForm = ({ user }: { user: User }) => {
             id="gender"
             value={formData.gender}
             onChange={handleChange}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+            className="mt-1 block w-full rounded-md border border-base-300 shadow-sm bg-base-100 text-base-content"
           >
             <option value="">-- Chọn giới tính --</option>
             <option value={Gender.MALE}>Nam</option>
@@ -133,7 +133,7 @@ export const ProfileForm = ({ user }: { user: User }) => {
       <div>
         <label
           htmlFor="phone"
-          className="block text-sm font-medium text-gray-700"
+          className="block text-sm font-medium text-base-content"
         >
           Số điện thoại
         </label>
@@ -143,13 +143,13 @@ export const ProfileForm = ({ user }: { user: User }) => {
           id="phone"
           value={formData.phone}
           onChange={handleChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+          className="mt-1 block w-full rounded-md border border-base-300 shadow-sm bg-base-100 text-base-content"
         />
       </div>
       <div>
         <label
           htmlFor="address"
-          className="block text-sm font-medium text-gray-700"
+          className="block text-sm font-medium text-base-content"
         >
           Địa chỉ
         </label>
@@ -159,7 +159,7 @@ export const ProfileForm = ({ user }: { user: User }) => {
           id="address"
           value={formData.address}
           onChange={handleChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+          className="mt-1 block w-full rounded-md border border-base-300 shadow-sm bg-base-100 text-base-content"
         />
       </div>
       <div>

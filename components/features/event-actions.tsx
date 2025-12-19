@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation";
 import { Event } from "@prisma/client";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { Ban, RotateCcw, Trash2 } from "lucide-react";
 
 type Props = {
   event: Event & {
@@ -96,11 +95,8 @@ export const EventActions = ({
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md border-l-4 border-error">
-      <h2 className="text-xl font-bold mb-4 text-error flex items-center gap-2">
-        <Ban className="h-6 w-6" />
-        Hành động nguy hiểm
-      </h2>
+    <div className="bg-base-100 text-base-content p-6 rounded-2xl shadow-md border-2 border-error">
+      <h2 className="text-xl font-bold mb-4 text-error">Hành động nguy hiểm</h2>
 
       {event.isCancelled && (
         <div className="mb-4 p-4 bg-error/10 border border-error/30 rounded-lg">
@@ -114,7 +110,7 @@ export const EventActions = ({
       <div className="space-y-3">
         {/* Cancel/Restore button */}
         {canManage && (
-          <div className="flex items-start gap-4 p-4 bg-base-100 rounded-lg border">
+          <div className="flex items-start gap-4 p-4 bg-base-100 rounded-lg border border-base-300">
             <div className="flex-1">
               {event.isCancelled ? (
                 <>
@@ -144,7 +140,6 @@ export const EventActions = ({
                 onClick={handleRestore}
                 className="btn btn-success gap-2 shrink-0"
               >
-                <RotateCcw className="h-4 w-4" />
                 Khôi phục
               </button>
             ) : (
@@ -153,7 +148,6 @@ export const EventActions = ({
                 className="btn btn-warning gap-2 shrink-0"
                 disabled={isOngoing}
               >
-                <Ban className="h-4 w-4" />
                 Hủy sự kiện
               </button>
             )}
@@ -162,7 +156,7 @@ export const EventActions = ({
 
         {/* Delete button - only for admin and creator */}
         {(isCreator || isAdmin) && (
-          <div className="flex items-start gap-4 p-4 bg-base-100 rounded-lg border border-error/30">
+          <div className="flex items-start gap-4 p-4 bg-base-100 rounded-lg border border-base-300">
             <div className="flex-1">
               <h3 className="font-semibold mb-1 text-error">
                 Xóa vĩnh viễn sự kiện
@@ -176,7 +170,6 @@ export const EventActions = ({
               onClick={handleDelete}
               className="btn btn-error gap-2 shrink-0"
             >
-              <Trash2 className="h-4 w-4" />
               Xóa vĩnh viễn
             </button>
           </div>

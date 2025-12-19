@@ -12,15 +12,21 @@ const EventStatusBadge = ({ status }: { status: EventStatus }) => {
   const statusConfig = {
     PENDING_APPROVAL: {
       text: "Chờ duyệt",
-      style: "bg-yellow-500 text-white shadow-lg",
+      style: "bg-amber-500 text-white border-amber-600 shadow-lg",
     },
-    PUBLISHED: { text: "Đã đăng", style: "bg-green-600 text-white shadow-lg" },
-    REJECTED: { text: "Bị từ chối", style: "bg-red-600 text-white shadow-lg" },
+    PUBLISHED: {
+      text: "Đã đăng",
+      style: "bg-emerald-600 text-white border-emerald-700 shadow-lg",
+    },
+    REJECTED: {
+      text: "Bị từ chối",
+      style: "bg-rose-600 text-white border-rose-700 shadow-lg",
+    },
   };
   const config = statusConfig[status];
   if (!config) return null;
   return (
-    <div className={`badge ${config.style} badge-md font-bold`}>
+    <div className={`badge ${config.style} badge-md font-bold border-2`}>
       {config.text}
     </div>
   );
@@ -40,29 +46,31 @@ const RegistrationStatusBadge = ({
   switch (status) {
     case "PENDING":
       text = "Chờ duyệt";
-      style = "bg-yellow-500 text-white shadow-lg";
+      style = "bg-amber-500 text-white border-amber-600 shadow-lg";
       break;
     case "APPROVED":
       if (isEventPast) {
         text = "Không hoàn thành";
-        style = "bg-gray-500 text-white shadow-lg";
+        style = "bg-slate-500 text-white border-slate-600 shadow-lg";
       } else {
         text = "Đã duyệt";
-        style = "bg-blue-600 text-white shadow-lg";
+        style = "bg-sky-600 text-white border-sky-700 shadow-lg";
       }
       break;
     case "REJECTED":
       text = "Bị từ chối";
-      style = "bg-red-600 text-white shadow-lg";
+      style = "bg-rose-600 text-white border-rose-700 shadow-lg";
       break;
     case "COMPLETED":
       text = "Đã hoàn thành";
-      style = "bg-green-600 text-white shadow-lg";
+      style = "bg-emerald-600 text-white border-emerald-700 shadow-lg";
       break;
   }
 
   if (!text) return null;
-  return <div className={`badge ${style} badge-md font-bold`}>{text}</div>;
+  return (
+    <div className={`badge ${style} badge-md font-bold border-2`}>{text}</div>
+  );
 };
 
 // create an object with artribute creator
@@ -99,10 +107,26 @@ export const EventCard = ({
 
   // Category icons and colors
   const categoryConfig = {
-    ENVIRONMENT: { icon: "🌱", color: "text-success", bg: "bg-success/10" },
-    EDUCATION: { icon: "📚", color: "text-info", bg: "bg-info/10" },
-    HEALTHCARE: { icon: "⚕️", color: "text-error", bg: "bg-error/10" },
-    COMMUNITY: { icon: "🤝", color: "text-warning", bg: "bg-warning/10" },
+    ENVIRONMENT: {
+      icon: "/images/environment.png",
+      color: "text-success",
+      bg: "bg-success/10",
+    },
+    EDUCATION: {
+      icon: "/images/education.png",
+      color: "text-info",
+      bg: "bg-info/10",
+    },
+    HEALTHCARE: {
+      icon: "/images/health.png",
+      color: "text-error",
+      bg: "bg-error/10",
+    },
+    COMMUNITY: {
+      icon: "/images/community.png",
+      color: "text-warning",
+      bg: "bg-warning/10",
+    },
   };
 
   const categoryInfo =
@@ -116,9 +140,9 @@ export const EventCard = ({
 
   return (
     <Link href={`/events/${event.id}`} className="group">
-      <div className="card bg-gradient-to-br from-blue-50 to-cyan-50 shadow-lg hover:shadow-2xl transition-all duration-300 border border-base-300 h-full group-hover:-translate-y-1 group-hover:border-primary/50">
+      <div className="card rounded-xl overflow-hidden bg-gradient-to-br from-blue-50 to-cyan-50 shadow-lg hover:shadow-2xl transition-all duration-300 border border-base-300 h-full group-hover:-translate-y-1 group-hover:border-primary/50">
         {/* Image placeholder */}
-        <figure className="relative h-48 bg-base-200">
+        <figure className="relative h-48 bg-base-200 overflow-hidden">
           {hasValidImage ? (
             <img
               src={"/" + event.imageUrl.replace(/\\/g, "/").replace(/^\/+/, "")}
@@ -148,7 +172,11 @@ export const EventCard = ({
           <div
             className={`absolute top-3 left-3 ${categoryInfo.bg} backdrop-blur-md px-4 py-2 rounded-full flex items-center gap-2 shadow-lg border border-white/20`}
           >
-            <span className="text-xl">{categoryInfo.icon}</span>
+            <img
+              src={categoryInfo.icon}
+              alt="Category"
+              className="w-6 h-6 object-contain"
+            />
           </div>
 
           {/* Favorite button overlay */}
