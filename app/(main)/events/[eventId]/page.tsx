@@ -3,6 +3,7 @@
 
 import prisma from "@/lib/prisma";
 import { notFound } from "next/navigation";
+import Image from "next/image";
 import { RegisterEventButton } from "@/components/features/register-event-button";
 import { FavoriteEventButton } from "@/components/features/favorite-event-button";
 import { InviteEventButton } from "@/components/features/invite-event-button";
@@ -40,8 +41,8 @@ export default async function EventDetailPage({
     }),
     userId
       ? prisma.registration.findUnique({
-          where: { userId_eventId: { userId, eventId: eventId } },
-        })
+        where: { userId_eventId: { userId, eventId: eventId } },
+      })
       : null,
   ]);
 
@@ -85,14 +86,16 @@ export default async function EventDetailPage({
     <div className="min-h-screen bg-base-200">
       {/* Event Image - Full width at top */}
       <div className="relative w-full h-80 md:h-[400px] bg-base-300 overflow-hidden">
-        <img
+        <Image
           src={
             event.imageUrl
               ? "/" + event.imageUrl.replace(/\\/g, "/").replace(/^\/+/, "")
               : "/images/placeholder.png"
           }
           alt={event.title}
-          className="w-full h-full object-cover"
+          fill
+          className="object-cover"
+          priority
         />
       </div>
 
@@ -129,11 +132,10 @@ export default async function EventDetailPage({
               <div className="flex flex-wrap gap-2">
                 {canManage && event.status !== "PUBLISHED" && (
                   <div
-                    className={`badge ${
-                      event.status === "PENDING_APPROVAL"
+                    className={`badge ${event.status === "PENDING_APPROVAL"
                         ? "bg-amber-500 text-white border-amber-600 border-2"
                         : "bg-rose-600 text-white border-rose-700 border-2"
-                    } gap-2 font-bold shadow-lg`}
+                      } gap-2 font-bold shadow-lg`}
                   >
                     {event.status === "PENDING_APPROVAL"
                       ? "Đang chờ duyệt"

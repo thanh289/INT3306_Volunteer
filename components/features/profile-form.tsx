@@ -39,6 +39,20 @@ export const ProfileForm = ({ user }: { user: User }) => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    // Kiểm tra xem có thay đổi gì không
+    const hasChanges =
+      formData.name !== (user.name || "") ||
+      formData.phone !== (user.phone || "") ||
+      formData.address !== (user.address || "") ||
+      formData.dateOfBirth !== formatDateForInput(user.dateOfBirth) ||
+      formData.gender !== (user.gender || "");
+
+    if (!hasChanges) {
+      toast.error("Bạn chưa thay đổi gì cả!");
+      return;
+    }
+
     setIsLoading(true);
 
     try {

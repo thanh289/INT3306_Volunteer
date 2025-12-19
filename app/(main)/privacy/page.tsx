@@ -476,7 +476,7 @@ export default function PrivacyPage() {
                       Trang Hồ sơ cá nhân
                     </p>
                     <p className="text-sm text-base-content/70 mb-3">
-                      Đăng nhập vào tài khoản và truy cập phần "Hồ sơ" để:
+                      Đăng nhập vào tài khoản và truy cập phần &ldquo;Hồ sơ&rdquo; để:
                     </p>
                     <ul className="space-y-1 text-sm text-base-content/70">
                       <li>✓ Xem tất cả thông tin cá nhân đã cung cấp</li>
@@ -507,7 +507,7 @@ export default function PrivacyPage() {
                       <span className="font-semibold">
                         privacy@volunteerhub.vn
                       </span>{" "}
-                      với tiêu đề "Yêu cầu xuất dữ liệu cá nhân". Chúng tôi sẽ
+                      với tiêu đề &ldquo;Yêu cầu xuất dữ liệu cá nhân&rdquo;. Chúng tôi sẽ
                       phản hồi trong vòng <strong>72 giờ</strong>.
                     </p>
                   </div>
@@ -530,7 +530,7 @@ export default function PrivacyPage() {
                       <span className="font-semibold">
                         privacy@volunteerhub.vn
                       </span>{" "}
-                      hoặc sử dụng chức năng "Xóa tài khoản" trong phần Hồ sơ.
+                      hoặc sử dụng chức năng &ldquo;Xóa tài khoản&rdquo; trong phần Hồ sơ.
                     </p>
                   </div>
                 </div>
@@ -787,7 +787,7 @@ export default function PrivacyPage() {
                       <li className="flex gap-2">
                         <span>•</span>
                         <span>
-                          Chúng tôi sẽ cập nhật ngày "Cập nhật lần cuối" ở đầu
+                          Chúng tôi sẽ cập nhật ngày &ldquo;Cập nhật lần cuối&rdquo; ở đầu
                           trang
                         </span>
                       </li>

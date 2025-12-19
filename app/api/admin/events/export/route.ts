@@ -5,6 +5,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import prisma from "@/lib/prisma";
+import { Prisma, EventStatus, EventCategory } from "@prisma/client";
 
 export async function GET(request: Request) {
   try {
@@ -20,7 +21,7 @@ export async function GET(request: Request) {
     const category = searchParams.get("category") || "";
 
     // Build where clause
-    const whereClause: any = {};
+    const whereClause: Prisma.EventWhereInput = {};
 
     if (search) {
       whereClause.OR = [
@@ -30,11 +31,11 @@ export async function GET(request: Request) {
     }
 
     if (status && status !== "ALL") {
-      whereClause.status = status;
+      whereClause.status = status as EventStatus;
     }
 
     if (category && category !== "ALL") {
-      whereClause.category = category;
+      whereClause.category = category as EventCategory;
     }
 
     // Get all events matching filters
@@ -74,14 +75,14 @@ export async function GET(request: Request) {
     const csvRows = [
       headers.join(","),
       ...events.map((event) => {
-        const categoryLabels: any = {
+        const categoryLabels: Record<string, string> = {
           ENVIRONMENT: "Môi trường",
           EDUCATION: "Giáo dục",
           HEALTHCARE: "Y tế",
           COMMUNITY: "Cộng đồng",
         };
 
-        const statusLabels: any = {
+        const statusLabels: Record<string, string> = {
           PUBLISHED: "Đã đăng",
           PENDING_APPROVAL: "Chờ duyệt",
           REJECTED: "Bị từ chối",
