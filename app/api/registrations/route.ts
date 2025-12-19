@@ -17,8 +17,7 @@ export async function GET(request: Request) {
     }
 
     const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get("page") || "1");
-    const filter = searchParams.get("filter") || "all"; // all, upcoming, past
+    const all = searchParams.get("all");
 
     // Build where clause
     const whereClause: any = {
@@ -27,6 +26,31 @@ export async function GET(request: Request) {
         isDeleted: false,
       },
     };
+
+    // If 'all' parameter is set, return all registrations without pagination
+    if (all === "true") {
+      const registrations = await prisma.registration.findMany({
+        where: whereClause,
+        include: {
+          event: {
+            include: {
+              creator: true,
+            },
+          },
+        },
+        orderBy: {
+          event: {
+            startDateTime: "asc",
+          },
+        },
+      });
+
+      return NextResponse.json({ registrations });
+    }
+
+    // Otherwise, use pagination with filters
+    const page = parseInt(searchParams.get("page") || "1");
+    const filter = searchParams.get("filter") || "all"; // all, upcoming, past
 
     // Apply time filter
     if (filter === "upcoming") {

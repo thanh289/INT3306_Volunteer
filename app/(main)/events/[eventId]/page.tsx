@@ -5,6 +5,7 @@ import prisma from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { RegisterEventButton } from "@/components/features/register-event-button";
 import { FavoriteEventButton } from "@/components/features/favorite-event-button";
+import { InviteEventButton } from "@/components/features/invite-event-button";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { EventWall } from "@/components/features/event-wall";
@@ -332,6 +333,7 @@ export default async function EventDetailPage({
                           event.requiresRegistrationForm
                         }
                       />
+                      <InviteEventButton eventId={event.id} />
                       <FavoriteEventButton eventId={event.id} />
                     </div>
                   )}

@@ -21,15 +21,42 @@ export async function GET(request: Request) {
     }
 
     const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get("page") || "1");
-    const filter = searchParams.get("filter") || "all"; // all, upcoming, past
-    const status = searchParams.get("status") || "all"; // all, published, pending, rejected
+    const all = searchParams.get("all");
 
     // Build where clause
     const whereClause: any = {
       creatorId: session.user.id,
       isDeleted: false,
     };
+
+    // If 'all' parameter is set, return all events without pagination
+    if (all === "true") {
+      const events = await prisma.event.findMany({
+        where: whereClause,
+        include: {
+          creator: true,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+
+      return NextResponse.json({ events });
+    }
+
+    // Otherwise, use pagination with filters
+    const page = parseInt(searchParams.get("page") || "1");
+    const filter = searchParams.get("filter") || "all"; // all, upcoming, past
+    const status = searchParams.get("status") || "all"; // all, published, pending, rejected
+    const search = searchParams.get("search") || "";
+
+    // Apply search filter
+    if (search.trim()) {
+      whereClause.OR = [
+        { title: { contains: search, mode: "insensitive" } },
+        { description: { contains: search, mode: "insensitive" } },
+      ];
+    }
 
     // Apply time filter
     if (filter === "upcoming") {

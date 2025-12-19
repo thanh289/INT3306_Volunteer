@@ -357,3 +357,56 @@ export async function notifyEventCancelled(
 //         console.error('Error sending new post notification:', error);
 //     }
 // }
+
+/**
+ * Generic function to send notification to a user
+ */
+export async function sendNotification({
+  userId,
+  message,
+  href,
+}: {
+  userId: string;
+  message: string;
+  href?: string;
+}) {
+  try {
+    // Create notification in database
+    await prisma.notification.create({
+      data: {
+        userId,
+        message,
+        href: href || null,
+      },
+    });
+
+    // Send push notification if user has subscriptions
+    const subscriptions = await prisma.pushSubscription.findMany({
+      where: { userId },
+      select: { endpoint: true, p256dh: true, auth: true },
+    });
+
+    if (subscriptions.length > 0) {
+      const subscriptionsData = subscriptions.map((sub) => ({
+        endpoint: sub.endpoint,
+        keys: { p256dh: sub.p256dh, auth: sub.auth },
+      }));
+
+      const result = await sendPushNotificationToMany(subscriptionsData, {
+        title: "Thông báo mới",
+        body: message,
+        url: href || "/",
+        tag: `notification-${Date.now()}`,
+      });
+
+      // Cleanup expired subscriptions
+      if (result.expired.length > 0) {
+        await prisma.pushSubscription.deleteMany({
+          where: { endpoint: { in: result.expired } },
+        });
+      }
+    }
+  } catch (error) {
+    console.error("Error sending notification:", error);
+  }
+}

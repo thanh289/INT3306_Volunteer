@@ -97,12 +97,14 @@ model User {
     postLikes     PostLike[]
     postComments  PostComment[]
 
-    createdEvents      Event[]             @relation("EventCreator")
-    notifications      Notification[]
-    passwordResetToken PasswordResetToken?
-    pushSubscriptions  PushSubscription[]
-    interestedEvents   InterestedEvent[]
-    managedEvents      EventManager[]
+    createdEvents           Event[]             @relation("EventCreator")
+    notifications           Notification[]
+    passwordResetToken      PasswordResetToken?
+    pushSubscriptions       PushSubscription[]
+    interestedEvents        InterestedEvent[]
+    managedEvents           EventManager[]
+    invitationsReceived     EventInvitation[]   @relation("EventInvitationsReceived")
+    invitationsSent         EventInvitation[]   @relation("EventInvitationsSent")
 
     @@index([role])
     @@index([status])
@@ -147,11 +149,12 @@ model Event {
     creator   User   @relation("EventCreator", fields: [creatorId], references: [id], onDelete: Cascade)
 
     // an event can has multiple user and post
-    registrations        Registration[]
-    posts                Post[]
-    interestedBy         InterestedEvent[]
-    eventManagers        EventManager[]
+    registrations         Registration[]
+    posts                 Post[]
+    interestedBy          InterestedEvent[]
+    eventManagers         EventManager[]
     registrationQuestions RegistrationQuestion[]
+    invitations           EventInvitation[]
 
     @@index([status, startDateTime])
     @@index([creatorId, createdAt])
@@ -354,4 +357,28 @@ model EventManager {
     @@unique([userId, eventId])
     @@index([userId])
     @@index([eventId])
+}
+
+model EventInvitation {
+    id        String   @id @default(auto()) @map("_id") @db.ObjectId
+    createdAt DateTime @default(now())
+
+    // Which event is the invitation for
+    eventId String @db.ObjectId
+    event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+    // Who is being invited
+    invitedUserId String @db.ObjectId
+    invitedUser   User   @relation("EventInvitationsReceived", fields: [invitedUserId], references: [id], onDelete: Cascade)
+
+    // Who sent the invitation
+    invitedBy String @db.ObjectId
+    inviter   User   @relation("EventInvitationsSent", fields: [invitedBy], references: [id], onDelete: Cascade)
+
+    // A user can receive multiple invitations from different people for the same event
+    // but the same person cannot invite the same user twice to the same event
+    @@unique([eventId, invitedUserId, invitedBy])
+    @@index([invitedUserId, createdAt])
+    @@index([eventId])
+    @@index([invitedBy])
 }
