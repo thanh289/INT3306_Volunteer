@@ -191,12 +191,12 @@ export const EventWall = ({
         posts.map((post) =>
           post.id === postId
             ? {
-                ...post,
-                isDeleted: true,
-                deletedAt: new Date().toISOString(),
-                deletedBy: session?.user?.id || null,
-                deletedByRole: session?.user?.role || null,
-              }
+              ...post,
+              isDeleted: true,
+              deletedAt: new Date().toISOString(),
+              deletedBy: session?.user?.id || null,
+              deletedByRole: session?.user?.role || null,
+            }
             : post
         )
       );
@@ -236,11 +236,11 @@ export const EventWall = ({
         posts.map((post) =>
           post.id === postId
             ? {
-                ...post,
-                postStatus: action === "approve" ? "APPROVED" : "REJECTED",
-                reviewedAt: new Date().toISOString(),
-                reviewedBy: session?.user?.id || null,
-              }
+              ...post,
+              postStatus: action === "approve" ? "APPROVED" : "REJECTED",
+              reviewedAt: new Date().toISOString(),
+              reviewedBy: session?.user?.id || null,
+            }
             : post
         )
       );
@@ -385,9 +385,8 @@ export const EventWall = ({
       {/* Access message */}
       {accessMessage && (
         <div
-          className={`alert ${
-            alertTypeClass[accessMessage.type as keyof typeof alertTypeClass]
-          } mb-6 shadow-lg`}
+          className={`alert ${alertTypeClass[accessMessage.type as keyof typeof alertTypeClass]
+            } mb-6 shadow-lg`}
         >
           {accessMessage.icon}
           <span>{accessMessage.message}</span>
@@ -515,7 +514,7 @@ export const EventWall = ({
         <>
           <div className="flex flex-col sm:flex-row gap-3 mb-6">
             {/* Search bar */}
-            <div className="relative flex-1">
+            <div className="relative flex-[0.8]">
               <Image
                 src="/images/search.png"
                 alt="Search"
@@ -536,7 +535,7 @@ export const EventWall = ({
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as SortOption)}
-              className="select select-bordered w-full sm:w-auto text-base pr-10 rounded-xl bg-base-100 shadow-sm border-2 focus:border-primary focus:outline-none"
+              className="select select-bordered flex-[0.2] sm:w-auto text-base pr-10 rounded-xl bg-base-100 shadow-sm border-2 focus:border-primary focus:outline-none"
             >
               <option value="recent">Gần đây</option>
               <option value="likes">Nhiều tym</option>
@@ -613,7 +612,7 @@ export const EventWall = ({
                           {post.author.registrations &&
                             post.author.registrations.length > 0 &&
                             post.author.registrations[0].status ===
-                              "APPROVED" &&
+                            "APPROVED" &&
                             post.authorId !== creatorId &&
                             !eventManagerIds.includes(post.authorId) &&
                             post.author.role !== "ADMIN" && (
@@ -653,19 +652,17 @@ export const EventWall = ({
                               onClick={() =>
                                 handlePinPost(post.id, post.isPinned || false)
                               }
-                              className={`btn btn-ghost btn-sm ${
-                                post.isPinned
-                                  ? "text-primary hover:bg-primary/10"
-                                  : "hover:bg-base-200"
-                              }`}
+                              className={`btn btn-ghost btn-sm ${post.isPinned
+                                ? "text-primary hover:bg-primary/10"
+                                : "hover:bg-base-200"
+                                }`}
                               title={
                                 post.isPinned ? "Bỏ ghim" : "Ghim bài viết"
                               }
                             >
                               <Pin
-                                className={`w-4 h-4 ${
-                                  post.isPinned ? "fill-current" : ""
-                                }`}
+                                className={`w-4 h-4 ${post.isPinned ? "fill-current" : ""
+                                  }`}
                               />
                             </button>
                             {/* Delete button */}
@@ -811,9 +808,8 @@ export const EventWall = ({
                   <p className="text-base-content/60">
                     {searchQuery.trim()
                       ? "Không tìm thấy bài viết nào phù hợp với tìm kiếm của bạn."
-                      : `Chưa có bài viết nào. ${
-                          canPost ? "Hãy là người đầu tiên!" : ""
-                        }`}
+                      : `Chưa có bài viết nào. ${canPost ? "Hãy là người đầu tiên!" : ""
+                      }`}
                   </p>
                 </div>
               </div>

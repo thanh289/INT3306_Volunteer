@@ -98,8 +98,8 @@ export const CreatedEventList = () => {
   return (
     <div className="space-y-6">
       {/* Filter Tabs */}
-      <div className="card bg-base-100 shadow-sm border border-base-300">
-        <div className="card-body p-4">
+      <div className="card bg-base-100 shadow-sm border border-base-300" style={{ overflow: 'visible' }}>
+        <div className="card-body p-4" style={{ overflow: 'visible' }}>
           <div className="flex flex-col md:flex-row gap-4">
             {/* Search Bar */}
             <div className="flex-1">
@@ -131,7 +131,7 @@ export const CreatedEventList = () => {
             </div>
 
             {/* Time Filter Dropdown */}
-            <div className="dropdown dropdown-end w-full md:w-52">
+            <div className="dropdown dropdown-end w-full md:w-52" style={{ position: 'relative' }}>
               <label
                 tabIndex={0}
                 className="btn btn-ghost w-full justify-between normal-case hover:bg-base-200"
@@ -141,10 +141,10 @@ export const CreatedEventList = () => {
                   {filter === "all"
                     ? "Tất cả"
                     : filter === "upcoming"
-                    ? "Sắp diễn ra"
-                    : filter === "ongoing"
-                    ? "Đang diễn ra"
-                    : "Đã kết thúc"}
+                      ? "Sắp diễn ra"
+                      : filter === "ongoing"
+                        ? "Đang diễn ra"
+                        : "Đã kết thúc"}
                 </span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -163,16 +163,21 @@ export const CreatedEventList = () => {
               </label>
               <ul
                 tabIndex={0}
-                className="dropdown-content z-[1] menu p-2 shadow-lg bg-base-100 rounded-box w-52 mt-1 border border-base-300"
+                className="dropdown-content menu p-2 shadow-lg bg-base-100 rounded-box w-52 mt-1 border border-base-300"
+                style={{
+                  position: 'absolute',
+                  zIndex: 9999,
+                  top: '100%',
+                  right: 0
+                }}
               >
                 <li>
                   <button
                     onClick={() => setFilter("all")}
-                    className={`justify-start ${
-                      filter === "all"
-                        ? "active bg-primary text-primary-content"
-                        : ""
-                    }`}
+                    className={`justify-start ${filter === "all"
+                      ? "active bg-primary text-primary-content"
+                      : ""
+                      }`}
                   >
                     Tất cả
                   </button>
@@ -180,11 +185,10 @@ export const CreatedEventList = () => {
                 <li>
                   <button
                     onClick={() => setFilter("upcoming")}
-                    className={`justify-start ${
-                      filter === "upcoming"
-                        ? "active bg-primary text-primary-content"
-                        : ""
-                    }`}
+                    className={`justify-start ${filter === "upcoming"
+                      ? "active bg-primary text-primary-content"
+                      : ""
+                      }`}
                   >
                     Sắp diễn ra
                   </button>
@@ -192,11 +196,10 @@ export const CreatedEventList = () => {
                 <li>
                   <button
                     onClick={() => setFilter("ongoing")}
-                    className={`justify-start ${
-                      filter === "ongoing"
-                        ? "active bg-primary text-primary-content"
-                        : ""
-                    }`}
+                    className={`justify-start ${filter === "ongoing"
+                      ? "active bg-primary text-primary-content"
+                      : ""
+                      }`}
                   >
                     Đang diễn ra
                   </button>
@@ -204,11 +207,10 @@ export const CreatedEventList = () => {
                 <li>
                   <button
                     onClick={() => setFilter("past")}
-                    className={`justify-start ${
-                      filter === "past"
-                        ? "active bg-primary text-primary-content"
-                        : ""
-                    }`}
+                    className={`justify-start ${filter === "past"
+                      ? "active bg-primary text-primary-content"
+                      : ""
+                      }`}
                   >
                     Đã kết thúc
                   </button>
@@ -227,10 +229,10 @@ export const CreatedEventList = () => {
                   {status === "all"
                     ? "Tất cả"
                     : status === "published"
-                    ? "Đã đăng"
-                    : status === "pending_approval"
-                    ? "Chờ duyệt"
-                    : "Bị từ chối"}
+                      ? "Đã đăng"
+                      : status === "pending_approval"
+                        ? "Chờ duyệt"
+                        : "Bị từ chối"}
                 </span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -249,16 +251,21 @@ export const CreatedEventList = () => {
               </label>
               <ul
                 tabIndex={0}
-                className="dropdown-content z-[1] menu p-2 shadow-lg bg-base-100 rounded-box w-52 mt-1 border border-base-300"
+                className="dropdown-content menu p-2 shadow-lg bg-base-100 rounded-box w-52 mt-1 border border-base-300"
+                style={{
+                  position: 'absolute',
+                  zIndex: 9999,
+                  top: '100%',
+                  right: 0
+                }}
               >
                 <li>
                   <button
                     onClick={() => setStatus("all")}
-                    className={`justify-start ${
-                      status === "all"
-                        ? "active bg-primary text-primary-content"
-                        : ""
-                    }`}
+                    className={`justify-start ${status === "all"
+                      ? "active bg-primary text-primary-content"
+                      : ""
+                      }`}
                   >
                     Tất cả
                   </button>
@@ -266,11 +273,10 @@ export const CreatedEventList = () => {
                 <li>
                   <button
                     onClick={() => setStatus("published")}
-                    className={`justify-start ${
-                      status === "published"
-                        ? "active bg-success text-success-content"
-                        : ""
-                    }`}
+                    className={`justify-start ${status === "published"
+                      ? "active bg-success text-success-content"
+                      : ""
+                      }`}
                   >
                     Đã đăng
                   </button>
@@ -278,11 +284,10 @@ export const CreatedEventList = () => {
                 <li>
                   <button
                     onClick={() => setStatus("pending_approval")}
-                    className={`justify-start ${
-                      status === "pending_approval"
-                        ? "active bg-warning text-warning-content"
-                        : ""
-                    }`}
+                    className={`justify-start ${status === "pending_approval"
+                      ? "active bg-warning text-warning-content"
+                      : ""
+                      }`}
                   >
                     Chờ duyệt
                   </button>
@@ -290,11 +295,10 @@ export const CreatedEventList = () => {
                 <li>
                   <button
                     onClick={() => setStatus("rejected")}
-                    className={`justify-start ${
-                      status === "rejected"
-                        ? "active bg-error text-error-content"
-                        : ""
-                    }`}
+                    className={`justify-start ${status === "rejected"
+                      ? "active bg-error text-error-content"
+                      : ""
+                      }`}
                   >
                     Bị từ chối
                   </button>
@@ -350,9 +354,8 @@ export const CreatedEventList = () => {
           <button
             onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
             disabled={currentPage <= 1}
-            className={`btn btn-circle btn-sm border border-base-300 ${
-              currentPage <= 1 ? "btn-disabled" : "btn-ghost"
-            }`}
+            className={`btn btn-circle btn-sm border border-base-300 ${currentPage <= 1 ? "btn-disabled" : "btn-ghost"
+              }`}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -375,11 +378,10 @@ export const CreatedEventList = () => {
             <button
               key={page}
               onClick={() => setCurrentPage(page)}
-              className={`btn btn-circle btn-sm border ${
-                currentPage === page
-                  ? "btn-primary"
-                  : "btn-ghost border-base-300"
-              }`}
+              className={`btn btn-circle btn-sm border ${currentPage === page
+                ? "btn-primary"
+                : "btn-ghost border-base-300"
+                }`}
             >
               {page}
             </button>
@@ -389,9 +391,8 @@ export const CreatedEventList = () => {
           <button
             onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
             disabled={currentPage >= totalPages}
-            className={`btn btn-circle btn-sm border border-base-300 ${
-              currentPage >= totalPages ? "btn-disabled" : "btn-ghost"
-            }`}
+            className={`btn btn-circle btn-sm border border-base-300 ${currentPage >= totalPages ? "btn-disabled" : "btn-ghost"
+              }`}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
