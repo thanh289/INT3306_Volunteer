@@ -285,17 +285,19 @@ export const RegistrationQuestionsManager = ({
                       <div className="flex gap-1">
                         <button
                           onClick={() => handleEdit(q)}
-                          className="btn btn-outline btn-primary btn-sm btn-square"
+                          className="btn btn-outline btn-primary btn-sm gap-1"
                           title="Sửa"
                         >
                           <Edit2 className="h-4 w-4" />
+                          Sửa
                         </button>
                         <button
                           onClick={() => handleDelete(q.id)}
-                          className="btn btn-outline btn-error btn-sm btn-square"
+                          className="btn btn-outline btn-error btn-sm gap-1"
                           title="Xóa"
                         >
                           <Trash2 className="h-4 w-4" />
+                          Xóa
                         </button>
                       </div>
                     </div>

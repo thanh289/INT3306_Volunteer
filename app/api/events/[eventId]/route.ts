@@ -145,6 +145,13 @@ export async function PUT(request: Request, { params }: RouteParams) {
       return new NextResponse("Forbidden", { status: 403 });
     }
 
+    // Prevent editing published events
+    if (event.status === "PUBLISHED") {
+      return new NextResponse("Không thể chỉnh sửa sự kiện đã được công khai", {
+        status: 403,
+      });
+    }
+
     const body = await request.json();
     const isCreator = event.creatorId === session.user.id;
     const isAdmin = session.user.role === "ADMIN";
@@ -166,15 +173,6 @@ export async function PUT(request: Request, { params }: RouteParams) {
         String(body[field]) !== String(event[field as keyof typeof event])
     );
 
-    // If creator makes significant changes to published event, reset to pending
-    if (
-      event.status === "PUBLISHED" &&
-      isCreator &&
-      hasSignificantChanges &&
-      !body.status
-    ) {
-      validatedData.status = "PENDING_APPROVAL";
-    }
 
     // Validate that new maxAttendees is not less than current approved registrations
     if (validatedData.maxAttendees !== undefined) {

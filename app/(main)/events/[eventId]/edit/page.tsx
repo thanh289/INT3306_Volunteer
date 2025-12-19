@@ -29,8 +29,8 @@ export default async function EditEventPage({ params }: EditEventPageProps) {
     include: {
       eventManagers: userId
         ? {
-            where: { userId },
-          }
+          where: { userId },
+        }
         : false,
     },
   });
@@ -45,6 +45,11 @@ export default async function EditEventPage({ params }: EditEventPageProps) {
   const isEventManager = event.eventManagers && event.eventManagers.length > 0;
 
   if (!isAdmin && !isCreator && !isEventManager) {
+    redirect(`/events/${eventId}`);
+  }
+
+  // Prevent editing published events
+  if (event.status === "PUBLISHED") {
     redirect(`/events/${eventId}`);
   }
 

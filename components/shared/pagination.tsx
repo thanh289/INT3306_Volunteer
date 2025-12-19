@@ -63,26 +63,28 @@ export const Pagination = ({ currentPage, totalPages, baseUrl }: PaginationProps
 
     return (
         <div className="flex justify-center">
-            <div className="join">
+            <div className="flex items-center gap-2">
                 {/* Previous Button */}
                 <Link
                     href={currentPage > 1 ? buildUrl(currentPage - 1) : '#'}
-                    className={`join-item btn btn-sm ${currentPage <= 1 ? 'btn-disabled' : ''}`}
+                    className={`flex items-center justify-center w-10 h-10 rounded-full transition-all duration-200 ${currentPage <= 1
+                        ? 'bg-base-200 text-base-content/40 cursor-not-allowed'
+                        : 'bg-base-200 hover:bg-base-300 text-base-content'
+                        }`}
                     aria-disabled={currentPage <= 1}
                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                     </svg>
-                    Trước
                 </Link>
 
                 {/* Page Numbers */}
                 {pageNumbers.map((page, index) => {
                     if (page === '...') {
                         return (
-                            <button key={`ellipsis-${index}`} className="join-item btn btn-sm btn-disabled">
+                            <span key={`ellipsis-${index}`} className="flex items-center justify-center w-10 h-10 text-base-content/60">
                                 ...
-                            </button>
+                            </span>
                         );
                     }
 
@@ -93,7 +95,10 @@ export const Pagination = ({ currentPage, totalPages, baseUrl }: PaginationProps
                         <Link
                             key={pageNum}
                             href={buildUrl(pageNum)}
-                            className={`join-item btn btn-sm ${isActive ? 'btn-active' : ''}`}
+                            className={`flex items-center justify-center w-10 h-10 rounded-full text-sm font-medium transition-all duration-200 ${isActive
+                                ? 'bg-primary text-primary-content border-2 border-primary'
+                                : 'bg-base-200 hover:bg-base-300 text-base-content border-2 border-transparent'
+                                }`}
                         >
                             {pageNum}
                         </Link>
@@ -103,11 +108,13 @@ export const Pagination = ({ currentPage, totalPages, baseUrl }: PaginationProps
                 {/* Next Button */}
                 <Link
                     href={currentPage < totalPages ? buildUrl(currentPage + 1) : '#'}
-                    className={`join-item btn btn-sm ${currentPage >= totalPages ? 'btn-disabled' : ''}`}
+                    className={`flex items-center justify-center w-10 h-10 rounded-full transition-all duration-200 ${currentPage >= totalPages
+                        ? 'bg-base-200 text-base-content/40 cursor-not-allowed'
+                        : 'bg-base-200 hover:bg-base-300 text-base-content'
+                        }`}
                     aria-disabled={currentPage >= totalPages}
                 >
-                    Sau
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
                 </Link>

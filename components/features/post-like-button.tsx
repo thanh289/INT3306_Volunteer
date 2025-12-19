@@ -68,13 +68,15 @@ export const PostLikeButton = ({ postId }: PostLikeButtonProps) => {
     <button
       onClick={handleClick}
       disabled={isLoading}
-      className={`flex items-center gap-1 px-3 py-1.5 rounded-full transition-all duration-200 disabled:opacity-50 ${
-        isLiked
-          ? "bg-error/10 text-error hover:bg-error/20"
-          : "bg-base-200 text-base-content/80 hover:bg-base-300"
-      }`}
+      className={`flex items-center gap-1 px-3 py-1.5 rounded-full transition-all duration-200 disabled:opacity-50 ${isLiked
+        ? "bg-red-50 text-red-500 hover:bg-red-100"
+        : "bg-base-200 text-base-content/80 hover:bg-base-300"
+        }`}
     >
-      <Heart className={`w-4 h-4 ${isLiked ? "fill-current" : ""}`} />
+      <Heart
+        className={`w-4 h-4 transition-colors duration-150 ${isLiked ? "fill-red-500 text-red-500 stroke-red-500" : "text-base-content/70"
+          }`}
+      />
       <span className="text-sm font-medium">{likesCount}</span>
     </button>
   );

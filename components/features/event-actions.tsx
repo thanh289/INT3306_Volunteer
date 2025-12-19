@@ -129,7 +129,7 @@ export const EventActions = ({
                   </p>
                   {isOngoing && (
                     <p className="text-sm text-warning mt-1">
-                      ⚠️ Không thể hủy sự kiện đang diễn ra
+                      Không thể hủy sự kiện đang diễn ra
                     </p>
                   )}
                 </>

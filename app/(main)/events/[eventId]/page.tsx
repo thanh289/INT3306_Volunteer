@@ -41,8 +41,8 @@ export default async function EventDetailPage({
     }),
     userId
       ? prisma.registration.findUnique({
-          where: { userId_eventId: { userId, eventId: eventId } },
-        })
+        where: { userId_eventId: { userId, eventId: eventId } },
+      })
       : null,
   ]);
 
@@ -68,6 +68,7 @@ export default async function EventDetailPage({
 
   const isRegistered = !!registration;
   const isEventEnded = new Date(event.endDateTime) < new Date();
+  const isEventStarted = new Date(event.startDateTime) <= new Date();
   const canManage =
     userId === event.creatorId || userRole === "ADMIN" || isEventManager;
 
@@ -132,11 +133,10 @@ export default async function EventDetailPage({
               <div className="flex flex-wrap gap-2">
                 {canManage && event.status !== "PUBLISHED" && (
                   <div
-                    className={`badge ${
-                      event.status === "PENDING_APPROVAL"
-                        ? "bg-amber-500 text-white border-amber-600 border-2"
-                        : "bg-rose-600 text-white border-rose-700 border-2"
-                    } gap-2 font-bold shadow-lg`}
+                    className={`badge ${event.status === "PENDING_APPROVAL"
+                      ? "bg-amber-500 text-white border-amber-600 border-2"
+                      : "bg-rose-600 text-white border-rose-700 border-2"
+                      } gap-2 font-bold shadow-lg`}
                   >
                     {event.status === "PENDING_APPROVAL"
                       ? "Đang chờ duyệt"
@@ -361,6 +361,7 @@ export default async function EventDetailPage({
                         eventId={event.id}
                         isInitiallyRegistered={isRegistered}
                         isEventEnded={isEventEnded}
+                        isEventStarted={isEventStarted}
                         isCancelled={event.isCancelled}
                         cancelReason={event.cancelReason}
                         requiresRegistrationForm={

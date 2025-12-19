@@ -21,6 +21,7 @@ type RegisterEventButtonProps = {
   eventId: string;
   isInitiallyRegistered: boolean;
   isEventEnded: boolean;
+  isEventStarted: boolean;
   isCancelled?: boolean;
   cancelReason?: string | null;
   requiresRegistrationForm?: boolean;
@@ -30,6 +31,7 @@ export const RegisterEventButton = ({
   eventId,
   isInitiallyRegistered,
   isEventEnded,
+  isEventStarted,
   isCancelled,
   cancelReason,
   requiresRegistrationForm = false,
@@ -175,22 +177,32 @@ export const RegisterEventButton = ({
     );
   }
 
+  if (isEventStarted && !isRegistered) {
+    return (
+      <button
+        disabled
+        className="w-full md:w-auto px-8 py-3 text-lg font-medium text-white bg-gray-400 border border-transparent rounded-md shadow-sm cursor-not-allowed"
+      >
+        Sự kiện đã bắt đầu
+      </button>
+    );
+  }
+
   return (
     <>
       <button
         onClick={handleClick}
         disabled={isPending}
-        className={`w-full md:w-auto px-8 py-3 text-lg font-medium text-white border border-transparent rounded-md shadow-sm disabled:opacity-50 ${
-          isRegistered
-            ? "bg-red-600 hover:bg-red-700"
-            : "bg-green-600 hover:bg-green-700"
-        }`}
+        className={`w-full md:w-auto px-8 py-3 text-lg font-medium text-white border border-transparent rounded-md shadow-sm disabled:opacity-50 ${isRegistered
+          ? "bg-red-600 hover:bg-red-700"
+          : "bg-green-600 hover:bg-green-700"
+          }`}
       >
         {isPending
           ? "Đang xử lý..."
           : isRegistered
-          ? "Hủy đăng ký"
-          : "Đăng ký tham gia sự kiện này"}
+            ? "Hủy đăng ký"
+            : "Đăng ký tham gia sự kiện này"}
       </button>
 
       {/* Registration Modal */}
