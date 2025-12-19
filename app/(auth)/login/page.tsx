@@ -206,7 +206,15 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense
+      fallback={
+        <AuthContainer title="Đăng nhập">
+          <div className="flex justify-center py-8">
+            <span className="loading loading-spinner loading-lg"></span>
+          </div>
+        </AuthContainer>
+      }
+    >
       <LoginForm />
     </Suspense>
   );

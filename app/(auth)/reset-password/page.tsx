@@ -268,7 +268,15 @@ function ResetPasswordForm() {
 
 export default function ResetPasswordPage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense
+      fallback={
+        <AuthContainer title="Đặt lại mật khẩu">
+          <div className="flex justify-center py-8">
+            <span className="loading loading-spinner loading-lg"></span>
+          </div>
+        </AuthContainer>
+      }
+    >
       <ResetPasswordForm />
     </Suspense>
   );
