@@ -117,33 +117,6 @@ export const RegisteredEventList = () => {
 
   return (
     <div className="space-y-6">
-      {/* Stats Card */}
-      <div className="card bg-base-100 shadow-sm border border-base-300">
-        <div className="card-body p-4">
-          <div className="flex items-center gap-2">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 text-primary"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-              />
-            </svg>
-            <h2 className="text-lg font-semibold">
-              {filteredRegistrations.length === data.registrations.length
-                ? `Tất cả ${data.registrations.length} sự kiện đã đăng ký`
-                : `${filteredRegistrations.length} / ${data.registrations.length} sự kiện`}
-            </h2>
-          </div>
-        </div>
-      </div>
-
       {/* Filter Tabs */}
       <div className="card bg-base-100 shadow-sm border border-base-300">
         <div className="card-body p-4">

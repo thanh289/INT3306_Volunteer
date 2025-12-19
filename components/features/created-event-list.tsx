@@ -297,19 +297,6 @@ export const CreatedEventList = () => {
         </div>
       </div>
 
-      {/* Stats */}
-      <div className="stats shadow border border-base-300">
-        <div className="stat">
-          <div className="stat-title">Tổng sự kiện</div>
-          <div className="stat-value text-primary">{data.events.length}</div>
-          <div className="stat-desc">
-            {filteredEvents.length !== data.events.length &&
-              `Hiển thị ${filteredEvents.length} / ${data.events.length}`}
-            {filteredEvents.length === data.events.length && "Bạn đã tạo"}
-          </div>
-        </div>
-      </div>
-
       {/* Events Grid */}
       {filteredEvents.length === 0 ? (
         <div className="card bg-base-100 shadow-lg border border-base-300">
