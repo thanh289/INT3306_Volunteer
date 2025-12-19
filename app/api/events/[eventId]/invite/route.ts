@@ -232,7 +232,15 @@ export async function GET(
     ];
 
     // Get users who are not registered
-    const whereClause: any = {
+    const whereClause: {
+      id: { notIn: string[] };
+      role: string;
+      status: string;
+      OR?: Array<
+        | { name?: { contains: string; mode: string } }
+        | { email?: { contains: string; mode: string } }
+      >;
+    } = {
       id: { notIn: excludedUserIds },
       role: "VOLUNTEER", // Only volunteers can be invited
       status: "ACTIVE",

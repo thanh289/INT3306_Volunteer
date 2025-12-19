@@ -31,22 +31,6 @@ export const EventInviteModal = ({
   const [isLoading, setIsLoading] = useState(false);
   const [isSending, setIsSending] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!isOpen) {
-      // Reset state when modal closes
-      setUsers([]);
-      setSearchQuery("");
-      return;
-    }
-
-    // Debounce search
-    const timeoutId = setTimeout(() => {
-      fetchUsers();
-    }, 300);
-
-    return () => clearTimeout(timeoutId);
-  }, [isOpen, searchQuery, eventId]);
-
   const fetchUsers = async () => {
     setIsLoading(true);
     try {
@@ -63,6 +47,23 @@ export const EventInviteModal = ({
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (!isOpen) {
+      // Reset state when modal closes
+      setUsers([]);
+      setSearchQuery("");
+      return;
+    }
+
+    // Debounce search
+    const timeoutId = setTimeout(() => {
+      fetchUsers();
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, searchQuery, eventId]);
 
   const handleInvite = async (userId: string) => {
     setIsSending(userId);

@@ -4,6 +4,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useSession } from "next-auth/react";
 
 export default function AboutPage() {
@@ -150,12 +151,12 @@ export default function AboutPage() {
             đồng.
           </p>
           <div className="flex gap-4 justify-center">
-            <a href="/register" className="btn btn-primary">
+            <Link href="/register" className="btn btn-primary">
               Đăng ký ngay
-            </a>
-            <a href="/events" className="btn btn-outline">
+            </Link>
+            <Link href="/events" className="btn btn-outline">
               Xem sự kiện
-            </a>
+            </Link>
           </div>
         </section>
       )}

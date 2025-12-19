@@ -2,6 +2,7 @@
 // app/(main)/terms/page.tsx
 
 import { Metadata } from "next";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Điều khoản dịch vụ - VolunteerHub",
@@ -263,7 +264,7 @@ export default function TermsPage() {
 
       {/* Back to home */}
       <div className="text-center pb-8">
-        <a href="/" className="btn btn-outline gap-2">
+        <Link href="/" className="btn btn-outline gap-2">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="h-5 w-5"
@@ -279,7 +280,7 @@ export default function TermsPage() {
             />
           </svg>
           Quay lại trang chủ
-        </a>
+        </Link>
       </div>
     </div>
   );

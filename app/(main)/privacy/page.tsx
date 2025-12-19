@@ -2,6 +2,7 @@
 // app/(main)/privacy/page.tsx
 
 import { Metadata } from "next";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Chính sách bảo mật - VolunteerHub",
@@ -893,7 +894,7 @@ export default function PrivacyPage() {
       {/* Back to home */}
       <div className="text-center pb-8">
         <div className="flex gap-4 justify-center">
-          <a href="/" className="btn btn-primary gap-2">
+          <Link href="/" className="btn btn-primary gap-2">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-5 w-5"
@@ -909,8 +910,8 @@ export default function PrivacyPage() {
               />
             </svg>
             Về trang chủ
-          </a>
-          <a href="/terms" className="btn btn-outline btn-primary gap-2">
+          </Link>
+          <Link href="/terms" className="btn btn-outline btn-primary gap-2">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-5 w-5"
@@ -926,7 +927,7 @@ export default function PrivacyPage() {
               />
             </svg>
             Điều khoản dịch vụ
-          </a>
+          </Link>
         </div>
       </div>
     </div>
