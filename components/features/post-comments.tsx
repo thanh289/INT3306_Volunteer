@@ -51,7 +51,7 @@ export const PostComments = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [displayCount, setDisplayCount] = useState(5);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [_isLoadingMore, _setIsLoadingMore] = useState(false);
   const [fetchedEventCreatorId, setFetchedEventCreatorId] = useState<
     string | undefined
   >(eventCreatorId);
@@ -61,6 +61,7 @@ export const PostComments = ({
   // Fetch comments on mount
   useEffect(() => {
     fetchComments();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [postId]);
 
   const fetchComments = async () => {

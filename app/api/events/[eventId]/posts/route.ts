@@ -53,23 +53,20 @@ export async function GET(request: Request, { params }: RouteParams) {
 
     // Build where clause for post status
     // Users can see: approved posts, OR their own pending/rejected posts, OR all posts if privileged
-    const postStatusFilter = canSeePending
-      ? {} // Admins/managers can see all posts
-      : {
-          OR: [
-            { postStatus: "APPROVED" }, // Everyone sees approved posts
-            ...(currentUserId
-              ? [{ authorId: currentUserId }] // Users see their own posts regardless of status
-              : []),
-          ],
-        };
-
-    // Base query
     const baseQuery = {
       where: {
         eventId,
         isDeleted: false,
-        ...postStatusFilter,
+        ...(canSeePending
+          ? {} // Admins/managers can see all posts
+          : {
+              OR: [
+                { postStatus: "APPROVED" as const }, // Everyone sees approved posts
+                ...(currentUserId
+                  ? [{ authorId: currentUserId }] // Users see their own posts regardless of status
+                  : []),
+              ],
+            }),
       },
       skip,
       take,
@@ -140,7 +137,14 @@ export async function GET(request: Request, { params }: RouteParams) {
       where: {
         eventId,
         isDeleted: false,
-        ...postStatusFilter,
+        ...(canSeePending
+          ? {}
+          : {
+              OR: [
+                { postStatus: "APPROVED" as const },
+                ...(currentUserId ? [{ authorId: currentUserId }] : []),
+              ],
+            }),
       },
     });
 

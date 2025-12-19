@@ -143,7 +143,7 @@ export const EventCard = ({
       <div className="card rounded-xl overflow-hidden bg-gradient-to-br from-blue-50 to-cyan-50 shadow-lg hover:shadow-2xl transition-all duration-300 border border-base-300 h-full group-hover:-translate-y-1 group-hover:border-primary/50">
         {/* Image placeholder */}
         <figure className="relative h-48 bg-base-200 overflow-hidden">
-          {hasValidImage ? (
+          {hasValidImage && event.imageUrl ? (
             <img
               src={"/" + event.imageUrl.replace(/\\/g, "/").replace(/^\/+/, "")}
               alt={event.title}

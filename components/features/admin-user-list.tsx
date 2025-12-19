@@ -121,9 +121,10 @@ export const UserList = () => {
             <button
               type="button"
               onClick={() => {
-                setSearch("");
                 setSearchInput("");
-                setPage(1); // Reset page when clearing search
+                const params = new URLSearchParams();
+                params.set("page", "1");
+                router.push(`/admin/user-management?${params.toString()}`);
               }}
               className="btn btn-ghost"
             >

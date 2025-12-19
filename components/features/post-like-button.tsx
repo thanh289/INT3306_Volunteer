@@ -15,7 +15,7 @@ type PostLikeButtonProps = {
 };
 
 export const PostLikeButton = ({ postId }: PostLikeButtonProps) => {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const router = useRouter();
 
   const [isLiked, setIsLiked] = useState(false);

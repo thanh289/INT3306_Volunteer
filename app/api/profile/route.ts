@@ -42,10 +42,10 @@ export async function PUT(request: Request) {
     if (validatedData.address && validatedData.address.trim() !== "") {
       dataToUpdate.address = validatedData.address;
     }
-    if (validatedData.dateOfBirth && validatedData.dateOfBirth !== "") {
+    if (validatedData.dateOfBirth) {
       dataToUpdate.dateOfBirth = validatedData.dateOfBirth;
     }
-    if (validatedData.gender && validatedData.gender !== "") {
+    if (validatedData.gender) {
       dataToUpdate.gender = validatedData.gender;
     }
 

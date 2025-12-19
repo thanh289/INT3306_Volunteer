@@ -36,6 +36,7 @@ export const RegistrationQuestionsManager = ({
 
   useEffect(() => {
     fetchQuestions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [eventId]);
 
   const fetchQuestions = async () => {

@@ -74,6 +74,14 @@ export const EventFilters = () => {
     router.push(`${pathname}?${currentParams.toString()}`);
   };
 
+  const handleRemoveFilter = (filterName: string) => {
+    const currentParams = new URLSearchParams(
+      Array.from(searchParams.entries())
+    );
+    currentParams.delete(filterName);
+    router.push(`${pathname}?${currentParams.toString()}`);
+  };
+
   const hasActiveFilters =
     searchParams.get("category") ||
     searchParams.get("sortBy") ||

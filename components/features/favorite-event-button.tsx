@@ -5,7 +5,6 @@
 
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import axios, { isAxiosError } from "axios";
 import toast from "react-hot-toast";
 import { Heart } from "lucide-react";
@@ -19,8 +18,7 @@ export const FavoriteEventButton = ({
   eventId,
   compact = false,
 }: FavoriteEventButtonProps) => {
-  const { data: session, status } = useSession();
-  const router = useRouter();
+  const { status } = useSession();
 
   const [isInterested, setIsInterested] = useState(false);
   const [isLoading, setIsLoading] = useState(false);

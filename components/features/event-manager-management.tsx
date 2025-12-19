@@ -30,7 +30,7 @@ interface Props {
 
 export const EventManagerManagement = ({
   eventId,
-  eventTitle,
+  eventTitle: _eventTitle,
   creatorId,
 }: Props) => {
   const { data: session } = useSession();
@@ -45,6 +45,7 @@ export const EventManagerManagement = ({
 
   useEffect(() => {
     fetchManagers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [eventId]);
 
   const fetchManagers = async () => {

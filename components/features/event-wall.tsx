@@ -56,8 +56,8 @@ type EventWallProps = {
 export const EventWall = ({
   eventId,
   creatorId,
-  isRegistered,
-  registrationStatus,
+  isRegistered: _isRegistered,
+  registrationStatus: _registrationStatus,
   eventStatus,
   eventManagerIds,
 }: EventWallProps) => {

@@ -361,7 +361,7 @@ export const AdminEventList = () => {
                 <div>
                   <p className="font-medium">Số lượng tình nguyện viên</p>
                   <p className="text-sm text-base-content/70">
-                    Tối đa: {selectedEvent.maxParticipants} người
+                    Tối đa: {selectedEvent.maxAttendees} người
                   </p>
                 </div>
               </div>
