@@ -47,6 +47,7 @@ interface Post {
   event: {
     id: string;
     title: string;
+    category: EventCategory;
     creatorId: string;
     isCancelled?: boolean;
     eventManagers: {
@@ -449,7 +450,18 @@ export const DashboardFeed = () => {
                     href={`/events/${post.event.id}`}
                     className="text-sm font-bold text-primary hover:underline flex items-center gap-1.5"
                   >
-                    <span className="text-lg">📌</span>
+                    <div className="relative w-5 h-5 flex-shrink-0">
+                      <Image
+                        src={
+                          CATEGORIES.find(
+                            (cat) => cat.value === post.event.category
+                          )?.icon || "/images/placeholder.png"
+                        }
+                        alt="Category icon"
+                        fill
+                        className="object-contain"
+                      />
+                    </div>
                     <span>{post.event.title}</span>
                   </Link>
                   <div className="flex flex-wrap gap-1.5 justify-end shrink-0">

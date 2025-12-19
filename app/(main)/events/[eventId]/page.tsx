@@ -41,8 +41,8 @@ export default async function EventDetailPage({
     }),
     userId
       ? prisma.registration.findUnique({
-        where: { userId_eventId: { userId, eventId: eventId } },
-      })
+          where: { userId_eventId: { userId, eventId: eventId } },
+        })
       : null,
   ]);
 
@@ -132,10 +132,11 @@ export default async function EventDetailPage({
               <div className="flex flex-wrap gap-2">
                 {canManage && event.status !== "PUBLISHED" && (
                   <div
-                    className={`badge ${event.status === "PENDING_APPROVAL"
+                    className={`badge ${
+                      event.status === "PENDING_APPROVAL"
                         ? "bg-amber-500 text-white border-amber-600 border-2"
                         : "bg-rose-600 text-white border-rose-700 border-2"
-                      } gap-2 font-bold shadow-lg`}
+                    } gap-2 font-bold shadow-lg`}
                   >
                     {event.status === "PENDING_APPROVAL"
                       ? "Đang chờ duyệt"
@@ -204,6 +205,37 @@ export default async function EventDetailPage({
                 <h3 className="text-lg font-bold mb-4 text-base-content">
                   Chi tiết sự kiện
                 </h3>
+
+                {/* Category */}
+                <div className="mb-6">
+                  <div className="flex items-start gap-3">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 text-primary mt-0.5 flex-shrink-0"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
+                      />
+                    </svg>
+                    <div className="flex-1">
+                      <p className="font-semibold text-base-content text-sm">
+                        Thể loại
+                      </p>
+                      <p className="text-sm text-base-content/80">
+                        {event.category === "ENVIRONMENT" && "Môi trường"}
+                        {event.category === "EDUCATION" && "Giáo dục"}
+                        {event.category === "HEALTHCARE" && "Y tế"}
+                        {event.category === "COMMUNITY" && "Cộng đồng"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
 
                 {/* Time */}
                 <div className="space-y-3 mb-6">

@@ -106,6 +106,7 @@ export async function GET(request: Request) {
           select: {
             id: true,
             title: true,
+            category: true,
             creatorId: true,
             isCancelled: true,
             eventManagers: {

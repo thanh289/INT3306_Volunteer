@@ -148,7 +148,12 @@ export const EventInviteModal = ({
                       <div className="w-10 h-10 rounded-full">
                         {user.imageUrl ? (
                           <Image
-                            src={user.imageUrl}
+                            src={
+                              "/" +
+                              user.imageUrl
+                                .replace(/\\/g, "/")
+                                .replace(/^\/+/, "")
+                            }
                             alt={user.name || "User"}
                             width={40}
                             height={40}
