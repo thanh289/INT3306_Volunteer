@@ -176,11 +176,10 @@ export const EventFiltersClient = ({ events }: EventFiltersClientProps) => {
                   <button
                     key={idx}
                     onClick={() => setCarouselIndex(idx)}
-                    className={`w-2 h-2 rounded-full transition-all ${
-                      idx === carouselIndex
+                    className={`w-2 h-2 rounded-full transition-all ${idx === carouselIndex
                         ? "bg-primary w-8"
                         : "bg-base-300 hover:bg-base-400"
-                    }`}
+                      }`}
                   />
                 ))}
               </div>
@@ -214,7 +213,7 @@ export const EventFiltersClient = ({ events }: EventFiltersClientProps) => {
                                 ) : (
                                   <div className="w-full h-full flex items-center justify-center">
                                     <img
-                                      src="/images/placeholder.png"
+                                      src="/images/placeholder.gif"
                                       alt="No image"
                                       className="max-w-full max-h-full object-contain p-4"
                                     />
@@ -499,11 +498,10 @@ export const EventFiltersClient = ({ events }: EventFiltersClientProps) => {
                 <li>
                   <button
                     onClick={() => setSortBy("startDateTime")}
-                    className={`justify-start flex items-center gap-2 ${
-                      sortBy === "startDateTime"
+                    className={`justify-start flex items-center gap-2 ${sortBy === "startDateTime"
                         ? "active bg-primary text-primary-content"
                         : ""
-                    }`}
+                      }`}
                   >
                     <Image
                       src="/images/calendar.png"
@@ -518,11 +516,10 @@ export const EventFiltersClient = ({ events }: EventFiltersClientProps) => {
                 <li>
                   <button
                     onClick={() => setSortBy("title")}
-                    className={`justify-start flex items-center gap-2 ${
-                      sortBy === "title"
+                    className={`justify-start flex items-center gap-2 ${sortBy === "title"
                         ? "active bg-primary text-primary-content"
                         : ""
-                    }`}
+                      }`}
                   >
                     <Image
                       src="/images/abc.png"
@@ -584,9 +581,8 @@ export const EventFiltersClient = ({ events }: EventFiltersClientProps) => {
               <button
                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                 disabled={currentPage <= 1}
-                className={`btn btn-circle btn-sm border border-base-300 ${
-                  currentPage <= 1 ? "btn-disabled" : "btn-ghost"
-                }`}
+                className={`btn btn-circle btn-sm border border-base-300 ${currentPage <= 1 ? "btn-disabled" : "btn-ghost"
+                  }`}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -607,11 +603,10 @@ export const EventFiltersClient = ({ events }: EventFiltersClientProps) => {
               {/* Page 1 */}
               <button
                 onClick={() => setCurrentPage(1)}
-                className={`btn btn-circle btn-sm border ${
-                  currentPage === 1
+                className={`btn btn-circle btn-sm border ${currentPage === 1
                     ? "btn-success text-white border-success"
                     : "btn-ghost border-base-300"
-                }`}
+                  }`}
               >
                 1
               </button>
@@ -650,11 +645,10 @@ export const EventFiltersClient = ({ events }: EventFiltersClientProps) => {
               {totalPages > 1 && currentPage <= 2 && (
                 <button
                   onClick={() => setCurrentPage(2)}
-                  className={`btn btn-circle btn-sm border ${
-                    currentPage === 2
+                  className={`btn btn-circle btn-sm border ${currentPage === 2
                       ? "btn-success text-white border-success"
                       : "btn-ghost border-base-300"
-                  }`}
+                    }`}
                 >
                   2
                 </button>
@@ -689,11 +683,10 @@ export const EventFiltersClient = ({ events }: EventFiltersClientProps) => {
               {totalPages > 1 && (
                 <button
                   onClick={() => setCurrentPage(totalPages)}
-                  className={`btn btn-circle btn-sm border ${
-                    currentPage === totalPages
+                  className={`btn btn-circle btn-sm border ${currentPage === totalPages
                       ? "btn-success text-white border-success"
                       : "btn-ghost border-base-300"
-                  }`}
+                    }`}
                 >
                   {totalPages}
                 </button>
@@ -705,9 +698,8 @@ export const EventFiltersClient = ({ events }: EventFiltersClientProps) => {
                   setCurrentPage((p) => Math.min(totalPages, p + 1))
                 }
                 disabled={currentPage >= totalPages}
-                className={`btn btn-circle btn-sm border border-base-300 ${
-                  currentPage >= totalPages ? "btn-disabled" : "btn-ghost"
-                }`}
+                className={`btn btn-circle btn-sm border border-base-300 ${currentPage >= totalPages ? "btn-disabled" : "btn-ghost"
+                  }`}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

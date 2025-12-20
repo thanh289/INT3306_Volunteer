@@ -162,7 +162,7 @@ export const EventCard = ({
             style={{ display: hasValidImage ? "none" : "flex" }}
           >
             <img
-              src="/images/placeholder.png"
+              src="/images/placeholder.gif"
               alt="No image"
               className="max-w-full max-h-full object-contain p-4"
             />
