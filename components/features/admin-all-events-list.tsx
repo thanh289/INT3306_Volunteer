@@ -146,8 +146,8 @@ export const AdminAllEventsList = () => {
   return (
     <div className="space-y-4">
       {/* Filters and Export */}
-      <div className="card bg-base-100 shadow-sm border border-base-300">
-        <div className="card-body p-4">
+      <div className="card bg-base-100 shadow-sm border border-base-300" style={{ overflow: 'visible' }}>
+        <div className="card-body p-4" style={{ overflow: 'visible' }}>
           <div className="flex flex-col md:flex-row gap-4">
             {/* Search Form */}
             <form onSubmit={handleSearch} className="flex-1 flex gap-2">
@@ -182,7 +182,7 @@ export const AdminAllEventsList = () => {
             </form>
 
             {/* Status Filter Dropdown */}
-            <div className="dropdown dropdown-end w-full md:w-52">
+            <div className="dropdown dropdown-end w-full md:w-52" style={{ position: 'relative' }}>
               <label
                 tabIndex={0}
                 className="btn btn-ghost w-full justify-between normal-case hover:bg-base-200"
@@ -192,10 +192,10 @@ export const AdminAllEventsList = () => {
                   {statusFilter === "ALL"
                     ? "Tất cả"
                     : statusFilter === "PUBLISHED"
-                    ? "Đã đăng"
-                    : statusFilter === "PENDING_APPROVAL"
-                    ? "Chờ duyệt"
-                    : "Bị từ chối"}
+                      ? "Đã đăng"
+                      : statusFilter === "PENDING_APPROVAL"
+                        ? "Chờ duyệt"
+                        : "Bị từ chối"}
                 </span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -214,16 +214,21 @@ export const AdminAllEventsList = () => {
               </label>
               <ul
                 tabIndex={0}
-                className="dropdown-content z-[1] menu p-2 shadow-lg bg-base-100 rounded-box w-52 mt-1 border border-base-300"
+                className="dropdown-content menu p-2 shadow-lg bg-base-100 rounded-box w-52 mt-1 border border-base-300"
+                style={{
+                  position: 'absolute',
+                  zIndex: 9999,
+                  top: '100%',
+                  right: 0
+                }}
               >
                 <li>
                   <button
                     onClick={() => handleFilterChange("status", "ALL")}
-                    className={`justify-start ${
-                      statusFilter === "ALL"
-                        ? "active bg-primary text-primary-content"
-                        : ""
-                    }`}
+                    className={`justify-start ${statusFilter === "ALL"
+                      ? "active bg-primary text-primary-content"
+                      : ""
+                      }`}
                   >
                     Tất cả trạng thái
                   </button>
@@ -231,11 +236,10 @@ export const AdminAllEventsList = () => {
                 <li>
                   <button
                     onClick={() => handleFilterChange("status", "PUBLISHED")}
-                    className={`justify-start ${
-                      statusFilter === "PUBLISHED"
-                        ? "active bg-success text-success-content"
-                        : ""
-                    }`}
+                    className={`justify-start ${statusFilter === "PUBLISHED"
+                      ? "active bg-success text-success-content"
+                      : ""
+                      }`}
                   >
                     Đã đăng
                   </button>
@@ -245,11 +249,10 @@ export const AdminAllEventsList = () => {
                     onClick={() =>
                       handleFilterChange("status", "PENDING_APPROVAL")
                     }
-                    className={`justify-start ${
-                      statusFilter === "PENDING_APPROVAL"
-                        ? "active bg-warning text-warning-content"
-                        : ""
-                    }`}
+                    className={`justify-start ${statusFilter === "PENDING_APPROVAL"
+                      ? "active bg-warning text-warning-content"
+                      : ""
+                      }`}
                   >
                     Chờ duyệt
                   </button>
@@ -257,11 +260,10 @@ export const AdminAllEventsList = () => {
                 <li>
                   <button
                     onClick={() => handleFilterChange("status", "REJECTED")}
-                    className={`justify-start ${
-                      statusFilter === "REJECTED"
-                        ? "active bg-error text-error-content"
-                        : ""
-                    }`}
+                    className={`justify-start ${statusFilter === "REJECTED"
+                      ? "active bg-error text-error-content"
+                      : ""
+                      }`}
                   >
                     Bị từ chối
                   </button>
@@ -280,12 +282,12 @@ export const AdminAllEventsList = () => {
                   {categoryFilter === "ALL"
                     ? "Tất cả"
                     : categoryFilter === "ENVIRONMENT"
-                    ? "Môi trường"
-                    : categoryFilter === "EDUCATION"
-                    ? "Giáo dục"
-                    : categoryFilter === "HEALTHCARE"
-                    ? "Y tế"
-                    : "Cộng đồng"}
+                      ? "Môi trường"
+                      : categoryFilter === "EDUCATION"
+                        ? "Giáo dục"
+                        : categoryFilter === "HEALTHCARE"
+                          ? "Y tế"
+                          : "Cộng đồng"}
                 </span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -304,16 +306,21 @@ export const AdminAllEventsList = () => {
               </label>
               <ul
                 tabIndex={0}
-                className="dropdown-content z-[1] menu p-2 shadow-lg bg-base-100 rounded-box w-52 mt-1 border border-base-300"
+                className="dropdown-content menu p-2 shadow-lg bg-base-100 rounded-box w-52 mt-1 border border-base-300"
+                style={{
+                  position: 'absolute',
+                  zIndex: 9999,
+                  top: '100%',
+                  right: 0
+                }}
               >
                 <li>
                   <button
                     onClick={() => handleFilterChange("category", "ALL")}
-                    className={`justify-start ${
-                      categoryFilter === "ALL"
-                        ? "active bg-primary text-primary-content"
-                        : ""
-                    }`}
+                    className={`justify-start ${categoryFilter === "ALL"
+                      ? "active bg-primary text-primary-content"
+                      : ""
+                      }`}
                   >
                     Tất cả thể loại
                   </button>
@@ -323,11 +330,10 @@ export const AdminAllEventsList = () => {
                     onClick={() =>
                       handleFilterChange("category", "ENVIRONMENT")
                     }
-                    className={`justify-start ${
-                      categoryFilter === "ENVIRONMENT"
-                        ? "active bg-primary text-primary-content"
-                        : ""
-                    }`}
+                    className={`justify-start ${categoryFilter === "ENVIRONMENT"
+                      ? "active bg-primary text-primary-content"
+                      : ""
+                      }`}
                   >
                     🌱 Môi trường
                   </button>
@@ -335,11 +341,10 @@ export const AdminAllEventsList = () => {
                 <li>
                   <button
                     onClick={() => handleFilterChange("category", "EDUCATION")}
-                    className={`justify-start ${
-                      categoryFilter === "EDUCATION"
-                        ? "active bg-primary text-primary-content"
-                        : ""
-                    }`}
+                    className={`justify-start ${categoryFilter === "EDUCATION"
+                      ? "active bg-primary text-primary-content"
+                      : ""
+                      }`}
                   >
                     📚 Giáo dục
                   </button>
@@ -347,11 +352,10 @@ export const AdminAllEventsList = () => {
                 <li>
                   <button
                     onClick={() => handleFilterChange("category", "HEALTHCARE")}
-                    className={`justify-start ${
-                      categoryFilter === "HEALTHCARE"
-                        ? "active bg-primary text-primary-content"
-                        : ""
-                    }`}
+                    className={`justify-start ${categoryFilter === "HEALTHCARE"
+                      ? "active bg-primary text-primary-content"
+                      : ""
+                      }`}
                   >
                     ⚕️ Y tế
                   </button>
@@ -359,11 +363,10 @@ export const AdminAllEventsList = () => {
                 <li>
                   <button
                     onClick={() => handleFilterChange("category", "COMMUNITY")}
-                    className={`justify-start ${
-                      categoryFilter === "COMMUNITY"
-                        ? "active bg-primary text-primary-content"
-                        : ""
-                    }`}
+                    className={`justify-start ${categoryFilter === "COMMUNITY"
+                      ? "active bg-primary text-primary-content"
+                      : ""
+                      }`}
                   >
                     🤝 Cộng đồng
                   </button>
@@ -446,9 +449,8 @@ export const AdminAllEventsList = () => {
                     </td>
                     <td>
                       <span
-                        className={`badge ${
-                          getStatusBadge(event.status).class
-                        }`}
+                        className={`badge ${getStatusBadge(event.status).class
+                          }`}
                       >
                         {getStatusBadge(event.status).text}
                       </span>

@@ -183,12 +183,12 @@ export const DashboardFeed = () => {
         posts.map((post) =>
           post.id === postId
             ? {
-                ...post,
-                isDeleted: true,
-                deletedAt: new Date().toISOString(),
-                deletedBy: session?.user?.id || null,
-                deletedByRole: session?.user?.role || null,
-              }
+              ...post,
+              isDeleted: true,
+              deletedAt: new Date().toISOString(),
+              deletedBy: session?.user?.id || null,
+              deletedByRole: session?.user?.role || null,
+            }
             : post
         )
       );
@@ -264,9 +264,8 @@ export const DashboardFeed = () => {
               {sortBy === "interested" && "Quan tâm"}
             </span>
             <svg
-              className={`h-4 w-4 transition-transform ${
-                showSortDropdown ? "rotate-180" : ""
-              }`}
+              className={`h-4 w-4 transition-transform ${showSortDropdown ? "rotate-180" : ""
+                }`}
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -367,9 +366,8 @@ export const DashboardFeed = () => {
                 : `Thể loại (${selectedCategories.length})`}
             </span>
             <svg
-              className={`h-4 w-4 transition-transform ${
-                showCategoryDropdown ? "rotate-180" : ""
-              }`}
+              className={`h-4 w-4 transition-transform ${showCategoryDropdown ? "rotate-180" : ""
+                }`}
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
