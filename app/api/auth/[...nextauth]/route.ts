@@ -4,14 +4,24 @@
 import NextAuth from "next-auth";
 import { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
+import { PrismaAdapter } from "@auth/prisma-adapter";
 import bcrypt from "bcryptjs";
 import prisma from "@/lib/prisma";
 import { UserStatus } from "@prisma/client";
 import { authRateLimiter } from "@/lib/rate-limit";
 
 export const authOptions: AuthOptions = {
+  adapter: PrismaAdapter(prisma) as any,
   providers: [
-    // only use email and password, no need of OAuth
+    // Google OAuth Provider
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID || "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
+      allowDangerousEmailAccountLinking: true, // Allows linking if email exists
+    }),
+
+    // Traditional Credentials Provider
     CredentialsProvider({
       name: "credentials",
       credentials: {
@@ -80,9 +90,79 @@ export const authOptions: AuthOptions = {
   // This callback is called whenever a JWT is created (i.e., at sign-in).
   // We are adding the user ID from the database to the token here.
   callbacks: {
+    // Handle account linking and user creation for OAuth
+    async signIn({ user, account, profile }) {
+      // Allow credentials provider to work as before
+      if (account?.provider === "credentials") {
+        return true;
+      }
+
+      // For OAuth providers (Google, Email)
+      if (account?.provider === "google" || account?.provider === "email") {
+        try {
+          // Check if user exists
+          const existingUser = await prisma.user.findUnique({
+            where: { email: user.email! },
+          });
+
+          // If user exists, check status
+          if (existingUser) {
+            if (existingUser.status === "LOCKED") {
+              return false; // Don't allow locked users to sign in
+            }
+
+            // Update user info from OAuth if needed
+            if (account.provider === "google" && profile) {
+              await prisma.user.update({
+                where: { id: existingUser.id },
+                data: {
+                  name: user.name || existingUser.name,
+                },
+              });
+            }
+          } else {
+            // Create new user for OAuth sign-in
+            const newUser = await prisma.user.create({
+              data: {
+                email: user.email!,
+                name: user.name,
+                passwordHash: undefined, // No password for OAuth users
+                role: "VOLUNTEER",
+                status: "ACTIVE",
+              },
+            });
+            user.id = newUser.id;
+          }
+
+          return true;
+        } catch (error) {
+          console.error("Error in signIn callback:", error);
+          return false;
+        }
+      }
+
+      return true;
+    },
+
     // called when a JWT is created
-    async jwt({ token, user, trigger }) {
-      if (user) {
+    async jwt({ token, user, trigger, account }) {
+      // First sign in with OAuth
+      if (account && user) {
+        const dbUser = await prisma.user.findUnique({
+          where: { email: user.email! },
+        });
+
+        if (dbUser) {
+          token.id = dbUser.id;
+          token.role = dbUser.role;
+          token.status = dbUser.status;
+          token.imageUrl = dbUser.imageUrl;
+          token.name = dbUser.name;
+        }
+      }
+
+      // Regular update for credentials
+      if (user && !account) {
         token.id = user.id; // add user's ID into token
         token.role = user.role;
         token.status = user.status;
