@@ -42,7 +42,7 @@ export const AdminEventActions = ({
       <button
         onClick={() => handleUpdateStatus(EventStatus.PUBLISHED)}
         disabled={isPending}
-        className="btn btn-success font-semibold shadow-md hover:shadow-lg transition-all"
+        className="btn bg-green-600 hover:bg-green-700 border-green-600 text-white font-semibold shadow-md hover:shadow-lg transition-all"
       >
         {isPending ? (
           <span className="loading loading-spinner loading-xs"></span>
@@ -67,7 +67,7 @@ export const AdminEventActions = ({
       <button
         onClick={() => handleUpdateStatus(EventStatus.REJECTED)}
         disabled={isPending}
-        className="btn btn-error font-semibold shadow-md hover:shadow-lg transition-all"
+        className="btn bg-red-600 hover:bg-red-700 border-red-600 text-white font-semibold shadow-md hover:shadow-lg transition-all"
       >
         {isPending ? (
           <span className="loading loading-spinner loading-xs"></span>

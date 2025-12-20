@@ -176,7 +176,7 @@ export const UserList = () => {
                   <tr key={user.id} className="hover">
                     <td className="font-medium">{user.name}</td>
                     <td className="whitespace-nowrap">{user.email}</td>
-                    <td>
+                    <td className="min-w-[210px]">
                       <AdminUserActions
                         user={user}
                         showRoleOnly

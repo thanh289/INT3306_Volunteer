@@ -158,7 +158,24 @@ function LoginForm() {
         <button
           type="submit"
           disabled={isLoading}
-          className="btn btn-primary w-full gap-2 hover:scale-[1.02] active:scale-[0.98] transition-transform"
+          style={{
+            backgroundColor: "#0891b2",
+            borderColor: "#0891b2",
+            color: "white",
+          }}
+          onMouseEnter={(e) => {
+            if (!isLoading) {
+              e.currentTarget.style.backgroundColor = "#0e7490";
+              e.currentTarget.style.borderColor = "#0e7490";
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (!isLoading) {
+              e.currentTarget.style.backgroundColor = "#0891b2";
+              e.currentTarget.style.borderColor = "#0891b2";
+            }
+          }}
+          className="btn w-full gap-2 hover:scale-[1.02] active:scale-[0.98] transition-transform"
         >
           {isLoading ? (
             <>

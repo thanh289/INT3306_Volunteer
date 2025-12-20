@@ -176,10 +176,11 @@ export const EventFiltersClient = ({ events }: EventFiltersClientProps) => {
                   <button
                     key={idx}
                     onClick={() => setCarouselIndex(idx)}
-                    className={`w-2 h-2 rounded-full transition-all ${idx === carouselIndex
-                      ? "bg-primary w-8"
-                      : "bg-base-300 hover:bg-base-400"
-                      }`}
+                    className={`w-2 h-2 rounded-full transition-all ${
+                      idx === carouselIndex
+                        ? "bg-primary w-8"
+                        : "bg-base-300 hover:bg-base-400"
+                    }`}
                   />
                 ))}
               </div>
@@ -335,8 +336,11 @@ export const EventFiltersClient = ({ events }: EventFiltersClientProps) => {
       )}
 
       {/* Filters */}
-      <div className="card bg-base-100 shadow-lg border border-base-300 rounded-2xl relative z-20" style={{ overflow: 'visible' }}>
-        <div className="card-body" style={{ overflow: 'visible' }}>
+      <div
+        className="card bg-base-100 shadow-lg border border-base-300 rounded-2xl relative z-20"
+        style={{ overflow: "visible" }}
+      >
+        <div className="card-body" style={{ overflow: "visible" }}>
           {/* Search bar on first row */}
           <div className="form-control w-full">
             <div className="relative">
@@ -368,7 +372,7 @@ export const EventFiltersClient = ({ events }: EventFiltersClientProps) => {
           {/* Category dropdown and sort on second row */}
           <div className="flex flex-col sm:flex-row gap-4 overflow-visible">
             {/* Category Filter - Dropdown with checkboxes */}
-            <div className="dropdown dropdown-end dropdown-bottom w-full sm:w-auto sm:flex-1 relative z-30">
+            <div className="dropdown dropdown-bottom w-full sm:w-auto sm:flex-1 relative z-50">
               <label
                 tabIndex={0}
                 className="btn btn-ghost w-full justify-between normal-case hover:bg-base-200 rounded-xl"
@@ -391,12 +395,11 @@ export const EventFiltersClient = ({ events }: EventFiltersClientProps) => {
               </label>
               <ul
                 tabIndex={0}
-                className="dropdown-content menu p-2 shadow-xl bg-base-100 rounded-2xl w-full sm:w-64 mt-2 border border-base-300 max-h-96 overflow-auto"
+                className="dropdown-content menu p-2 shadow-xl bg-base-100 rounded-2xl w-full sm:w-64 mt-2 border border-base-300 max-h-96 overflow-auto z-[9999]"
                 style={{
-                  position: 'absolute',
-                  zIndex: 9999,
-                  top: '100%',
-                  left: 0
+                  position: "absolute",
+                  top: "100%",
+                  left: 0,
                 }}
               >
                 {[
@@ -444,7 +447,7 @@ export const EventFiltersClient = ({ events }: EventFiltersClientProps) => {
             </div>
 
             {/* Sort Filter - Dropdown style */}
-            <div className="dropdown dropdown-end dropdown-bottom w-full sm:w-auto sm:flex-1 relative z-30">
+            <div className="dropdown dropdown-bottom w-full sm:w-auto sm:flex-1 relative z-40">
               <label
                 tabIndex={0}
                 className="btn btn-ghost w-full justify-between normal-case hover:bg-base-200 rounded-xl"
@@ -486,21 +489,21 @@ export const EventFiltersClient = ({ events }: EventFiltersClientProps) => {
               </label>
               <ul
                 tabIndex={0}
-                className="dropdown-content menu p-2 shadow-xl bg-base-100 rounded-2xl w-full sm:w-64 mt-2 border border-base-300 max-h-96 overflow-auto"
+                className="dropdown-content menu p-2 shadow-xl bg-base-100 rounded-2xl w-full sm:w-64 mt-2 border border-base-300 max-h-96 overflow-auto z-[9999]"
                 style={{
-                  position: 'absolute',
-                  zIndex: 9999,
-                  top: '100%',
-                  left: 0
+                  position: "absolute",
+                  top: "100%",
+                  left: 0,
                 }}
               >
                 <li>
                   <button
                     onClick={() => setSortBy("startDateTime")}
-                    className={`justify-start flex items-center gap-2 ${sortBy === "startDateTime"
-                      ? "active bg-primary text-primary-content"
-                      : ""
-                      }`}
+                    className={`justify-start flex items-center gap-2 ${
+                      sortBy === "startDateTime"
+                        ? "active bg-primary text-primary-content"
+                        : ""
+                    }`}
                   >
                     <Image
                       src="/images/calendar.png"
@@ -515,10 +518,11 @@ export const EventFiltersClient = ({ events }: EventFiltersClientProps) => {
                 <li>
                   <button
                     onClick={() => setSortBy("title")}
-                    className={`justify-start flex items-center gap-2 ${sortBy === "title"
-                      ? "active bg-primary text-primary-content"
-                      : ""
-                      }`}
+                    className={`justify-start flex items-center gap-2 ${
+                      sortBy === "title"
+                        ? "active bg-primary text-primary-content"
+                        : ""
+                    }`}
                   >
                     <Image
                       src="/images/abc.png"
@@ -580,8 +584,9 @@ export const EventFiltersClient = ({ events }: EventFiltersClientProps) => {
               <button
                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                 disabled={currentPage <= 1}
-                className={`btn btn-circle btn-sm border border-base-300 ${currentPage <= 1 ? "btn-disabled" : "btn-ghost"
-                  }`}
+                className={`btn btn-circle btn-sm border border-base-300 ${
+                  currentPage <= 1 ? "btn-disabled" : "btn-ghost"
+                }`}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -602,10 +607,11 @@ export const EventFiltersClient = ({ events }: EventFiltersClientProps) => {
               {/* Page 1 */}
               <button
                 onClick={() => setCurrentPage(1)}
-                className={`btn btn-circle btn-sm border ${currentPage === 1
-                  ? "btn-success text-white border-success"
-                  : "btn-ghost border-base-300"
-                  }`}
+                className={`btn btn-circle btn-sm border ${
+                  currentPage === 1
+                    ? "btn-success text-white border-success"
+                    : "btn-ghost border-base-300"
+                }`}
               >
                 1
               </button>
@@ -644,10 +650,11 @@ export const EventFiltersClient = ({ events }: EventFiltersClientProps) => {
               {totalPages > 1 && currentPage <= 2 && (
                 <button
                   onClick={() => setCurrentPage(2)}
-                  className={`btn btn-circle btn-sm border ${currentPage === 2
-                    ? "btn-success text-white border-success"
-                    : "btn-ghost border-base-300"
-                    }`}
+                  className={`btn btn-circle btn-sm border ${
+                    currentPage === 2
+                      ? "btn-success text-white border-success"
+                      : "btn-ghost border-base-300"
+                  }`}
                 >
                   2
                 </button>
@@ -682,10 +689,11 @@ export const EventFiltersClient = ({ events }: EventFiltersClientProps) => {
               {totalPages > 1 && (
                 <button
                   onClick={() => setCurrentPage(totalPages)}
-                  className={`btn btn-circle btn-sm border ${currentPage === totalPages
-                    ? "btn-success text-white border-success"
-                    : "btn-ghost border-base-300"
-                    }`}
+                  className={`btn btn-circle btn-sm border ${
+                    currentPage === totalPages
+                      ? "btn-success text-white border-success"
+                      : "btn-ghost border-base-300"
+                  }`}
                 >
                   {totalPages}
                 </button>
@@ -697,8 +705,9 @@ export const EventFiltersClient = ({ events }: EventFiltersClientProps) => {
                   setCurrentPage((p) => Math.min(totalPages, p + 1))
                 }
                 disabled={currentPage >= totalPages}
-                className={`btn btn-circle btn-sm border border-base-300 ${currentPage >= totalPages ? "btn-disabled" : "btn-ghost"
-                  }`}
+                className={`btn btn-circle btn-sm border border-base-300 ${
+                  currentPage >= totalPages ? "btn-disabled" : "btn-ghost"
+                }`}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

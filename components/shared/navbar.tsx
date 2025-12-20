@@ -29,13 +29,17 @@ export const Navbar = () => {
 
   return (
     <div
-      className={`navbar bg-base-100 shadow-lg sticky top-0 z-50 border-b border-base-300 transition-all duration-300 ${isScrolled ? "py-1" : "py-2"
-        }`}
+      className={`navbar bg-base-100 shadow-lg sticky top-0 z-50 border-b border-base-300 transition-all duration-300 ${
+        isScrolled ? "py-1" : "py-2"
+      }`}
     >
       <div className="container mx-auto flex items-center">
         {/* Mobile menu button */}
         <div className="flex-none lg:hidden">
-          <label htmlFor="mobile-drawer" className="btn btn-square btn-ghost text-2xl">
+          <label
+            htmlFor="mobile-drawer"
+            className="btn btn-square btn-ghost text-2xl"
+          >
             ☰
           </label>
         </div>
@@ -47,8 +51,9 @@ export const Navbar = () => {
             className="btn btn-ghost normal-case text-xl gap-2 hover:scale-105 transition-all duration-300 px-3 py-2 h-auto min-h-0 bg-transparent hover:bg-transparent border-none shadow-none"
           >
             <div
-              className={`relative transition-all duration-300 overflow-hidden rounded-full ${isScrolled ? "w-10 h-10" : "w-12 h-12"
-                }`}
+              className={`relative transition-all duration-300 overflow-hidden rounded-full ${
+                isScrolled ? "w-10 h-10" : "w-12 h-12"
+              }`}
             >
               <Image
                 src="/images/logo.webp"
@@ -59,8 +64,9 @@ export const Navbar = () => {
               />
             </div>
             <span
-              className={`hidden sm:inline bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent font-extrabold bg-[length:200%_auto] animate-gradient drop-shadow-sm transition-all duration-300 ${isScrolled ? "text-2xl" : "text-3xl"
-                }`}
+              className={`hidden sm:inline bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent font-extrabold bg-[length:200%_auto] animate-gradient drop-shadow-sm transition-all duration-300 ${
+                isScrolled ? "text-2xl" : "text-3xl"
+              }`}
             >
               VolunteerHub
             </span>
@@ -89,8 +95,9 @@ export const Navbar = () => {
               />
             </svg>
             <span
-              className={`text-xs transition-all duration-700 overflow-hidden ${isScrolled ? "opacity-0 max-h-0" : "opacity-100 max-h-6 mt-1"
-                }`}
+              className={`text-xs transition-all duration-700 overflow-hidden ${
+                isScrolled ? "opacity-0 max-h-0" : "opacity-100 max-h-6 mt-1"
+              }`}
             >
               Trang chủ
             </span>
@@ -116,8 +123,9 @@ export const Navbar = () => {
               />
             </svg>
             <span
-              className={`text-xs transition-all duration-700 overflow-hidden ${isScrolled ? "opacity-0 max-h-0" : "opacity-100 max-h-6 mt-1"
-                }`}
+              className={`text-xs transition-all duration-700 overflow-hidden ${
+                isScrolled ? "opacity-0 max-h-0" : "opacity-100 max-h-6 mt-1"
+              }`}
             >
               Về chúng tôi
             </span>
@@ -143,8 +151,9 @@ export const Navbar = () => {
               />
             </svg>
             <span
-              className={`text-xs transition-all duration-700 overflow-hidden ${isScrolled ? "opacity-0 max-h-0" : "opacity-100 max-h-6 mt-1"
-                }`}
+              className={`text-xs transition-all duration-700 overflow-hidden ${
+                isScrolled ? "opacity-0 max-h-0" : "opacity-100 max-h-6 mt-1"
+              }`}
             >
               Liên hệ
             </span>
@@ -174,10 +183,11 @@ export const Navbar = () => {
                   />
                 </svg>
                 <span
-                  className={`text-xs transition-all duration-700 overflow-hidden ${isScrolled
-                    ? "opacity-0 max-h-0"
-                    : "opacity-100 max-h-6 mt-1"
-                    }`}
+                  className={`text-xs transition-all duration-700 overflow-hidden ${
+                    isScrolled
+                      ? "opacity-0 max-h-0"
+                      : "opacity-100 max-h-6 mt-1"
+                  }`}
                 >
                   Bảng tin
                 </span>
@@ -205,10 +215,11 @@ export const Navbar = () => {
                       />
                     </svg>
                     <span
-                      className={`text-xs transition-all duration-700 overflow-hidden ${isScrolled
-                        ? "opacity-0 max-h-0"
-                        : "opacity-100 max-h-6 mt-1"
-                        }`}
+                      className={`text-xs transition-all duration-700 overflow-hidden ${
+                        isScrolled
+                          ? "opacity-0 max-h-0"
+                          : "opacity-100 max-h-6 mt-1"
+                      }`}
                     >
                       Đã đăng ký
                     </span>
@@ -232,10 +243,11 @@ export const Navbar = () => {
                       />
                     </svg>
                     <span
-                      className={`text-xs transition-all duration-700 overflow-hidden ${isScrolled
-                        ? "opacity-0 max-h-0"
-                        : "opacity-100 max-h-6 mt-1"
-                        }`}
+                      className={`text-xs transition-all duration-700 overflow-hidden ${
+                        isScrolled
+                          ? "opacity-0 max-h-0"
+                          : "opacity-100 max-h-6 mt-1"
+                      }`}
                     >
                       Quan tâm
                     </span>
@@ -264,10 +276,11 @@ export const Navbar = () => {
                     />
                   </svg>
                   <span
-                    className={`text-xs transition-all duration-700 overflow-hidden ${isScrolled
-                      ? "opacity-0 max-h-0"
-                      : "opacity-100 max-h-6 mt-1"
-                      }`}
+                    className={`text-xs transition-all duration-700 overflow-hidden ${
+                      isScrolled
+                        ? "opacity-0 max-h-0"
+                        : "opacity-100 max-h-6 mt-1"
+                    }`}
                   >
                     Đã tạo
                   </span>
@@ -295,10 +308,11 @@ export const Navbar = () => {
                     />
                   </svg>
                   <span
-                    className={`text-xs transition-all duration-700 overflow-hidden ${isScrolled
-                      ? "opacity-0 max-h-0"
-                      : "opacity-100 max-h-6 mt-1"
-                      }`}
+                    className={`text-xs transition-all duration-700 overflow-hidden ${
+                      isScrolled
+                        ? "opacity-0 max-h-0"
+                        : "opacity-100 max-h-6 mt-1"
+                    }`}
                   >
                     Tạo sự kiện
                   </span>
@@ -326,10 +340,11 @@ export const Navbar = () => {
                     />
                   </svg>
                   <span
-                    className={`text-xs transition-all duration-700 overflow-hidden ${isScrolled
-                      ? "opacity-0 max-h-0"
-                      : "opacity-100 max-h-6 mt-1"
-                      }`}
+                    className={`text-xs transition-all duration-700 overflow-hidden ${
+                      isScrolled
+                        ? "opacity-0 max-h-0"
+                        : "opacity-100 max-h-6 mt-1"
+                    }`}
                   >
                     Admin
                   </span>
@@ -341,7 +356,10 @@ export const Navbar = () => {
 
               {/* User Dropdown */}
               <div className="dropdown dropdown-end">
-                <label tabIndex={0} className="btn btn-ghost gap-2 px-3 py-2 h-auto min-h-0 hover:bg-base-200 transition-all duration-300">
+                <label
+                  tabIndex={0}
+                  className="btn btn-ghost gap-2 px-3 py-2 h-auto min-h-0 hover:bg-base-200 transition-all duration-300"
+                >
                   <div className="avatar placeholder w-10 h-10 relative rounded-full overflow-hidden">
                     {session.user.imageUrl ? (
                       <Image
@@ -422,7 +440,7 @@ export const Navbar = () => {
             <>
               <Link
                 href="/login"
-                className="btn btn-ghost flex-col gap-0 px-3 py-2 h-auto min-h-0 hover:bg-base-200 transition-all duration-300"
+                className="btn flex-col gap-0 px-3 py-2 h-auto min-h-0 bg-cyan-600 hover:bg-cyan-700 text-white border-cyan-600 transition-all duration-300"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -439,10 +457,11 @@ export const Navbar = () => {
                   />
                 </svg>
                 <span
-                  className={`text-xs transition-all duration-700 overflow-hidden ${isScrolled
-                    ? "opacity-0 max-h-0"
-                    : "opacity-100 max-h-6 mt-1"
-                    }`}
+                  className={`text-xs transition-all duration-700 overflow-hidden ${
+                    isScrolled
+                      ? "opacity-0 max-h-0"
+                      : "opacity-100 max-h-6 mt-1"
+                  }`}
                 >
                   Đăng nhập
                 </span>

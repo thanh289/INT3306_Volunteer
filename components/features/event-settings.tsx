@@ -107,14 +107,14 @@ export const EventSettings = ({ event }: Props) => {
               </p>
             )}
           </div>
-          <div className="shrink-0 bg-base-200 p-5 rounded-xl border-2 border-base-300 shadow-sm hover:shadow-md transition-shadow">
+          <div className="shrink-0 bg-base-200 p-3 rounded-xl border-2 border-base-300 shadow-sm hover:shadow-md transition-shadow">
             <label className="cursor-pointer">
               <input
                 type="checkbox"
                 checked={requiresRegistrationForm}
                 onChange={handleToggleRegistrationForm}
                 disabled={isSavingForm}
-                className="checkbox checkbox-success checkbox-lg scale-150"
+                className="checkbox checkbox-success checkbox-md"
               />
             </label>
           </div>
@@ -154,14 +154,14 @@ export const EventSettings = ({ event }: Props) => {
               </p>
             )}
           </div>
-          <div className="shrink-0 bg-base-200 p-5 rounded-xl border-2 border-base-300 shadow-sm hover:shadow-md transition-shadow">
+          <div className="shrink-0 bg-base-200 p-3 rounded-xl border-2 border-base-300 shadow-sm hover:shadow-md transition-shadow">
             <label className="cursor-pointer">
               <input
                 type="checkbox"
                 checked={requirePostApproval}
                 onChange={handleTogglePostApproval}
                 disabled={isSavingPost}
-                className="checkbox checkbox-success checkbox-lg scale-150"
+                className="checkbox checkbox-success checkbox-md"
               />
             </label>
           </div>

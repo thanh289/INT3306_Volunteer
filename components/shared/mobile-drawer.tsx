@@ -48,7 +48,7 @@ export const MobileDrawer = ({ children }: { children: React.ReactNode }) => {
     <div className="drawer">
       <input id="mobile-drawer" type="checkbox" className="drawer-toggle" />
       <div className="drawer-content">{children}</div>
-      <div className="drawer-side z-50">
+      <div className="drawer-side z-60">
         {/* Blur overlay using drawer-overlay */}
         <label htmlFor="mobile-drawer" className="drawer-overlay"></label>
         <div

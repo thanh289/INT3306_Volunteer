@@ -385,7 +385,7 @@ export const DashboardFeed = () => {
 
           {/* Category Dropdown */}
           {showCategoryDropdown && (
-            <div className="absolute top-full mt-2 right-0 bg-base-100 border border-base-300 rounded-lg shadow-lg z-10 min-w-[220px]">
+            <div className="absolute top-full mt-2 left-0 sm:right-0 sm:left-auto bg-base-100 border border-base-300 rounded-lg shadow-lg z-10 min-w-[220px]">
               <div className="p-4 space-y-2">
                 {CATEGORIES.map((category) => (
                   <label

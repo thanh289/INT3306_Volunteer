@@ -145,7 +145,17 @@ export const EventActions = ({
             ) : (
               <button
                 onClick={handleCancel}
-                className="btn btn-warning gap-2 shrink-0"
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = "rgb(239, 68, 68)";
+                  e.currentTarget.style.borderColor = "rgb(239, 68, 68)";
+                  e.currentTarget.style.color = "white";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = "";
+                  e.currentTarget.style.borderColor = "";
+                  e.currentTarget.style.color = "";
+                }}
+                className="btn btn-outline gap-2 shrink-0 border-warning text-warning"
                 disabled={isOngoing}
               >
                 Hủy sự kiện
@@ -168,7 +178,17 @@ export const EventActions = ({
             </div>
             <button
               onClick={handleDelete}
-              className="btn btn-error gap-2 shrink-0"
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "rgb(239, 68, 68)";
+                e.currentTarget.style.borderColor = "rgb(239, 68, 68)";
+                e.currentTarget.style.color = "white";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "";
+                e.currentTarget.style.borderColor = "";
+                e.currentTarget.style.color = "";
+              }}
+              className="btn btn-outline gap-2 shrink-0 border-error text-error"
             >
               Xóa vĩnh viễn
             </button>

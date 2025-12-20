@@ -109,10 +109,10 @@ export const FavoriteEventButton = ({
     <button
       onClick={handleClick}
       disabled={isLoading || isChecking}
-      className={`flex items-center gap-2 px-6 py-3 font-medium border rounded-md shadow-sm transition-all duration-200 disabled:opacity-50 group ${
+      className={`btn w-full gap-2 ${
         isInterested
           ? "bg-red-50 text-red-600 border-red-200 hover:bg-red-100"
-          : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+          : "btn-outline"
       }`}
     >
       <Heart

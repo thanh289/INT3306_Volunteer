@@ -99,7 +99,12 @@ export const AdminUserActions = ({
 
     return (
       <select
-        className="select select-bordered select-sm"
+        className="select select-bordered w-full max-w-[200px] !pb-3 !pt-2"
+        style={{
+          lineHeight: "1.8",
+          paddingBottom: "0.85rem",
+          paddingTop: "0.65rem",
+        }}
         value={selectedRole}
         onChange={(e) => {
           const newRole = e.target.value as Role;
@@ -125,8 +130,10 @@ export const AdminUserActions = ({
       <button
         onClick={handleToggleLock}
         disabled={isPending}
-        className={`btn btn-xs disabled:opacity-50 ${
-          user.status === "ACTIVE" ? "btn-error" : "btn-success"
+        className={`btn btn-xs text-white disabled:opacity-50 ${
+          user.status === "ACTIVE"
+            ? "bg-red-600 hover:bg-red-700 border-red-600"
+            : "bg-green-600 hover:bg-green-700 border-green-600"
         }`}
       >
         {isPending

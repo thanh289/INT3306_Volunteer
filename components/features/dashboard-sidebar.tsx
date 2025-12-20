@@ -41,11 +41,30 @@ export const DashboardSidebar = ({
     localStorage.setItem("dashboardSidebarCollapsed", "true");
   }, [pathname]);
 
+  // Auto-close when mobile drawer opens
+  useEffect(() => {
+    const checkDrawer = () => {
+      const drawer = document.getElementById(
+        "mobile-drawer"
+      ) as HTMLInputElement | null;
+      if (drawer?.checked) {
+        setIsCollapsed(true);
+        localStorage.setItem("dashboardSidebarCollapsed", "true");
+      }
+    };
+
+    const drawer = document.getElementById("mobile-drawer");
+    if (drawer) {
+      drawer.addEventListener("change", checkDrawer);
+      return () => drawer.removeEventListener("change", checkDrawer);
+    }
+  }, []);
+
   return (
     <>
       {/* Sidebar */}
       <aside
-        className={`fixed left-0 top-16 h-[calc(100vh-4rem)] bg-base-100 border-r border-base-300 transition-all duration-300 z-40 ${
+        className={`fixed left-0 top-20 h-[calc(100vh-5rem)] bg-base-100 border-r border-base-300 transition-all duration-300 z-30 ${
           isCollapsed ? "w-0" : "w-80"
         } overflow-hidden`}
       >
@@ -150,7 +169,7 @@ export const DashboardSidebar = ({
         onClick={() => setIsCollapsed(!isCollapsed)}
         className={`fixed top-1/2 -translate-y-1/2 ${
           isCollapsed ? "left-3" : "left-[19rem]"
-        } z-[120] btn btn-circle btn-sm bg-primary text-white border border-primary shadow-xl transition-all duration-300`}
+        } z-[35] btn btn-circle btn-sm bg-primary text-white border border-primary shadow-xl transition-all duration-300`}
         title={isCollapsed ? "Mở thanh bên" : "Đóng thanh bên"}
       >
         {isCollapsed ? (
