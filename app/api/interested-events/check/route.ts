@@ -5,6 +5,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import prisma from "@/lib/prisma";
+import { apiCache } from "@/lib/cache";
 
 export async function GET(request: Request) {
   try {
@@ -21,6 +22,13 @@ export async function GET(request: Request) {
       return new NextResponse("Event ID is required", { status: 400 });
     }
 
+    // Check cache first
+    const cacheKey = `interested:${session.user.id}:${eventId}`;
+    const cached = apiCache.get<boolean>(cacheKey);
+    if (cached !== null) {
+      return NextResponse.json({ isInterested: cached });
+    }
+
     const interestedEvent = await prisma.interestedEvent.findUnique({
       where: {
         userId_eventId: {
@@ -30,7 +38,11 @@ export async function GET(request: Request) {
       },
     });
 
-    return NextResponse.json({ isInterested: !!interestedEvent });
+    const isInterested = !!interestedEvent;
+    // Cache for 1 minute
+    apiCache.set(cacheKey, isInterested);
+
+    return NextResponse.json({ isInterested });
   } catch (error) {
     console.error("LỖI KHI KIỂM TRA SỰ KIỆN QUAN TÂM:", error);
     return NextResponse.json({ isInterested: false });

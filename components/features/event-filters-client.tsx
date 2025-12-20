@@ -13,11 +13,15 @@ type EventWithCreator = Event & { creator: User };
 
 interface EventFiltersClientProps {
   events: EventWithCreator[];
+  interestedEventIds: string[];
 }
 
 const ITEMS_PER_PAGE = 12;
 
-export const EventFiltersClient = ({ events }: EventFiltersClientProps) => {
+export const EventFiltersClient = ({
+  events,
+  interestedEventIds,
+}: EventFiltersClientProps) => {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState<"startDateTime" | "title">(
     "startDateTime"
@@ -214,7 +218,7 @@ export const EventFiltersClient = ({ events }: EventFiltersClientProps) => {
                                 ) : (
                                   <div className="w-full h-full flex items-center justify-center">
                                     <img
-                                      src="/images/placeholder.png"
+                                      src="/images/placeholder.gif"
                                       alt="No image"
                                       className="max-w-full max-h-full object-contain p-4"
                                     />
@@ -573,7 +577,11 @@ export const EventFiltersClient = ({ events }: EventFiltersClientProps) => {
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {paginatedEvents.map((event) => (
-              <EventCard key={event.id} event={event} />
+              <EventCard
+                key={event.id}
+                event={event}
+                initialIsInterested={interestedEventIds.includes(event.id)}
+              />
             ))}
           </div>
 

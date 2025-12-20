@@ -84,12 +84,14 @@ type EventCardProps = {
   event: EventWithCreator;
   showStatus?: boolean;
   registrationStatus?: RegistrationStatus;
+  initialIsInterested?: boolean;
 };
 
 export const EventCard = ({
   event,
   showStatus,
   registrationStatus,
+  initialIsInterested,
 }: EventCardProps) => {
   const eventDate = new Date(event.startDateTime).toLocaleDateString("vi-VN", {
     weekday: "short",
@@ -162,7 +164,7 @@ export const EventCard = ({
             style={{ display: hasValidImage ? "none" : "flex" }}
           >
             <img
-              src="/images/placeholder.png"
+              src="/images/placeholder.gif"
               alt="No image"
               className="max-w-full max-h-full object-contain p-4"
             />
@@ -181,7 +183,11 @@ export const EventCard = ({
 
           {/* Favorite button overlay */}
           <div className="absolute top-2 right-2 sm:top-3 sm:right-3 z-10">
-            <FavoriteEventButton eventId={event.id} compact />
+            <FavoriteEventButton
+              eventId={event.id}
+              compact
+              initialIsInterested={initialIsInterested}
+            />
           </div>
 
           {/* Status badge overlay */}

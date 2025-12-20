@@ -7,6 +7,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import prisma from "@/lib/prisma";
 import { EventCategory } from "@prisma/client";
 import { z } from "zod";
+import { dataCache } from "@/lib/cache";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 import { existsSync } from "fs";
@@ -191,6 +192,9 @@ export async function POST(request: Request) {
 
       return newEvent;
     });
+
+    // Invalidate homepage cache
+    dataCache.invalidatePattern("homepage:events");
 
     return NextResponse.json(result, { status: 201 });
   } catch (error) {

@@ -33,7 +33,15 @@ export const UserList = () => {
 
   const { data, isLoading, error, mutate } = useSWR<ApiResponse>(
     `/api/admin/users?page=${page}&search=${search}`,
-    fetcher
+    fetcher,
+    {
+      onError: (err) => {
+        console.error("Error fetching users:", err);
+      },
+      onSuccess: (data) => {
+        console.log("Users loaded successfully:", data);
+      },
+    }
   );
 
   const handleSearch = (e: React.FormEvent) => {
@@ -86,7 +94,27 @@ export const UserList = () => {
     }
   };
 
-  if (error) return <p>Không thể tải danh sách người dùng.</p>;
+  if (error) {
+    console.error("User list error:", error);
+    return (
+      <div className="alert alert-error">
+        <span>
+          Không thể tải danh sách người dùng. Lỗi:{" "}
+          {error?.message || "Unknown error"}
+        </span>
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        <div className="skeleton h-12 w-full"></div>
+        <div className="skeleton h-12 w-full"></div>
+        <div className="skeleton h-12 w-full"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">

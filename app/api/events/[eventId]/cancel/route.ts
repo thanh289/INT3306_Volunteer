@@ -5,6 +5,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import prisma from "@/lib/prisma";
+import { dataCache } from "@/lib/cache";
 
 type RouteParams = {
   params: Promise<{
@@ -50,7 +51,7 @@ export async function POST(request: Request, { params }: RouteParams) {
     // Check if event is ongoing (current time is between start and end time)
     const now = new Date();
     const isOngoing = now >= event.startDateTime && now <= event.endDateTime;
-    
+
     if (isOngoing) {
       return new NextResponse("Không thể hủy sự kiện đang diễn ra", {
         status: 400,
@@ -105,6 +106,11 @@ export async function POST(request: Request, { params }: RouteParams) {
         });
       }
     });
+
+    // Invalidate event cache
+    dataCache.delete(`event:details:${eventId}`);
+    dataCache.invalidatePattern(`dashboard:posts:`);
+    dataCache.invalidatePattern("homepage:events");
 
     return NextResponse.json(
       { message: "Sự kiện đã được hủy thành công" },

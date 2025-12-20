@@ -7,6 +7,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import prisma from "@/lib/prisma";
 import { z } from "zod";
 import { Gender } from "@prisma/client";
+import { dataCache } from "@/lib/cache";
 
 // Schema để xác thực dữ liệu gửi lên
 const profileUpdateSchema = z.object({
@@ -20,6 +21,55 @@ const profileUpdateSchema = z.object({
   dateOfBirth: z.coerce.date().optional().or(z.literal("")),
   gender: z.enum([Gender.MALE, Gender.FEMALE]).optional().or(z.literal("")),
 });
+
+// GET endpoint to fetch current user's profile
+export async function GET(request: Request) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
+    // Check cache first (10 minute TTL for profile data)
+    const cacheKey = `profile:${session.user.id}`;
+    const cachedProfile = dataCache.get<any>(cacheKey);
+
+    if (cachedProfile) {
+      return NextResponse.json(cachedProfile);
+    }
+
+    // Fetch from database
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        address: true,
+        dateOfBirth: true,
+        gender: true,
+        role: true,
+        status: true,
+        imageUrl: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+
+    if (!user) {
+      return new NextResponse("User not found", { status: 404 });
+    }
+
+    // Cache for 10 minutes (600000ms)
+    dataCache.set(cacheKey, user, 600000);
+
+    return NextResponse.json(user);
+  } catch (error) {
+    console.error("LỖI KHI LẤY HỒ SƠ:", error);
+    return new NextResponse("Lỗi hệ thống", { status: 500 });
+  }
+}
 
 export async function PUT(request: Request) {
   try {
@@ -53,6 +103,9 @@ export async function PUT(request: Request) {
       where: { id: session.user.id },
       data: dataToUpdate,
     });
+
+    // Invalidate profile cache after update
+    dataCache.delete(`profile:${session.user.id}`);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { passwordHash, ...userWithoutPassword } = updatedUser;
