@@ -96,7 +96,7 @@ export async function GET(request: Request) {
 
     // Since frontend does all sorting client-side, we just fetch all recent posts
     // No need to sort or filter by sortBy parameter here
-    const orderBy = { createdAt: "desc" }; // Always fetch by recent
+    const orderBy = { createdAt: "desc" as const }; // Always fetch by recent
 
     // Get all posts from published events
     const posts = await prisma.post.findMany({

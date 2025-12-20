@@ -227,11 +227,10 @@ export const PushNotificationSetting = () => {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div
-            className={`w-10 h-10 rounded-full flex items-center justify-center ${
-              isSubscribed
-                ? "bg-success/10 text-success"
-                : "bg-base-200 text-base-content/60"
-            }`}
+            className={`w-10 h-10 rounded-full flex items-center justify-center ${isSubscribed
+              ? "bg-success/10 text-success"
+              : "bg-base-200 text-base-content/60"
+              }`}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -262,9 +261,8 @@ export const PushNotificationSetting = () => {
         <button
           onClick={handleToggle}
           disabled={isLoading || permission === "denied"}
-          className={`btn btn-sm font-semibold ${
-            isSubscribed ? "btn-success text-white" : "btn-outline btn-primary"
-          }`}
+          className={`btn btn-sm font-semibold ${isSubscribed ? "btn-success text-cyan-500" : "btn-outline btn-primary"
+            }`}
           aria-pressed={isSubscribed}
         >
           {isSubscribed ? "Đang bật" : "Bật thông báo"}
