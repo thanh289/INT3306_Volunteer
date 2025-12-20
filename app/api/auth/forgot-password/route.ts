@@ -66,6 +66,14 @@ export async function POST(request: Request) {
     // send the password reset email (with RAW token)
     const resetUrl = `${process.env.NEXTAUTH_URL}/reset-password?token=${resetToken}`;
 
+    const fs = await import("fs");
+    const path = await import("path");
+    const logoPath = path.join(
+      process.cwd(),
+      "public/images/logo-circle-white.png"
+    );
+    const logoData = fs.readFileSync(logoPath);
+
     await transporter.sendMail({
       ...mailOptions,
       to: user.email,
@@ -78,8 +86,8 @@ export async function POST(request: Request) {
                     
                     <!-- Header with logo and gradient -->
                     <div style="background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%); padding: 48px 32px; text-align: center;">
-                        <div style="width: 80px; height: 80px; margin: 0 auto 16px; background-color: white; border-radius: 14.4px; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
-                            <img src="${process.env.NEXTAUTH_URL}/images/logo.webp" alt="VolunteerHub Logo" style="width: 56px; height: 56px; object-fit: contain;" />
+                        <div style="width: 96px; height: 96px; margin: 0 auto 16px; background-color: white; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15); overflow: hidden;">
+                          <img src="cid:logo" alt="VolunteerHub Logo" style="width: 100%; height: 100%; display: block;" />
                         </div>
                         <h1 style="color: white; margin: 0; font-size: 28px; font-weight: 700; letter-spacing: -0.5px;">VolunteerHub</h1>
                         <p style="color: rgba(255,255,255,0.9); margin: 8px 0 0 0; font-size: 14px;">Nền tảng kết nối tình nguyện viên</p>
@@ -133,6 +141,13 @@ export async function POST(request: Request) {
                 </body>
                 </html>
                 `,
+      attachments: [
+        {
+          filename: "logo-circle-white.png",
+          content: logoData,
+          cid: "logo",
+        },
+      ],
     });
 
     return NextResponse.json({
