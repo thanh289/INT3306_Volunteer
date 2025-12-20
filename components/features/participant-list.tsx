@@ -33,7 +33,7 @@ export const ParticipantList = ({ eventId }: { eventId: string }) => {
   return (
     <div className="overflow-x-auto">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-semibold">
+        <h2 className="text-xl font-bold text-base-content">
           Danh sách tình nguyện viên đã đăng ký (
           {hasParticipants ? registrations.length : 0})
         </h2>

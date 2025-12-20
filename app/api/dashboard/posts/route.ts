@@ -75,7 +75,18 @@ export async function GET(request: Request) {
 
     // Determine orderBy based on sortBy parameter
     let orderBy: any;
-    if (sortBy === "likes") {
+
+    // For trending, we need posts from last 3 days
+    if (sortBy === "trending") {
+      const threeDaysAgo = new Date();
+      threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+
+      whereClause.createdAt = { gte: threeDaysAgo };
+
+      // We'll sort by engagement score (likes + comments count) on the client side
+      // For now, get all posts from last 3 days sorted by creation date
+      orderBy = { createdAt: "desc" };
+    } else if (sortBy === "likes") {
       orderBy = [{ likes: { _count: "desc" } }, { createdAt: "desc" }];
     } else if (sortBy === "comments") {
       orderBy = [{ comments: { _count: "desc" } }, { createdAt: "desc" }];

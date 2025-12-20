@@ -60,7 +60,9 @@ export default async function DashboardPage() {
 
       {/* Main Content - Posts Feed */}
       <main className="flex-1 p-4 md:p-8 max-w-4xl mx-auto w-full">
-        <h1 className="text-3xl font-bold mb-6">Bảng tin</h1>
+        <h1 className="text-3xl md:text-4xl font-bold flex items-center gap-3 mb-6">
+          Bảng tin
+        </h1>
         <DashboardFeed />
       </main>
     </div>

@@ -40,8 +40,11 @@ export const EventManagerManagement = ({
   const [userEmail, setUserEmail] = useState("");
   const [isAdding, setIsAdding] = useState(false);
 
-  const canManage =
-    session?.user?.role === "ADMIN" || session?.user?.id === creatorId;
+  // Check if current user is admin, creator, or an event manager
+  const isAdmin = session?.user?.role === "ADMIN";
+  const isCreator = session?.user?.id === creatorId;
+  const isEventManager = managers.some((m) => m.userId === session?.user?.id);
+  const canManage = isAdmin || isCreator || isEventManager;
 
   useEffect(() => {
     fetchManagers();
@@ -121,10 +124,14 @@ export const EventManagerManagement = ({
   return (
     <div className="space-y-6">
       {/* Event Managers Section */}
-      <div className="card bg-base-100 border border-base-300">
-        <div className="card-body">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="card-title">Quản lý sự kiện</h2>
+      <div className="bg-base-100 rounded-2xl shadow-md border border-base-300">
+        <div className="p-6 border-b border-base-300">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-bold text-base-content">
+                Danh sách người quản lý sự kiện
+              </h2>
+            </div>
             {canManage && (
               <button
                 onClick={() => setShowAddModal(true)}
@@ -135,7 +142,9 @@ export const EventManagerManagement = ({
               </button>
             )}
           </div>
+        </div>
 
+        <div className="p-6">
           <div className="space-y-2">
             {managers.length === 0 ? (
               <p className="text-base-content/60 text-center py-4">
