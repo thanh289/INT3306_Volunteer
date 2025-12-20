@@ -3,8 +3,9 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { useSession } from "next-auth/react";
+import useSWR from "swr";
 import axios from "axios";
 import Image from "next/image";
 import Link from "next/link";
@@ -58,7 +59,7 @@ interface Post {
   isInterestedEvent?: boolean;
   _count?: {
     likes: number;
-    comments: true;
+    comments: number;
   };
 }
 
@@ -83,10 +84,7 @@ type SortOption =
 
 export const DashboardFeed = () => {
   const { data: session } = useSession();
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [totalCount, setTotalCount] = useState(0);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [displayLimit, setDisplayLimit] = useState(10);
   const [searchInput, setSearchInput] = useState(""); // Input field value
   const [searchQuery, setSearchQuery] = useState(""); // Actual search query
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -94,6 +92,7 @@ export const DashboardFeed = () => {
   const [showSortDropdown, setShowSortDropdown] = useState(false);
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
 
+<<<<<<< HEAD
   useEffect(() => {
     fetchPosts();
   }, [searchQuery, selectedCategories, sortBy]);
@@ -148,12 +147,46 @@ export const DashboardFeed = () => {
       toast.error("Không thể tải bài viết");
     } finally {
       setIsLoading(false);
+=======
+  // Create SWR key based on filters (NOT sortBy - we sort client-side to reuse cached data)
+  const swrKey = useMemo(() => {
+    const params = new URLSearchParams({
+      skip: "0",
+      take: "100", // Fetch more data since we're doing all sorting client-side
+    });
+    if (searchQuery.trim()) {
+      params.append("search", searchQuery.trim());
+>>>>>>> 8acc46e4cfc11d79c680c1ac3c4d70e0bcb480af
     }
+    if (selectedCategories.length > 0) {
+      params.append("categories", selectedCategories.join(","));
+    }
+    return `/api/dashboard/posts?${params.toString()}`;
+  }, [searchQuery, selectedCategories]); // sortBy removed from dependencies
+
+  // Fetcher function for SWR
+  const fetcher = async (url: string) => {
+    const response = await axios.get(url);
+    return response.data;
   };
 
-  const handleLoadMore = async () => {
-    setIsLoadingMore(true);
+  // Use SWR for data fetching with caching
+  const { data, error, isLoading, mutate } = useSWR(swrKey, fetcher, {
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+    dedupingInterval: 0, // Disable deduping to ensure fresh data after mutations
+  });
+
+  // Process data with client-side filtering and sorting
+  const { posts, totalCount } = useMemo(() => {
+    if (!data) {
+      return { posts: [], totalCount: 0 };
+    }
+
+    let fetchedPosts = [...data.posts]; // Clone array to avoid mutating cache
+
     try {
+<<<<<<< HEAD
       const serverSortBy =
         sortBy === "upcoming" ||
           sortBy === "interested" ||
@@ -179,27 +212,82 @@ export const DashboardFeed = () => {
       let fetchedPosts = response.data.posts;
 
       // Client-side filtering
+=======
+      // Client-side sorting based on sortBy option
+>>>>>>> 8acc46e4cfc11d79c680c1ac3c4d70e0bcb480af
       if (sortBy === "upcoming") {
         fetchedPosts = fetchedPosts.filter((p: Post) => p.isUpcomingEvent);
+        // Sort upcoming events by creation date (recent first)
+        fetchedPosts.sort(
+          (a: Post, b: Post) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
       } else if (sortBy === "interested") {
         fetchedPosts = fetchedPosts.filter((p: Post) => p.isInterestedEvent);
+        // Sort interested events by creation date (recent first)
+        fetchedPosts.sort(
+          (a: Post, b: Post) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
       } else if (sortBy === "trending") {
+        // Filter to last 3 days
+        const threeDaysAgo = new Date();
+        threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+        fetchedPosts = fetchedPosts.filter(
+          (p: Post) => new Date(p.createdAt) >= threeDaysAgo
+        );
         // Sort by engagement score (likes + comments)
-        fetchedPosts = fetchedPosts.sort((a: Post, b: Post) => {
+        fetchedPosts.sort((a: Post, b: Post) => {
           const aScore = (a._count?.likes || 0) + (a._count?.comments || 0);
           const bScore = (b._count?.likes || 0) + (b._count?.comments || 0);
           return bScore - aScore;
         });
+      } else if (sortBy === "likes") {
+        // Sort by number of likes
+        fetchedPosts.sort((a: Post, b: Post) => {
+          const aLikes = a._count?.likes || 0;
+          const bLikes = b._count?.likes || 0;
+          // If likes are equal, sort by creation date
+          if (bLikes === aLikes) {
+            return (
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+            );
+          }
+          return bLikes - aLikes;
+        });
+      } else if (sortBy === "comments") {
+        // Sort by number of comments
+        fetchedPosts.sort((a: Post, b: Post) => {
+          const aComments = a._count?.comments || 0;
+          const bComments = b._count?.comments || 0;
+          // If comments are equal, sort by creation date
+          if (bComments === aComments) {
+            return (
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+            );
+          }
+          return bComments - aComments;
+        });
+      } else {
+        // Default: recent (sort by creation date)
+        fetchedPosts.sort(
+          (a: Post, b: Post) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
       }
 
-      setPosts(fetchedPosts.slice(0, posts.length + 10));
-      setTotalCount(fetchedPosts.length);
-    } catch (error) {
-      console.error("Failed to load more posts:", error);
-      toast.error("Không thể tải thêm bài viết");
-    } finally {
-      setIsLoadingMore(false);
+      return {
+        posts: fetchedPosts.slice(0, displayLimit),
+        totalCount: fetchedPosts.length,
+      };
+    } catch (err) {
+      console.error("Error processing posts:", err);
+      return { posts: [], totalCount: 0 };
     }
+  }, [data, sortBy, displayLimit]);
+
+  const handleLoadMore = () => {
+    setDisplayLimit((prev) => prev + 10);
   };
 
   const handleSearch = (e: React.FormEvent) => {
@@ -210,7 +298,11 @@ export const DashboardFeed = () => {
   const handleDeletePost = async (postId: string) => {
     if (!confirm("Bạn có chắc chắn muốn xóa bài viết này?")) return;
 
+    // Show loading toast
+    const loadingToast = toast.loading("Đang xóa bài viết...");
+
     try {
+<<<<<<< HEAD
       await axios.delete(`/api/posts/${postId}/delete`);
       setPosts(
         posts.map((post) =>
@@ -224,11 +316,47 @@ export const DashboardFeed = () => {
             }
             : post
         )
+=======
+      // Optimistic update - remove post from list immediately
+      mutate(
+        (currentData: any) => {
+          if (!currentData) return currentData;
+          return {
+            ...currentData,
+            posts: currentData.posts.filter((p: Post) => p.id !== postId),
+            totalCount: currentData.totalCount - 1,
+          };
+        },
+        false // Don't revalidate yet
+>>>>>>> 8acc46e4cfc11d79c680c1ac3c4d70e0bcb480af
       );
-      toast.success("Đã xóa bài viết!");
+
+      // Perform actual deletion
+      await axios.delete(`/api/posts/${postId}/delete`);
+
+      // Wait for backend to fully complete (transaction + cache invalidation)
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Force revalidate - bypass all caches to get fresh data
+      await mutate(
+        async () => {
+          // Force no-cache by adding timestamp
+          const response = await axios.get(`${swrKey}&_t=${Date.now()}`);
+          return response.data;
+        },
+        {
+          revalidate: false,
+          populateCache: true,
+          rollbackOnError: true,
+        }
+      );
+
+      toast.success("Đã xóa bài viết!", { id: loadingToast });
     } catch (error) {
       console.error("Failed to delete post:", error);
-      toast.error("Không thể xóa bài viết");
+      // Revert on error by revalidating
+      await mutate(undefined, { revalidate: true });
+      toast.error("Không thể xóa bài viết", { id: loadingToast });
     }
   };
 
@@ -240,6 +368,16 @@ export const DashboardFeed = () => {
     );
   };
 
+  // Show error message
+  if (error) {
+    return (
+      <div className="alert alert-error">
+        <span>Không thể tải bài viết. Vui lòng thử lại sau.</span>
+      </div>
+    );
+  }
+
+  // Show loading skeleton
   if (isLoading) {
     return (
       <div className="space-y-4">
@@ -488,7 +626,7 @@ export const DashboardFeed = () => {
         </div>
       ) : (
         <>
-          {posts.map((post) => (
+          {posts.map((post: Post) => (
             <div
               key={post.id}
               className="card bg-base-100 border border-base-300 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
@@ -580,7 +718,7 @@ export const DashboardFeed = () => {
                         )}
                       {/* Show badge for event manager */}
                       {post.event.eventManagers.some(
-                        (m) => m.userId === post.authorId
+                        (m: { userId: string }) => m.userId === post.authorId
                       ) &&
                         post.authorId !== post.event.creatorId &&
                         post.author.role !== "ADMIN" && (
@@ -592,13 +730,13 @@ export const DashboardFeed = () => {
                       {post.author.registrations &&
                         post.author.registrations.length > 0 &&
                         post.author.registrations.some(
-                          (reg) =>
+                          (reg: { status: string; eventId: string }) =>
                             reg.eventId === post.event.id &&
                             reg.status === "APPROVED"
                         ) &&
                         post.authorId !== post.event.creatorId &&
                         !post.event.eventManagers.some(
-                          (m) => m.userId === post.authorId
+                          (m: { userId: string }) => m.userId === post.authorId
                         ) &&
                         post.author.role !== "ADMIN" && (
                           <span className="badge badge-success badge-sm">
@@ -629,7 +767,8 @@ export const DashboardFeed = () => {
                     (session?.user?.role === "ADMIN" ||
                       session?.user?.id === post.event.creatorId ||
                       post.event.eventManagers.some(
-                        (m) => m.userId === session?.user?.id
+                        (m: { userId: string }) =>
+                          m.userId === session?.user?.id
                       )) && (
                       <button
                         onClick={() => handleDeletePost(post.id)}
@@ -697,7 +836,7 @@ export const DashboardFeed = () => {
                       postId={post.id}
                       eventCreatorId={post.event.creatorId}
                       eventManagerIds={post.event.eventManagers.map(
-                        (m) => m.userId
+                        (m: { userId: string }) => m.userId
                       )}
                     />
                   </div>
@@ -711,20 +850,10 @@ export const DashboardFeed = () => {
             <div className="flex justify-center mt-6">
               <button
                 onClick={handleLoadMore}
-                disabled={isLoadingMore}
                 className="btn btn-outline btn-primary"
               >
-                {isLoadingMore ? (
-                  <>
-                    <span className="loading loading-spinner loading-sm"></span>
-                    Đang tải...
-                  </>
-                ) : (
-                  <>
-                    Ấn để tải {Math.min(10, totalCount - posts.length)} bài viết
-                    tiếp theo
-                  </>
-                )}
+                Ấn để tải {Math.min(10, totalCount - posts.length)} bài viết
+                tiếp theo
               </button>
             </div>
           )}

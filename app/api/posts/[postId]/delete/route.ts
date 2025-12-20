@@ -5,6 +5,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import prisma from "@/lib/prisma";
+import { dataCache } from "@/lib/cache";
 
 type RouteContext = {
   params: Promise<{ postId: string }>;
@@ -52,30 +53,35 @@ export async function DELETE(request: Request, context: RouteContext) {
       );
     }
 
-    // Soft delete the post and delete all likes and comments
-    const [deletedPost] = await prisma.$transaction([
-      prisma.post.update({
-        where: { id: postId },
-        data: {
-          isDeleted: true,
-          deletedAt: new Date(),
-          deletedBy: session.user.id,
-          deletedByRole: session.user.role,
-        },
-      }),
-      // Delete all likes for this post
-      prisma.postLike.deleteMany({
+    // Use transaction to ensure atomicity - delete likes/comments first, then delete post
+    await prisma.$transaction(async (tx) => {
+      // Delete all likes for this post FIRST
+      const deletedLikes = await tx.postLike.deleteMany({
         where: { postId },
-      }),
+      });
+      console.log(`Deleted ${deletedLikes.count} likes for post ${postId}`);
+
       // Delete all comments for this post
-      prisma.postComment.deleteMany({
+      const deletedComments = await tx.postComment.deleteMany({
         where: { postId },
-      }),
-    ]);
+      });
+      console.log(
+        `Deleted ${deletedComments.count} comments for post ${postId}`
+      );
+
+      // Hard delete the post - remove from database completely
+      await tx.post.delete({
+        where: { id: postId },
+      });
+      console.log(`Post ${postId} permanently deleted from database`);
+    });
+
+    // Invalidate cache AFTER transaction completes successfully
+    dataCache.invalidatePattern("dashboard:posts:");
+    console.log("Cache invalidated after post deletion:", postId);
 
     return NextResponse.json({
       message: "Post deleted successfully",
-      post: deletedPost,
     });
   } catch (error) {
     console.error("Error deleting post:", error);
