@@ -20,6 +20,7 @@ import {
   Calendar,
   Star,
   Ban,
+  TrendingUp,
 } from "lucide-react";
 import { Role, EventCategory } from "@prisma/client";
 
@@ -72,7 +73,13 @@ const CATEGORIES = [
   { value: "COMMUNITY", label: "Cộng đồng", icon: "/images/community.png" },
 ];
 
-type SortOption = "recent" | "likes" | "comments" | "upcoming" | "interested";
+type SortOption =
+  | "recent"
+  | "trending"
+  | "likes"
+  | "comments"
+  | "upcoming"
+  | "interested";
 
 export const DashboardFeed = () => {
   const { data: session } = useSession();
@@ -94,9 +101,15 @@ export const DashboardFeed = () => {
   const fetchPosts = async () => {
     setIsLoading(true);
     try {
-      // For upcoming/interested, we need server sort by recent first, then client sort
+      // For upcoming/interested/trending, we need server sort by recent first, then client sort
       const serverSortBy =
-        sortBy === "upcoming" || sortBy === "interested" ? "recent" : sortBy;
+        sortBy === "upcoming" ||
+        sortBy === "interested" ||
+        sortBy === "trending"
+          ? sortBy === "trending"
+            ? "trending"
+            : "recent"
+          : sortBy;
 
       const params = new URLSearchParams({
         skip: "0",
@@ -113,11 +126,18 @@ export const DashboardFeed = () => {
       const response = await axios.get(`/api/dashboard/posts?${params}`);
       let fetchedPosts = response.data.posts;
 
-      // Client-side sorting for upcoming/interested
+      // Client-side sorting for upcoming/interested/trending
       if (sortBy === "upcoming") {
         fetchedPosts = fetchedPosts.filter((p: Post) => p.isUpcomingEvent);
       } else if (sortBy === "interested") {
         fetchedPosts = fetchedPosts.filter((p: Post) => p.isInterestedEvent);
+      } else if (sortBy === "trending") {
+        // Sort by engagement score (likes + comments)
+        fetchedPosts = fetchedPosts.sort((a: Post, b: Post) => {
+          const aScore = (a._count?.likes || 0) + (a._count?.comments || 0);
+          const bScore = (b._count?.likes || 0) + (b._count?.comments || 0);
+          return bScore - aScore;
+        });
       }
 
       // Take only first 10 for display
@@ -135,7 +155,13 @@ export const DashboardFeed = () => {
     setIsLoadingMore(true);
     try {
       const serverSortBy =
-        sortBy === "upcoming" || sortBy === "interested" ? "recent" : sortBy;
+        sortBy === "upcoming" ||
+        sortBy === "interested" ||
+        sortBy === "trending"
+          ? sortBy === "trending"
+            ? "trending"
+            : "recent"
+          : sortBy;
 
       const params = new URLSearchParams({
         skip: "0",
@@ -157,6 +183,13 @@ export const DashboardFeed = () => {
         fetchedPosts = fetchedPosts.filter((p: Post) => p.isUpcomingEvent);
       } else if (sortBy === "interested") {
         fetchedPosts = fetchedPosts.filter((p: Post) => p.isInterestedEvent);
+      } else if (sortBy === "trending") {
+        // Sort by engagement score (likes + comments)
+        fetchedPosts = fetchedPosts.sort((a: Post, b: Post) => {
+          const aScore = (a._count?.likes || 0) + (a._count?.comments || 0);
+          const bScore = (b._count?.likes || 0) + (b._count?.comments || 0);
+          return bScore - aScore;
+        });
       }
 
       setPosts(fetchedPosts.slice(0, posts.length + 10));
@@ -183,12 +216,12 @@ export const DashboardFeed = () => {
         posts.map((post) =>
           post.id === postId
             ? {
-              ...post,
-              isDeleted: true,
-              deletedAt: new Date().toISOString(),
-              deletedBy: session?.user?.id || null,
-              deletedByRole: session?.user?.role || null,
-            }
+                ...post,
+                isDeleted: true,
+                deletedAt: new Date().toISOString(),
+                deletedBy: session?.user?.id || null,
+                deletedByRole: session?.user?.role || null,
+              }
             : post
         )
       );
@@ -252,20 +285,23 @@ export const DashboardFeed = () => {
             className="btn btn-outline gap-2"
           >
             {sortBy === "recent" && <Clock className="h-4 w-4" />}
+            {sortBy === "trending" && <TrendingUp className="h-4 w-4" />}
             {sortBy === "likes" && <HeartIcon className="h-4 w-4" />}
             {sortBy === "comments" && <MessageCircle className="h-4 w-4" />}
             {sortBy === "upcoming" && <Calendar className="h-4 w-4" />}
             {sortBy === "interested" && <Star className="h-4 w-4" />}
             <span className="hidden sm:inline">
               {sortBy === "recent" && "Gần đây"}
+              {sortBy === "trending" && "Nổi bật gần đây"}
               {sortBy === "likes" && "Nhiều tym"}
               {sortBy === "comments" && "Nhiều bình luận"}
               {sortBy === "upcoming" && "Sự kiện sắp tới"}
               {sortBy === "interested" && "Quan tâm"}
             </span>
             <svg
-              className={`h-4 w-4 transition-transform ${showSortDropdown ? "rotate-180" : ""
-                }`}
+              className={`h-4 w-4 transition-transform ${
+                showSortDropdown ? "rotate-180" : ""
+              }`}
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -293,6 +329,18 @@ export const DashboardFeed = () => {
                   >
                     <Clock className="h-4 w-4" />
                     Gần đây
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => {
+                      setSortBy("trending");
+                      setShowSortDropdown(false);
+                    }}
+                    className={sortBy === "trending" ? "active" : ""}
+                  >
+                    <TrendingUp className="h-4 w-4" />
+                    Nổi bật gần đây
                   </button>
                 </li>
                 <li>
@@ -366,8 +414,9 @@ export const DashboardFeed = () => {
                 : `Thể loại (${selectedCategories.length})`}
             </span>
             <svg
-              className={`h-4 w-4 transition-transform ${showCategoryDropdown ? "rotate-180" : ""
-                }`}
+              className={`h-4 w-4 transition-transform ${
+                showCategoryDropdown ? "rotate-180" : ""
+              }`}
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"

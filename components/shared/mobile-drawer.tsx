@@ -215,7 +215,7 @@ export const MobileDrawer = ({ children }: { children: React.ReactNode }) => {
                     <li>
                       <Link
                         href="/registered-events"
-                        className={`text-3xl md:text-4xl font-bold flex items-center gap-3 ${
+                        className={`gap-3 ${
                           isActive("/registered-events") ? "active" : ""
                         }`}
                       >
