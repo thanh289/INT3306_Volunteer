@@ -12,20 +12,32 @@ import { Heart } from "lucide-react";
 type FavoriteEventButtonProps = {
   eventId: string;
   compact?: boolean; // For smaller button in event cards
+  initialIsInterested?: boolean; // Pre-fetched interested status
 };
 
 export const FavoriteEventButton = ({
   eventId,
   compact = false,
+  initialIsInterested,
 }: FavoriteEventButtonProps) => {
   const { status } = useSession();
 
-  const [isInterested, setIsInterested] = useState(false);
+  const [isInterested, setIsInterested] = useState(
+    initialIsInterested ?? false
+  );
   const [isLoading, setIsLoading] = useState(false);
-  const [isChecking, setIsChecking] = useState(true);
+  const [isChecking, setIsChecking] = useState(
+    initialIsInterested === undefined
+  );
 
-  // Check if user is already interested in this event
+  // Only check via API if initialIsInterested was not provided
   useEffect(() => {
+    if (initialIsInterested !== undefined) {
+      // Already have the data, no need to fetch
+      setIsChecking(false);
+      return;
+    }
+
     const checkInterested = async () => {
       if (status === "authenticated") {
         try {
@@ -44,7 +56,7 @@ export const FavoriteEventButton = ({
     };
 
     checkInterested();
-  }, [eventId, status]);
+  }, [eventId, status, initialIsInterested]);
 
   const handleClick = async (e: React.MouseEvent) => {
     // Prevent event propagation and default link behavior

@@ -88,6 +88,7 @@ export async function DELETE(request: Request, { params }: RouteParams) {
     // Invalidate event cache
     dataCache.delete(`event:details:${eventId}`);
     dataCache.invalidatePattern(`dashboard:posts:`);
+    dataCache.invalidatePattern("homepage:events");
 
     return NextResponse.json(
       { message: "Sự kiện đã được xóa thành công" },
@@ -144,6 +145,7 @@ export async function PATCH(request: Request, { params }: RouteParams) {
 
       // Invalidate event cache
       dataCache.delete(`event:details:${eventId}`);
+      dataCache.invalidatePattern("homepage:events");
 
       return NextResponse.json(updatedEvent);
     }
@@ -151,6 +153,68 @@ export async function PATCH(request: Request, { params }: RouteParams) {
     return new NextResponse("Invalid request", { status: 400 });
   } catch (error) {
     console.error("Error updating event settings:", error);
+    return new NextResponse("Internal server error", { status: 500 });
+  }
+}
+
+// PUT endpoint for admin to approve/reject events
+export async function PUT(request: Request, { params }: RouteParams) {
+  try {
+    const session = await getServerSession(authOptions);
+    const { eventId } = await params;
+
+    if (!session?.user?.id) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
+    // Only admin can approve/reject events
+    if (session.user.role !== "ADMIN") {
+      return new NextResponse("Forbidden - Admin only", { status: 403 });
+    }
+
+    const body = await request.json();
+    const { status } = body;
+
+    // Validate status
+    if (!status || !["PUBLISHED", "REJECTED"].includes(status)) {
+      return new NextResponse("Invalid status", { status: 400 });
+    }
+
+    const event = await prisma.event.findUnique({
+      where: { id: eventId },
+      select: {
+        id: true,
+        title: true,
+        creatorId: true,
+      },
+    });
+
+    if (!event) {
+      return new NextResponse("Event not found", { status: 404 });
+    }
+
+    // Update event status
+    const updatedEvent = await prisma.event.update({
+      where: { id: eventId },
+      data: { status },
+    });
+
+    // Invalidate caches
+    dataCache.delete(`event:details:${eventId}`);
+    dataCache.invalidatePattern("homepage:events");
+
+    // Send notification to event creator
+    if (status === "PUBLISHED") {
+      const { notifyEventPublished } = await import("@/lib/send-notification");
+      await notifyEventPublished(event.creatorId, event.title, eventId);
+    } else if (status === "REJECTED") {
+      const { notifyEventRejected } = await import("@/lib/send-notification");
+      await notifyEventRejected(event.creatorId, event.title, eventId);
+    }
+
+    return NextResponse.json(updatedEvent);
+  } catch (error) {
+    console.error("Error updating event status:", error);
     return new NextResponse("Internal server error", { status: 500 });
   }
 }

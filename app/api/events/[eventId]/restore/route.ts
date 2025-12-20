@@ -96,6 +96,7 @@ export async function POST(request: Request, { params }: RouteParams) {
     // Invalidate event cache
     dataCache.delete(`event:details:${eventId}`);
     dataCache.invalidatePattern(`dashboard:posts:`);
+    dataCache.invalidatePattern("homepage:events");
 
     return NextResponse.json(
       { message: "Sự kiện đã được khôi phục thành công" },

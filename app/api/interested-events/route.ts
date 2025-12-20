@@ -5,6 +5,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import prisma from "@/lib/prisma";
+import { apiCache } from "@/lib/cache";
 
 const ITEMS_PER_PAGE = 12;
 
@@ -165,6 +166,9 @@ export async function POST(request: Request) {
       },
     });
 
+    // Invalidate cache
+    apiCache.delete(`interested:${session.user.id}:${eventId}`);
+
     return NextResponse.json(interestedEvent);
   } catch (error) {
     console.error("LỖI KHI THÊM SỰ KIỆN QUAN TÂM:", error);
@@ -210,6 +214,9 @@ export async function DELETE(request: Request) {
         id: interestedEvent.id,
       },
     });
+
+    // Invalidate cache
+    apiCache.delete(`interested:${session.user.id}:${eventId}`);
 
     return NextResponse.json({ message: "Removed from interested events" });
   } catch (error) {
