@@ -672,7 +672,8 @@ export const CreateEventForm = () => {
           />
         </svg>
         <span>
-          Sau khi tạo sự kiện, bạn có thể thêm ảnh và chỉnh sửa thông tin.
+          Sau khi tạo, bạn không thể thay đổi thông tin, bạn chỉ có thể quản lý
+          sự kiện.
         </span>
       </div>
 

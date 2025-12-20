@@ -68,9 +68,6 @@ export const EventSettings = ({ event }: Props) => {
     <div className="bg-base-100 rounded-2xl shadow-md border border-base-300">
       <div className="p-6 border-b border-base-300">
         <h2 className="text-xl font-bold text-base-content">Cài đặt sự kiện</h2>
-        <p className="text-sm text-base-content/60 mt-1">
-          Quản lý form đăng ký và yêu cầu duyệt bài đăng
-        </p>
       </div>
 
       <div className="p-6 space-y-6">

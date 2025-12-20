@@ -62,16 +62,6 @@ export const EventManagementButtons = ({ event }: Props) => {
       >
         Quản lý
       </Link>
-
-      {/* Show Edit button only if event is not cancelled */}
-      {!event.isCancelled && canManage && (
-        <Link
-          href={`/events/${event.id}/edit`}
-          className="btn btn-primary btn-sm gap-2"
-        >
-          Sửa
-        </Link>
-      )}
     </div>
   );
 };
