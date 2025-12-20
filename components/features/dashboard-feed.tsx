@@ -92,62 +92,6 @@ export const DashboardFeed = () => {
   const [showSortDropdown, setShowSortDropdown] = useState(false);
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
 
-<<<<<<< HEAD
-  useEffect(() => {
-    fetchPosts();
-  }, [searchQuery, selectedCategories, sortBy]);
-
-  const fetchPosts = async () => {
-    setIsLoading(true);
-    try {
-      // For upcoming/interested/trending, we need server sort by recent first, then client sort
-      const serverSortBy =
-        sortBy === "upcoming" ||
-          sortBy === "interested" ||
-          sortBy === "trending"
-          ? sortBy === "trending"
-            ? "trending"
-            : "recent"
-          : sortBy;
-
-      const params = new URLSearchParams({
-        skip: "0",
-        take: "50", // Fetch more for client-side filtering
-        sortBy: serverSortBy,
-      });
-      if (searchQuery.trim()) {
-        params.append("search", searchQuery.trim());
-      }
-      if (selectedCategories.length > 0) {
-        params.append("categories", selectedCategories.join(","));
-      }
-
-      const response = await axios.get(`/api/dashboard/posts?${params}`);
-      let fetchedPosts = response.data.posts;
-
-      // Client-side sorting for upcoming/interested/trending
-      if (sortBy === "upcoming") {
-        fetchedPosts = fetchedPosts.filter((p: Post) => p.isUpcomingEvent);
-      } else if (sortBy === "interested") {
-        fetchedPosts = fetchedPosts.filter((p: Post) => p.isInterestedEvent);
-      } else if (sortBy === "trending") {
-        // Sort by engagement score (likes + comments)
-        fetchedPosts = fetchedPosts.sort((a: Post, b: Post) => {
-          const aScore = (a._count?.likes || 0) + (a._count?.comments || 0);
-          const bScore = (b._count?.likes || 0) + (b._count?.comments || 0);
-          return bScore - aScore;
-        });
-      }
-
-      // Take only first 10 for display
-      setPosts(fetchedPosts.slice(0, 10));
-      setTotalCount(fetchedPosts.length);
-    } catch (error) {
-      console.error("Failed to fetch posts:", error);
-      toast.error("Không thể tải bài viết");
-    } finally {
-      setIsLoading(false);
-=======
   // Create SWR key based on filters (NOT sortBy - we sort client-side to reuse cached data)
   const swrKey = useMemo(() => {
     const params = new URLSearchParams({
@@ -156,7 +100,6 @@ export const DashboardFeed = () => {
     });
     if (searchQuery.trim()) {
       params.append("search", searchQuery.trim());
->>>>>>> 8acc46e4cfc11d79c680c1ac3c4d70e0bcb480af
     }
     if (selectedCategories.length > 0) {
       params.append("categories", selectedCategories.join(","));
@@ -186,35 +129,7 @@ export const DashboardFeed = () => {
     let fetchedPosts = [...data.posts]; // Clone array to avoid mutating cache
 
     try {
-<<<<<<< HEAD
-      const serverSortBy =
-        sortBy === "upcoming" ||
-          sortBy === "interested" ||
-          sortBy === "trending"
-          ? sortBy === "trending"
-            ? "trending"
-            : "recent"
-          : sortBy;
-
-      const params = new URLSearchParams({
-        skip: "0",
-        take: "100", // Fetch more for filtering
-        sortBy: serverSortBy,
-      });
-      if (searchQuery.trim()) {
-        params.append("search", searchQuery.trim());
-      }
-      if (selectedCategories.length > 0) {
-        params.append("categories", selectedCategories.join(","));
-      }
-
-      const response = await axios.get(`/api/dashboard/posts?${params}`);
-      let fetchedPosts = response.data.posts;
-
-      // Client-side filtering
-=======
       // Client-side sorting based on sortBy option
->>>>>>> 8acc46e4cfc11d79c680c1ac3c4d70e0bcb480af
       if (sortBy === "upcoming") {
         fetchedPosts = fetchedPosts.filter((p: Post) => p.isUpcomingEvent);
         // Sort upcoming events by creation date (recent first)
@@ -302,21 +217,6 @@ export const DashboardFeed = () => {
     const loadingToast = toast.loading("Đang xóa bài viết...");
 
     try {
-<<<<<<< HEAD
-      await axios.delete(`/api/posts/${postId}/delete`);
-      setPosts(
-        posts.map((post) =>
-          post.id === postId
-            ? {
-              ...post,
-              isDeleted: true,
-              deletedAt: new Date().toISOString(),
-              deletedBy: session?.user?.id || null,
-              deletedByRole: session?.user?.role || null,
-            }
-            : post
-        )
-=======
       // Optimistic update - remove post from list immediately
       mutate(
         (currentData: any) => {
@@ -328,7 +228,6 @@ export const DashboardFeed = () => {
           };
         },
         false // Don't revalidate yet
->>>>>>> 8acc46e4cfc11d79c680c1ac3c4d70e0bcb480af
       );
 
       // Perform actual deletion
