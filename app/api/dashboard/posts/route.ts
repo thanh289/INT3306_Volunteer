@@ -5,6 +5,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import prisma from "@/lib/prisma";
+import { dataCache } from "@/lib/cache";
 
 export async function GET(request: Request) {
   try {
@@ -21,6 +22,26 @@ export async function GET(request: Request) {
     const categoriesParam = searchParams.get("categories") || "";
     const categories = categoriesParam ? categoriesParam.split(",") : [];
     const sortBy = searchParams.get("sortBy") || "recent";
+
+    // Create cache key based on query parameters (exclude sortBy since frontend sorts client-side)
+    const cacheKey = `dashboard:posts:${session.user.id}:${skip}:${take}:${search}:${categoriesParam}`;
+
+    console.log(`Dashboard API: Attempting to get cache for key: ${cacheKey}`);
+
+    // Check cache first
+    const cachedData = dataCache.get<{ posts: any[]; totalCount: number }>(
+      cacheKey
+    );
+    if (cachedData) {
+      console.log("Dashboard posts: Serving from cache", cacheKey);
+      return NextResponse.json(cachedData);
+    }
+
+    console.log("Dashboard posts: Fetching from database", cacheKey);
+
+    // Add a small delay to ensure MongoDB replication has completed
+    // This helps prevent reading stale data after write operations
+    await new Promise((resolve) => setTimeout(resolve, 100));
 
     // Get user's upcoming and interested events
     const [upcomingEventIds, interestedEventIds] = await Promise.all([
@@ -51,9 +72,9 @@ export async function GET(request: Request) {
         .then((items) => items.map((i) => i.eventId)),
     ]);
 
-    // Build where clause
+    // Build where clause - filter out deleted posts
     const whereClause: any = {
-      isDeleted: false,
+      isDeleted: false, // Don't show deleted posts
       event: {
         status: "PUBLISHED",
         isDeleted: false, // Only show posts from non-deleted events
@@ -73,29 +94,11 @@ export async function GET(request: Request) {
       ];
     }
 
-    // Determine orderBy based on sortBy parameter
-    let orderBy: any;
+    // Since frontend does all sorting client-side, we just fetch all recent posts
+    // No need to sort or filter by sortBy parameter here
+    const orderBy = { createdAt: "desc" }; // Always fetch by recent
 
-    // For trending, we need posts from last 3 days
-    if (sortBy === "trending") {
-      const threeDaysAgo = new Date();
-      threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
-
-      whereClause.createdAt = { gte: threeDaysAgo };
-
-      // We'll sort by engagement score (likes + comments count) on the client side
-      // For now, get all posts from last 3 days sorted by creation date
-      orderBy = { createdAt: "desc" };
-    } else if (sortBy === "likes") {
-      orderBy = [{ likes: { _count: "desc" } }, { createdAt: "desc" }];
-    } else if (sortBy === "comments") {
-      orderBy = [{ comments: { _count: "desc" } }, { createdAt: "desc" }];
-    } else {
-      // Default to recent
-      orderBy = { createdAt: "desc" };
-    }
-
-    // Get all posts from published events, ordered by specified criteria
+    // Get all posts from published events
     const posts = await prisma.post.findMany({
       where: whereClause,
       skip,
@@ -136,6 +139,20 @@ export async function GET(request: Request) {
       },
     });
 
+    // Debug: Log posts with isDeleted flag
+    const deletedPosts = posts.filter((p) => p.isDeleted);
+    if (deletedPosts.length > 0) {
+      console.log(
+        `Dashboard API found ${deletedPosts.length} deleted posts:`,
+        deletedPosts.map((p) => ({
+          id: p.id,
+          isDeleted: p.isDeleted,
+          likes: p._count?.likes,
+          comments: p._count?.comments,
+        }))
+      );
+    }
+
     // Get total count for pagination
     const totalCount = await prisma.post.count({
       where: whereClause,
@@ -148,7 +165,11 @@ export async function GET(request: Request) {
       isInterestedEvent: interestedEventIds.includes(post.event.id),
     }));
 
-    return NextResponse.json({ posts: postsWithLabels, totalCount });
+    // Cache the result for 30 seconds
+    const result = { posts: postsWithLabels, totalCount };
+    dataCache.set(cacheKey, result, 30000);
+
+    return NextResponse.json(result);
   } catch (error) {
     console.error("Error fetching dashboard posts:", error);
     return new NextResponse("Internal Server Error", { status: 500 });

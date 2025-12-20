@@ -5,6 +5,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import prisma from "@/lib/prisma";
+import { dataCache } from "@/lib/cache";
 
 type RouteParams = {
   params: Promise<{
@@ -91,6 +92,10 @@ export async function POST(request: Request, { params }: RouteParams) {
         });
       }
     });
+
+    // Invalidate event cache
+    dataCache.delete(`event:details:${eventId}`);
+    dataCache.invalidatePattern(`dashboard:posts:`);
 
     return NextResponse.json(
       { message: "Sự kiện đã được khôi phục thành công" },

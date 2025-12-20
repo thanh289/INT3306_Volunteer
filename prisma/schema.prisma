@@ -84,7 +84,7 @@ model User {
     address      String?
     dateOfBirth  DateTime?
     gender       Gender?
-    passwordHash String
+    passwordHash String?
     role         Role       @default(VOLUNTEER)
     status       UserStatus @default(ACTIVE)
     imageUrl     String?

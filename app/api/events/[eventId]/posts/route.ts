@@ -8,7 +8,9 @@ import prisma from "@/lib/prisma";
 import { z } from "zod"; // for schema validation
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
+import { apiRateLimiter, withRateLimit } from "@/lib/rate-limit";
 import { existsSync } from "fs";
+import { dataCache } from "@/lib/cache";
 
 type RouteParams = {
   params: Promise<{
@@ -169,6 +171,17 @@ export async function POST(request: Request, { params }: RouteParams) {
     if (!session?.user?.id) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
+
+    // Rate limiting for post creation (authenticated by user ID)
+    const rateLimitError = await withRateLimit(
+      request,
+      apiRateLimiter,
+      session.user.id
+    );
+    if (rateLimitError) {
+      return rateLimitError;
+    }
+
     const userId = session.user.id;
     const { eventId } = await params;
 
@@ -308,6 +321,9 @@ export async function POST(request: Request, { params }: RouteParams) {
         },
       },
     });
+
+    // Invalidate dashboard cache since new post affects feed
+    dataCache.invalidatePattern("dashboard:posts:");
 
     return NextResponse.json(newPost, { status: 201 });
   } catch (error) {
