@@ -95,8 +95,8 @@ export const EventFiltersClient = ({ events }: EventFiltersClientProps) => {
     );
   }, [filteredAndSortedEvents, currentPage]);
 
-  // Reset to page 1 when filters change
-  useMemo(() => {
+  // Reset pagination when filters change
+  useEffect(() => {
     setCurrentPage(1);
   }, [selectedCategories, sortBy, searchQuery]);
 
@@ -584,8 +584,10 @@ export const EventFiltersClient = ({ events }: EventFiltersClientProps) => {
               <button
                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                 disabled={currentPage <= 1}
-                className={`btn btn-circle btn-sm border border-base-300 ${
-                  currentPage <= 1 ? "btn-disabled" : "btn-ghost"
+                className={`flex items-center justify-center w-10 h-10 rounded-full transition-all duration-200 ${
+                  currentPage <= 1
+                    ? "bg-base-200 text-base-content/40 cursor-not-allowed"
+                    : "bg-base-200 hover:bg-base-300 text-base-content"
                 }`}
               >
                 <svg
@@ -604,95 +606,72 @@ export const EventFiltersClient = ({ events }: EventFiltersClientProps) => {
                 </svg>
               </button>
 
-              {/* Page 1 */}
+              {/* Always show first page */}
               <button
                 onClick={() => setCurrentPage(1)}
-                className={`btn btn-circle btn-sm border ${
+                className={`flex items-center justify-center w-10 h-10 rounded-full text-sm font-medium transition-all duration-200 ${
                   currentPage === 1
-                    ? "btn-success text-white border-success"
-                    : "btn-ghost border-base-300"
+                    ? "bg-primary text-primary-content border-2 border-primary"
+                    : "bg-base-200 hover:bg-base-300 text-base-content border-2 border-transparent"
                 }`}
               >
                 1
               </button>
 
               {/* Left Ellipsis */}
-              {currentPage > 3 && (
-                <span className="px-2 text-base-content/40">...</span>
+              {currentPage > 3 && totalPages > 4 && (
+                <span className="flex items-center justify-center w-10 h-10 text-base-content/60">
+                  ...
+                </span>
               )}
 
-              {/* Middle Pages */}
-              {currentPage > 2 && currentPage < totalPages && (
-                <>
-                  {currentPage > 3 && (
-                    <button
-                      onClick={() => setCurrentPage(currentPage - 1)}
-                      className="btn btn-circle btn-sm btn-ghost border border-base-300"
-                    >
-                      {currentPage - 1}
-                    </button>
-                  )}
-                  <button className="btn btn-circle btn-sm btn-success text-white border border-success">
-                    {currentPage}
+              {/* Dynamic middle pages */}
+              {Array.from({ length: totalPages }, (_, i) => i + 1)
+                .filter((page) => {
+                  // Show pages around current page
+                  if (page === 1 || page === totalPages) return false;
+                  if (currentPage <= 3) {
+                    // At the start, show pages 2, 3, 4
+                    return page >= 2 && page <= Math.min(4, totalPages - 1);
+                  } else if (currentPage >= totalPages - 2) {
+                    // At the end, show last 3 pages before totalPages
+                    return (
+                      page >= Math.max(2, totalPages - 3) && page < totalPages
+                    );
+                  } else {
+                    // In the middle, show current page and adjacent pages
+                    return Math.abs(page - currentPage) <= 1;
+                  }
+                })
+                .map((page) => (
+                  <button
+                    key={page}
+                    onClick={() => setCurrentPage(page)}
+                    className={`flex items-center justify-center w-10 h-10 rounded-full text-sm font-medium transition-all duration-200 ${
+                      currentPage === page
+                        ? "bg-primary text-primary-content border-2 border-primary"
+                        : "bg-base-200 hover:bg-base-300 text-base-content border-2 border-transparent"
+                    }`}
+                  >
+                    {page}
                   </button>
-                  {currentPage < totalPages - 2 && (
-                    <button
-                      onClick={() => setCurrentPage(currentPage + 1)}
-                      className="btn btn-circle btn-sm btn-ghost border border-base-300"
-                    >
-                      {currentPage + 1}
-                    </button>
-                  )}
-                </>
-              )}
-
-              {/* Show page 2 if current is 1 or 2 */}
-              {totalPages > 1 && currentPage <= 2 && (
-                <button
-                  onClick={() => setCurrentPage(2)}
-                  className={`btn btn-circle btn-sm border ${
-                    currentPage === 2
-                      ? "btn-success text-white border-success"
-                      : "btn-ghost border-base-300"
-                  }`}
-                >
-                  2
-                </button>
-              )}
-
-              {/* Show page 3 if current is 1 */}
-              {totalPages > 2 && currentPage === 1 && (
-                <button
-                  onClick={() => setCurrentPage(3)}
-                  className="btn btn-circle btn-sm btn-ghost border border-base-300"
-                >
-                  3
-                </button>
-              )}
-
-              {/* Show page 4 if current is 1 and total > 5 */}
-              {totalPages > 5 && currentPage === 1 && (
-                <button
-                  onClick={() => setCurrentPage(4)}
-                  className="btn btn-circle btn-sm btn-ghost border border-base-300"
-                >
-                  4
-                </button>
-              )}
+                ))}
 
               {/* Right Ellipsis */}
-              {currentPage < totalPages - 2 && totalPages > 3 && (
-                <span className="px-2 text-base-content/40">...</span>
+              {currentPage < totalPages - 2 && totalPages > 4 && (
+                <span className="flex items-center justify-center w-10 h-10 text-base-content/60">
+                  ...
+                </span>
               )}
 
-              {/* Last Page */}
+              {/* Always show last page */}
               {totalPages > 1 && (
                 <button
                   onClick={() => setCurrentPage(totalPages)}
-                  className={`btn btn-circle btn-sm border ${
+                  className={`flex items-center justify-center w-10 h-10 rounded-full text-sm font-medium transition-all duration-200 ${
                     currentPage === totalPages
-                      ? "btn-success text-white border-success"
-                      : "btn-ghost border-base-300"
+                      ? "bg-primary text-primary-content border-2 border-primary"
+                      : "bg-base-200 hover:bg-base-300 text-base-content border-2 border-transparent"
                   }`}
                 >
                   {totalPages}
@@ -705,8 +684,10 @@ export const EventFiltersClient = ({ events }: EventFiltersClientProps) => {
                   setCurrentPage((p) => Math.min(totalPages, p + 1))
                 }
                 disabled={currentPage >= totalPages}
-                className={`btn btn-circle btn-sm border border-base-300 ${
-                  currentPage >= totalPages ? "btn-disabled" : "btn-ghost"
+                className={`flex items-center justify-center w-10 h-10 rounded-full transition-all duration-200 ${
+                  currentPage >= totalPages
+                    ? "bg-base-200 text-base-content/40 cursor-not-allowed"
+                    : "bg-base-200 hover:bg-base-300 text-base-content"
                 }`}
               >
                 <svg

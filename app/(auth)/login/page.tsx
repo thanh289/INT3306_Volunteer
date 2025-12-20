@@ -239,7 +239,23 @@ function LoginForm() {
         type="button"
         onClick={handleGoogleSignIn}
         disabled={isLoading}
-        className="btn btn-outline w-full gap-2 hover:scale-[1.02] active:scale-[0.98] transition-transform"
+        className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white border border-gray-300 rounded-lg shadow-sm hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-medium text-gray-700 group"
+        style={{
+          backgroundColor: "#ffffff",
+          borderColor: "#dadce0",
+        }}
+        onMouseEnter={(e) => {
+          if (!isLoading) {
+            e.currentTarget.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.15)";
+            e.currentTarget.style.borderColor = "#d2d3d4";
+          }
+        }}
+        onMouseLeave={(e) => {
+          if (!isLoading) {
+            e.currentTarget.style.boxShadow = "0 1px 3px rgba(0, 0, 0, 0.12)";
+            e.currentTarget.style.borderColor = "#dadce0";
+          }
+        }}
       >
         <svg className="h-5 w-5" viewBox="0 0 24 24">
           <path
@@ -259,7 +275,7 @@ function LoginForm() {
             d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
           />
         </svg>
-        Đăng nhập với Google
+        <span className="text-[15px]">Đăng nhập với Google</span>
       </button>
     </AuthContainer>
   );
