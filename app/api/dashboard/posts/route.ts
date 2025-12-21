@@ -23,12 +23,10 @@ export async function GET(request: Request) {
     const categories = categoriesParam ? categoriesParam.split(",") : [];
     const sortBy = searchParams.get("sortBy") || "recent";
 
-    // Create cache key based on query parameters (exclude sortBy since frontend sorts client-side)
     const cacheKey = `dashboard:posts:${session.user.id}:${skip}:${take}:${search}:${categoriesParam}`;
 
     console.log(`Dashboard API: Attempting to get cache for key: ${cacheKey}`);
 
-    // Check cache first
     const cachedData = dataCache.get<{ posts: any[]; totalCount: number }>(
       cacheKey
     );
@@ -39,11 +37,8 @@ export async function GET(request: Request) {
 
     console.log("Dashboard posts: Fetching from database", cacheKey);
 
-    // Add a small delay to ensure MongoDB replication has completed
-    // This helps prevent reading stale data after write operations
     await new Promise((resolve) => setTimeout(resolve, 100));
 
-    // Get user's upcoming and interested events
     const [upcomingEventIds, interestedEventIds] = await Promise.all([
       prisma.registration
         .findMany({
@@ -72,17 +67,15 @@ export async function GET(request: Request) {
         .then((items) => items.map((i) => i.eventId)),
     ]);
 
-    // Build where clause - filter out deleted posts
     const whereClause: any = {
-      isDeleted: false, // Don't show deleted posts
+      isDeleted: false,
       event: {
         status: "PUBLISHED",
-        isDeleted: false, // Only show posts from non-deleted events
+        isDeleted: false,
         ...(categories.length > 0 && { category: { in: categories } }),
       },
     };
 
-    // Add search filter if provided
     if (search.trim()) {
       whereClause.OR = [
         { content: { contains: search, mode: "insensitive" } },
@@ -94,11 +87,8 @@ export async function GET(request: Request) {
       ];
     }
 
-    // Since frontend does all sorting client-side, we just fetch all recent posts
-    // No need to sort or filter by sortBy parameter here
-    const orderBy = { createdAt: "desc" as const }; // Always fetch by recent
+    const orderBy = { createdAt: "desc" as const };
 
-    // Get all posts from published events
     const posts = await prisma.post.findMany({
       where: whereClause,
       skip,
@@ -139,7 +129,6 @@ export async function GET(request: Request) {
       },
     });
 
-    // Debug: Log posts with isDeleted flag
     const deletedPosts = posts.filter((p) => p.isDeleted);
     if (deletedPosts.length > 0) {
       console.log(
@@ -153,19 +142,16 @@ export async function GET(request: Request) {
       );
     }
 
-    // Get total count for pagination
     const totalCount = await prisma.post.count({
       where: whereClause,
     });
 
-    // Add event labels to posts
     const postsWithLabels = posts.map((post) => ({
       ...post,
       isUpcomingEvent: upcomingEventIds.includes(post.event.id),
       isInterestedEvent: interestedEventIds.includes(post.event.id),
     }));
 
-    // Cache the result for 30 seconds
     const result = { posts: postsWithLabels, totalCount };
     dataCache.set(cacheKey, result, 30000);
 

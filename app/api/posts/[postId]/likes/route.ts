@@ -16,12 +16,10 @@ export async function GET(request: Request, context: RouteContext) {
     const { postId } = await context.params;
     const session = await getServerSession(authOptions);
 
-    // Get total likes count
     const likesCount = await prisma.postLike.count({
       where: { postId },
     });
 
-    // Check if current user liked this post
     let isLiked = false;
     if (session?.user?.id) {
       const userLike = await prisma.postLike.findUnique({
@@ -53,7 +51,6 @@ export async function POST(request: Request, context: RouteContext) {
 
     const { postId } = await context.params;
 
-    // Check if post exists
     const post = await prisma.post.findUnique({
       where: { id: postId },
     });
@@ -62,7 +59,6 @@ export async function POST(request: Request, context: RouteContext) {
       return new NextResponse("Post not found", { status: 404 });
     }
 
-    // Check if already liked
     const existing = await prisma.postLike.findUnique({
       where: {
         userId_postId: {
@@ -76,7 +72,6 @@ export async function POST(request: Request, context: RouteContext) {
       return new NextResponse("Already liked this post", { status: 400 });
     }
 
-    // Create like
     await prisma.postLike.create({
       data: {
         userId: session.user.id,
@@ -102,7 +97,6 @@ export async function DELETE(request: Request, context: RouteContext) {
 
     const { postId } = await context.params;
 
-    // Find the like
     const like = await prisma.postLike.findUnique({
       where: {
         userId_postId: {
@@ -116,7 +110,6 @@ export async function DELETE(request: Request, context: RouteContext) {
       return new NextResponse("Not liked this post", { status: 404 });
     }
 
-    // Delete like
     await prisma.postLike.delete({
       where: { id: like.id },
     });

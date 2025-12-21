@@ -25,7 +25,6 @@ function ResetPasswordForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
-  // Check for token existence on page load
   useEffect(() => {
     if (!token) {
       toast.error(
@@ -39,7 +38,6 @@ function ResetPasswordForm() {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
 
-    // Reset each time type
     if (name === "password" && passwordError) {
       setPasswordError("");
     }
@@ -48,21 +46,17 @@ function ResetPasswordForm() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // Check pw requirement
     const passwordValidationError = validatePassword(formData.password);
     if (passwordValidationError) {
-      // setPasswordError(passwordValidationError);
       toast.error(passwordValidationError);
       return;
     }
 
-    // Check pw match
     if (formData.password !== formData.confirmPassword) {
       toast.error("Mật khẩu xác nhận không khớp.");
       return;
     }
 
-    // Check token
     if (!token) {
       toast.error("Token không hợp lệ.");
       return;
@@ -77,7 +71,6 @@ function ResetPasswordForm() {
       setIsSuccess(true);
     } catch (error) {
       if (isAxiosError(error)) {
-        // Extract the message if it's an object, otherwise use the data as-is
         const errorData = error.response?.data;
         const errorMessage =
           typeof errorData === "object" && errorData?.message
@@ -94,7 +87,6 @@ function ResetPasswordForm() {
     }
   };
 
-  // Success state
   if (isSuccess) {
     return (
       <AuthContainer title="Thành công!" subtitle="">
@@ -143,7 +135,6 @@ function ResetPasswordForm() {
     );
   }
 
-  // Main form
   return (
     <AuthContainer
       title="Đặt lại mật khẩu"

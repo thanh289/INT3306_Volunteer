@@ -21,7 +21,6 @@ export async function GET(request: Request, { params }: RouteParams) {
 
     const { registrationId } = await params;
 
-    // Get registration with event info to check permissions
     const registration = await prisma.registration.findUnique({
       where: { id: registrationId },
       include: {
@@ -40,7 +39,6 @@ export async function GET(request: Request, { params }: RouteParams) {
       return new NextResponse("Registration not found", { status: 404 });
     }
 
-    // Check if user is admin, event creator, or event manager
     const isAdmin = session.user.role === "ADMIN";
     const isCreator = registration.event.creatorId === session.user.id;
     const isManager = registration.event.eventManagers.some(
@@ -51,7 +49,6 @@ export async function GET(request: Request, { params }: RouteParams) {
       return new NextResponse("Forbidden", { status: 403 });
     }
 
-    // Get answers
     const answers = await prisma.registrationAnswer.findMany({
       where: { registrationId },
       include: {

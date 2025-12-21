@@ -39,7 +39,6 @@ export const InterestedEventList = () => {
   const [searchInput, setSearchInput] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Fetch all interested events once
   const { data, isLoading, error } = useSWR<ApiResponse>(
     `/api/interested-events?all=true`,
     fetcher,
@@ -138,8 +137,11 @@ export const InterestedEventList = () => {
   return (
     <div className="space-y-6">
       {/* Filter Tabs */}
-      <div className="card bg-base-100 shadow-sm border border-base-300" style={{ overflow: 'visible' }}>
-        <div className="card-body p-4" style={{ overflow: 'visible' }}>
+      <div
+        className="card bg-base-100 shadow-sm border border-base-300"
+        style={{ overflow: "visible" }}
+      >
+        <div className="card-body p-4" style={{ overflow: "visible" }}>
           <div className="flex flex-col md:flex-row gap-4">
             {/* Search Bar */}
             <div className="flex-1">
@@ -171,7 +173,10 @@ export const InterestedEventList = () => {
             </div>
 
             {/* Time Filter Dropdown */}
-            <div className="dropdown dropdown-end w-full md:w-52" style={{ position: 'relative' }}>
+            <div
+              className="dropdown dropdown-end w-full md:w-52"
+              style={{ position: "relative" }}
+            >
               <label
                 tabIndex={0}
                 className="btn btn-ghost w-full justify-between normal-case hover:bg-base-200"
@@ -181,10 +186,10 @@ export const InterestedEventList = () => {
                   {filter === "all"
                     ? "Tất cả"
                     : filter === "upcoming"
-                      ? "Sắp diễn ra"
-                      : filter === "ongoing"
-                        ? "Đang diễn ra"
-                        : "Đã kết thúc"}
+                    ? "Sắp diễn ra"
+                    : filter === "ongoing"
+                    ? "Đang diễn ra"
+                    : "Đã kết thúc"}
                 </span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -205,19 +210,20 @@ export const InterestedEventList = () => {
                 tabIndex={0}
                 className="dropdown-content menu p-2 shadow-lg bg-base-100 rounded-box w-52 mt-1 border border-base-300"
                 style={{
-                  position: 'absolute',
+                  position: "absolute",
                   zIndex: 9999,
-                  top: '100%',
-                  right: 0
+                  top: "100%",
+                  right: 0,
                 }}
               >
                 <li>
                   <button
                     onClick={() => setFilter("all")}
-                    className={`justify-start ${filter === "all"
-                      ? "active bg-primary text-primary-content"
-                      : ""
-                      }`}
+                    className={`justify-start ${
+                      filter === "all"
+                        ? "active bg-primary text-primary-content"
+                        : ""
+                    }`}
                   >
                     Tất cả
                   </button>
@@ -225,10 +231,11 @@ export const InterestedEventList = () => {
                 <li>
                   <button
                     onClick={() => setFilter("upcoming")}
-                    className={`justify-start ${filter === "upcoming"
-                      ? "active bg-primary text-primary-content"
-                      : ""
-                      }`}
+                    className={`justify-start ${
+                      filter === "upcoming"
+                        ? "active bg-primary text-primary-content"
+                        : ""
+                    }`}
                   >
                     Sắp diễn ra
                   </button>
@@ -236,10 +243,11 @@ export const InterestedEventList = () => {
                 <li>
                   <button
                     onClick={() => setFilter("ongoing")}
-                    className={`justify-start ${filter === "ongoing"
-                      ? "active bg-primary text-primary-content"
-                      : ""
-                      }`}
+                    className={`justify-start ${
+                      filter === "ongoing"
+                        ? "active bg-primary text-primary-content"
+                        : ""
+                    }`}
                   >
                     Đang diễn ra
                   </button>
@@ -247,10 +255,11 @@ export const InterestedEventList = () => {
                 <li>
                   <button
                     onClick={() => setFilter("past")}
-                    className={`justify-start ${filter === "past"
-                      ? "active bg-primary text-primary-content"
-                      : ""
-                      }`}
+                    className={`justify-start ${
+                      filter === "past"
+                        ? "active bg-primary text-primary-content"
+                        : ""
+                    }`}
                   >
                     Đã kết thúc
                   </button>
@@ -308,8 +317,9 @@ export const InterestedEventList = () => {
           <button
             onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
             disabled={currentPage <= 1}
-            className={`btn btn-circle btn-sm border border-base-300 ${currentPage <= 1 ? "btn-disabled" : "btn-ghost"
-              }`}
+            className={`btn btn-circle btn-sm border border-base-300 ${
+              currentPage <= 1 ? "btn-disabled" : "btn-ghost"
+            }`}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -332,10 +342,11 @@ export const InterestedEventList = () => {
             <button
               key={page}
               onClick={() => setCurrentPage(page)}
-              className={`btn btn-circle btn-sm border ${currentPage === page
-                ? "btn-primary"
-                : "btn-ghost border-base-300"
-                }`}
+              className={`btn btn-circle btn-sm border ${
+                currentPage === page
+                  ? "btn-primary"
+                  : "btn-ghost border-base-300"
+              }`}
             >
               {page}
             </button>
@@ -345,8 +356,9 @@ export const InterestedEventList = () => {
           <button
             onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
             disabled={currentPage >= totalPages}
-            className={`btn btn-circle btn-sm border border-base-300 ${currentPage >= totalPages ? "btn-disabled" : "btn-ghost"
-              }`}
+            className={`btn btn-circle btn-sm border border-base-300 ${
+              currentPage >= totalPages ? "btn-disabled" : "btn-ghost"
+            }`}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

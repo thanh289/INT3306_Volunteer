@@ -22,7 +22,6 @@ export async function GET(request: Request) {
       return new NextResponse("Event ID is required", { status: 400 });
     }
 
-    // Check cache first
     const cacheKey = `interested:${session.user.id}:${eventId}`;
     const cached = apiCache.get<boolean>(cacheKey);
     if (cached !== null) {
@@ -39,7 +38,6 @@ export async function GET(request: Request) {
     });
 
     const isInterested = !!interestedEvent;
-    // Cache for 1 minute
     apiCache.set(cacheKey, isInterested);
 
     return NextResponse.json({ isInterested });

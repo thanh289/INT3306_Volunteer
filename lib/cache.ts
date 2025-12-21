@@ -8,30 +8,28 @@ interface CacheEntry<T> {
 
 class Cache {
   private cache: Map<string, CacheEntry<any>>;
-  private blockedPatterns: Map<string, number>; // Pattern -> expiry timestamp
-  private defaultTTL: number; // Time to live in milliseconds
+  private blockedPatterns: Map<string, number>;
+  private defaultTTL: number;
 
   constructor(defaultTTL: number = 60000) {
-    // Default 1 minute
+    // Default: 1 minute
     this.cache = new Map();
     this.blockedPatterns = new Map();
     this.defaultTTL = defaultTTL;
 
-    // Clean up expired entries every 5 minutes
     setInterval(() => {
       this.cleanup();
     }, 300000);
   }
 
   set<T>(key: string, data: T, ttl?: number): void {
-    // Check if this key matches any blocked pattern
     const now = Date.now();
     for (const [pattern, expiry] of this.blockedPatterns.entries()) {
       if (now < expiry && key.includes(pattern)) {
         console.log(
           `Cache set blocked for key "${key}" due to pattern "${pattern}"`
         );
-        return; // Don't cache
+        return;
       }
     }
 
@@ -42,7 +40,6 @@ class Cache {
   }
 
   get<T>(key: string): T | null {
-    // Check if this key matches any blocked pattern first
     const now = Date.now();
     const blockedList = Array.from(this.blockedPatterns.entries());
 
@@ -58,7 +55,6 @@ class Cache {
         console.log(
           `Cache get BLOCKED for key "${key}" due to pattern "${pattern}"`
         );
-        // Delete the cache entry to ensure it's not served
         this.cache.delete(key);
         return null;
       }
@@ -70,7 +66,6 @@ class Cache {
       return null;
     }
 
-    // Check if expired
     if (Date.now() > entry.timestamp) {
       this.cache.delete(key);
       return null;
@@ -86,7 +81,6 @@ class Cache {
       return false;
     }
 
-    // Check if expired
     if (Date.now() > entry.timestamp) {
       this.cache.delete(key);
       return false;
@@ -113,7 +107,6 @@ class Cache {
       }
     });
 
-    // Block this pattern from being cached for the specified duration
     this.blockedPatterns.set(pattern, Date.now() + blockDurationMs);
     console.log(
       `Cache invalidatePattern("${pattern}"): deleted ${matchedKeys.length} keys, blocked for ${blockDurationMs}ms`,
@@ -124,7 +117,6 @@ class Cache {
   private cleanup(): void {
     const now = Date.now();
 
-    // Clean expired cache entries
     const keys = Array.from(this.cache.keys());
     keys.forEach((key) => {
       const entry = this.cache.get(key);
@@ -133,7 +125,6 @@ class Cache {
       }
     });
 
-    // Clean expired blocked patterns
     for (const [pattern, expiry] of this.blockedPatterns.entries()) {
       if (now > expiry) {
         this.blockedPatterns.delete(pattern);
@@ -149,7 +140,7 @@ class Cache {
   }
 }
 
-// Create cache instances with different TTLs
+// Create cache instances
 export const apiCache = new Cache(60000); // 1 minute for API responses
 export const dataCache = new Cache(300000); // 5 minutes for data queries
 export const shortCache = new Cache(10000); // 10 seconds for frequently changing data

@@ -50,7 +50,6 @@ export async function PATCH(request: Request, { params }: RouteParams) {
       return new NextResponse("Registration not found", { status: 404 });
     }
 
-    // Check if user is admin, creator, or assigned event manager
     const isAdmin = session.user.role === "ADMIN";
     const isCreator = registration.event.creatorId === session.user.id;
     const isEventManager = registration.event.eventManagers.length > 0;
@@ -63,7 +62,6 @@ export async function PATCH(request: Request, { params }: RouteParams) {
     const { status } = updateSchema.parse(body);
 
     const updatedRegistration = await prisma.$transaction(async (tx) => {
-      // Check capacity of approved volunteer
       if (status === RegistrationStatus.APPROVED) {
         const approvedCount = await tx.registration.count({
           where: {
@@ -77,7 +75,6 @@ export async function PATCH(request: Request, { params }: RouteParams) {
         }
       }
 
-      // Manager can mark completed only after event ends
       if (status === RegistrationStatus.COMPLETED) {
         const eventEndTime = new Date(registration.event.endDateTime);
         const now = new Date();
@@ -87,7 +84,6 @@ export async function PATCH(request: Request, { params }: RouteParams) {
         }
       }
 
-      // Update the registration status
       return await tx.registration.update({
         where: { id: registrationId },
         data: { status },
@@ -100,7 +96,6 @@ export async function PATCH(request: Request, { params }: RouteParams) {
     switch (status) {
       case "APPROVED":
         message = `Chúc mừng! Bạn đã được duyệt tham gia sự kiện "${updatedRegistration.event.title}".`;
-        // Send push notification
         await notifyRegistrationApproved(
           updatedRegistration.userId,
           updatedRegistration.event.title,

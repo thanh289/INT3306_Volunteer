@@ -28,7 +28,6 @@ export async function PATCH(request: Request, { params }: RouteParams) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    // prevent admin from modifying his/her own account
     if (session.user.id === userId) {
       return new NextResponse(
         "Không thể tự chỉnh sửa tài khoản của chính mình.",
@@ -39,7 +38,6 @@ export async function PATCH(request: Request, { params }: RouteParams) {
     const body = await request.json();
     const validatedData = updateSchema.parse(body);
 
-    // At least one field must be provided
     if (!validatedData.status && !validatedData.role) {
       return new NextResponse("Cần cung cấp ít nhất một trường để cập nhật.", {
         status: 400,

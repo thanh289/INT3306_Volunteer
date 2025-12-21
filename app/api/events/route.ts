@@ -38,7 +38,6 @@ const createEventSchema = z
   })
   .refine(
     (data) => {
-      // Start date must be in the future
       return new Date(data.startDateTime) > new Date();
     },
     {
@@ -48,7 +47,6 @@ const createEventSchema = z
   )
   .refine(
     (data) => {
-      // End date must be after start date
       return new Date(data.endDateTime) > new Date(data.startDateTime);
     },
     {
@@ -58,7 +56,6 @@ const createEventSchema = z
   )
   .refine(
     (data) => {
-      // Event duration should not be longer than 30 days
       const duration =
         new Date(data.endDateTime).getTime() -
         new Date(data.startDateTime).getTime();
@@ -74,7 +71,6 @@ const createEventSchema = z
 export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions);
-    // Check role
     if (
       !session?.user?.id ||
       (session.user.role !== "ADMIN" && session.user.role !== "EVENT_MANAGER")
@@ -84,7 +80,6 @@ export async function POST(request: Request) {
 
     const formData = await request.formData();
 
-    // Extract and validate data
     const title = formData.get("title") as string;
     const description = formData.get("description") as string;
     const location = formData.get("location") as string;
@@ -118,19 +113,16 @@ export async function POST(request: Request) {
       category,
     });
 
-    // Handle image upload if present
     let imageUrl: string | undefined;
     if (imageFile) {
       try {
         const bytes = await imageFile.arrayBuffer();
         const buffer = Buffer.from(bytes);
 
-        // Generate unique filename
         const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
         const ext = path.extname(imageFile.name);
         const filename = `event-${uniqueSuffix}${ext}`;
 
-        // Create uploads directory if it doesn't exist
         const uploadsDir = path.join(
           process.cwd(),
           "uploads",
@@ -140,7 +132,6 @@ export async function POST(request: Request) {
           await mkdir(uploadsDir, { recursive: true });
         }
 
-        // Save file
         const filepath = path.join(uploadsDir, filename);
         await writeFile(filepath, buffer);
 
@@ -151,24 +142,19 @@ export async function POST(request: Request) {
       }
     }
 
-    // Use transaction to create event, registration questions, and event manager
     const result = await prisma.$transaction(async (tx) => {
-      // Create the event
       const newEvent = await tx.event.create({
         data: {
           ...validatedData,
           imageUrl,
           requirePostApproval,
           requiresRegistrationForm: requiresRegistrationForm === "true",
-          // attach the current id to creatorId
           creatorId: session.user.id,
-          // Auto-approve events created by admins
           status:
             session.user.role === "ADMIN" ? "PUBLISHED" : "PENDING_APPROVAL",
         },
       });
 
-      // Create registration questions if any
       if (registrationQuestions.length > 0) {
         await tx.registrationQuestion.createMany({
           data: registrationQuestions.map((q, index) => ({
@@ -180,7 +166,6 @@ export async function POST(request: Request) {
         });
       }
 
-      // Automatically add creator as event manager
       await tx.eventManager.create({
         data: {
           userId: session.user.id,
@@ -192,7 +177,6 @@ export async function POST(request: Request) {
       return newEvent;
     });
 
-    // Invalidate homepage cache
     dataCache.invalidatePattern("homepage:events");
 
     return NextResponse.json(result, { status: 201 });

@@ -24,7 +24,6 @@ export const AdminEventActions = ({
         toast.success(
           `Sự kiện đã được ${status === "PUBLISHED" ? "duyệt" : "từ chối"}.`
         );
-        // Revalidate data immediately without full page refresh
         if (onSuccess) {
           onSuccess();
         }

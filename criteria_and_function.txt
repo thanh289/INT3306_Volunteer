@@ -1,0 +1,35 @@
+1. Tiêu chí chấm điểm
+- Chức năng và các features đã cài đặt
+- Thiết kế: Logic, dễ sử dụng
+- Giao diện: Responsive, đẹp, hiện đại, có bản sắc, đặc trưng nhận dạng thương hiệu nổi bật
+- Hiệu năng: Sử dụng fetch hoặc AJAX để tải bộ phận, không tải lại, backend API, sử dụng dữ liệu JSON, cập nhật DOM trên frontend.
+- Phong cách lập trình: Sử dụng mẫu thiết kế, tách biệt mã tạo giao diện và mã xử lý nghiệp vụ, tổ chức gói thư viện, trình bày và chú thích mã, ...
+- Xử lý nhập liệu: Kiểm tra hợp thức, tự động điền, gợi ý, chuyển đổi, ...
+- An ninh: Xác thực, quản lý phiên, điều khiển truy cập, mã hóa, ...
+- Viết lại và/hoặc định tuyến URL
+- Thao tác CSDL theo lập trình hướng đối và độc lập CSDL
+
+2. Chức năng theo vai trò
+Tình nguyện viên
+- Đăng ký/Đăng nhập: Tạo tài khoản, đăng nhập bằng email/password.
+- Xem sự kiện: Xem danh sách sự kiện (tên, ngày, địa điểm, mô tả), lọc theo thời gian/danh mục.
+- Đăng ký sự kiện: Đăng ký tham gia sự kiện, nhận thông báo xác nhận.
+- Thoái đăng sự kiện: Hủy đăng ký trước khi sự kiện diễn ra.
+- Xem lịch sử tham gia: Xem danh sách sự kiện đã tham gia, trạng thái hoàn thành.
+- Nhận thông báo: Nhận thông báo trạng thái đăng ký/hoàn thành (Web Push API).
+- Truy cập kênh trao đổi: Post bài, comment, like trên kênh sự kiện (tương tự wall Facebook), chỉ sau khi sự kiện được duyệt.
+- Xem Dashboard: Xem tổng hợp sự kiện liên quan (mới công bố, có tin bài mới), sự kiện thu hút (tăng thành viên/trao đổi/like nhanh).
+Quản lý sự kiện
+- Đăng ký/Đăng nhập: Tạo tài khoản, đăng nhập bằng email/password.
+- Quản lý sự kiện: Tạo, sửa, xóa sự kiện (tên, ngày, địa điểm, mô tả). Validate input (Joi/Yup).
+- Xác nhận đăng ký: Duyệt/hủy đăng ký của tình nguyện viên.
+- Đánh dấu hoàn thành: Cập nhật trạng thái hoàn thành cho tình nguyện viên sau sự kiện.
+- Xem báo cáo: Xem danh sách tình nguyện viên tham gia sự kiện.
+- Truy cập kênh trao đổi: Post bài, comment, like trên kênh sự kiện (tương tự wall Facebook), chỉ sau khi sự kiện được duyệt.
+- Xem Dashboard: Xem tổng hợp sự kiện liên quan (mới công bố, có tin bài mới), sự kiện thu hút (tăng thành viên/trao đổi/like nhanh).
+Admin
+- Đăng ký/Đăng nhập: Tạo tài khoản, đăng nhập bằng email/password.
+- Quản lý sự kiện: Duyệt/xóa sự kiện do quản lý sự kiện tạo.
+- Quản lý người dùng: Xem, khóa/mở tài khoản tình nguyện viên/quản lý sự kiện.
+- Xuất dữ liệu: Export danh sách sự kiện/tình nguyện viên (CSV/JSON).
+- Xem Dashboard: Xem tổng hợp sự kiện liên quan (mới công bố, có tin bài mới), sự kiện thu hút (tăng thành viên/trao đổi/like nhanh).

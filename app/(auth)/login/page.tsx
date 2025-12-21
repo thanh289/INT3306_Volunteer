@@ -32,25 +32,20 @@ function LoginForm() {
       setGeneralError(
         "Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên."
       );
-      // delete error from url, not to show again
       router.replace("/login", { scroll: false });
     }
   }, [searchParams, router]);
 
-  // update form data whenever user type in input
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    // Clear errors when user types
     setErrors({ email: "", password: "" });
     setGeneralError("");
   };
 
-  // when submit
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // Client-side validation
     const emailError = validateEmail(formData.email);
     const passwordError = !formData.password
       ? "Mật khẩu không được để trống"
@@ -61,7 +56,6 @@ function LoginForm() {
         email: emailError || "",
         password: passwordError || "",
       });
-      // Show toast for the first error found
       const firstError = emailError || passwordError;
       if (firstError) toast.error(firstError);
       return;
@@ -70,10 +64,9 @@ function LoginForm() {
     setIsLoading(true);
 
     try {
-      // use singin instead of axios
       const result = await signIn("credentials", {
         ...formData,
-        redirect: false, // not change the page automatically
+        redirect: false,
       });
 
       if (result?.error) {
@@ -93,7 +86,6 @@ function LoginForm() {
     }
   };
 
-  // Handle Google Sign In
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
     try {

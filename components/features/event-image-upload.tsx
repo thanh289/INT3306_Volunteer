@@ -20,12 +20,9 @@ export const EventImageUpload = ({ eventId, currentImageUrl, eventTitle }: Event
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [isUploading, setIsUploading] = useState(false);
 
-    // Format image URL to ensure correct path
     const formatImageUrl = (url: string | null) => {
         if (!url) return null;
-        // If it's already a data URL (preview), return as is
         if (url.startsWith('data:')) return url;
-        // Format the path with leading slash and forward slashes
         return "/" + url.replace(/\\/g, "/").replace(/^\/+/, "");
     };
 
@@ -40,7 +37,6 @@ export const EventImageUpload = ({ eventId, currentImageUrl, eventTitle }: Event
             return;
         }
 
-        // validate size 5MB
         if (file.size > 5 * 1024 * 1024) {
             toast.error('Kích thước file không được vượt quá 5MB');
             return;
@@ -64,15 +60,13 @@ export const EventImageUpload = ({ eventId, currentImageUrl, eventTitle }: Event
 
             console.log('Upload response:', response.data);
             toast.success('Cập nhật ảnh sự kiện thành công!');
-            // Add cache busting parameter to force reload
+
             const newImageUrl = formatImageUrl(response.data.imageUrl);
             console.log('Formatted image URL:', newImageUrl);
             setPreviewUrl(newImageUrl ? `${newImageUrl}?t=${Date.now()}` : null);
 
-            // Invalidate all SWR caches to force refetch
             mutate(() => true, undefined, { revalidate: true });
 
-            // Force router refresh
             router.refresh();
 
         } catch (error) {
@@ -82,12 +76,10 @@ export const EventImageUpload = ({ eventId, currentImageUrl, eventTitle }: Event
             } else {
                 toast.error('Có lỗi xảy ra khi tải ảnh lên');
             }
-            // revert
             setPreviewUrl(formatImageUrl(currentImageUrl));
 
         } finally {
             setIsUploading(false);
-            // clear input
             if (fileInputRef.current) {
                 fileInputRef.current.value = '';
             }
@@ -108,10 +100,8 @@ export const EventImageUpload = ({ eventId, currentImageUrl, eventTitle }: Event
             toast.success('Đã xóa ảnh sự kiện');
             setPreviewUrl(null);
 
-            // Invalidate all SWR caches to force refetch
             mutate(() => true, undefined, { revalidate: true });
 
-            // Force router refresh
             router.refresh();
         } catch (error) {
             console.error('Error deleting event image:', error);

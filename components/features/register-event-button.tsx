@@ -41,7 +41,7 @@ export const RegisterEventButton = ({
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  // Only consider registered if status is not REJECTED
+  // registered if status: not REJECTED
   const [isRegistered, setIsRegistered] = useState(
     isInitiallyRegistered && registrationStatus !== "REJECTED"
   );
@@ -63,15 +63,11 @@ export const RegisterEventButton = ({
         })
         .finally(() => setLoadingQuestions(false));
     } else if (!showModal) {
-      // Reset loading state when modal closes
       setLoadingQuestions(false);
     }
   }, [showModal, isRegistered, eventId]);
 
-  // This button just for user
-  if (
-    session?.user?.role === Role.ADMIN
-  ) {
+  if (session?.user?.role === Role.ADMIN) {
     return null;
   }
 
@@ -101,7 +97,6 @@ export const RegisterEventButton = ({
     } else {
       // Register based on whether form is required
       if (requiresRegistrationForm) {
-        // Show modal to register - set loading first to prevent flash
         setLoadingQuestions(true);
         setShowModal(true);
       } else {
@@ -194,16 +189,17 @@ export const RegisterEventButton = ({
       <button
         onClick={handleClick}
         disabled={isPending}
-        className={`btn w-full gap-2 text-white ${isRegistered
-          ? "bg-red-600 hover:bg-red-700 border-red-600"
-          : "bg-green-600 hover:bg-green-700 border-green-600"
-          }`}
+        className={`btn w-full gap-2 text-white ${
+          isRegistered
+            ? "bg-red-600 hover:bg-red-700 border-red-600"
+            : "bg-green-600 hover:bg-green-700 border-green-600"
+        }`}
       >
         {isPending
           ? "Đang xử lý..."
           : isRegistered
-            ? "Hủy đăng ký"
-            : "Đăng ký tham gia sự kiện này"}
+          ? "Hủy đăng ký"
+          : "Đăng ký tham gia sự kiện này"}
       </button>
 
       {/* Registration Modal */}

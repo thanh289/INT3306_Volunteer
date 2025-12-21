@@ -33,8 +33,8 @@ type Comment = {
 
 type PostCommentsProps = {
   postId: string;
-  eventCreatorId?: string; // Pass event creator ID to check permissions
-  eventManagerIds?: string[]; // Pass event manager IDs
+  eventCreatorId?: string;
+  eventManagerIds?: string[];
 };
 
 export const PostComments = ({
@@ -58,10 +58,8 @@ export const PostComments = ({
   const [fetchedEventManagerIds, setFetchedEventManagerIds] =
     useState<string[]>(eventManagerIds);
 
-  // Fetch comments on mount
   useEffect(() => {
     fetchComments();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [postId]);
 
   const fetchComments = async () => {
@@ -69,7 +67,7 @@ export const PostComments = ({
     try {
       const response = await axios.get(`/api/posts/${postId}/comments`);
       setComments(response.data.comments || response.data);
-      // Update event creator and manager IDs if provided in response
+
       if (response.data.eventCreatorId) {
         setFetchedEventCreatorId(response.data.eventCreatorId);
       }
@@ -119,7 +117,6 @@ export const PostComments = ({
 
     try {
       await axios.delete(`/api/comments/${commentId}/delete`);
-      // Update the comment in the list to show it's deleted
       setComments(
         comments.map((comment) =>
           comment.id === commentId

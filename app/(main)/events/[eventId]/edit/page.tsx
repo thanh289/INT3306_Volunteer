@@ -29,8 +29,8 @@ export default async function EditEventPage({ params }: EditEventPageProps) {
     include: {
       eventManagers: userId
         ? {
-          where: { userId },
-        }
+            where: { userId },
+          }
         : false,
     },
   });
@@ -39,7 +39,6 @@ export default async function EditEventPage({ params }: EditEventPageProps) {
     notFound();
   }
 
-  // Check if user is admin, creator, or event manager
   const isAdmin = userRole === "ADMIN";
   const isCreator = event.creatorId === userId;
   const isEventManager = event.eventManagers && event.eventManagers.length > 0;

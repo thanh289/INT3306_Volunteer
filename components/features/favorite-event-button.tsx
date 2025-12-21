@@ -11,8 +11,8 @@ import { Heart } from "lucide-react";
 
 type FavoriteEventButtonProps = {
   eventId: string;
-  compact?: boolean; // For smaller button in event cards
-  initialIsInterested?: boolean; // Pre-fetched interested status
+  compact?: boolean;
+  initialIsInterested?: boolean;
 };
 
 export const FavoriteEventButton = ({
@@ -33,7 +33,6 @@ export const FavoriteEventButton = ({
   // Only check via API if initialIsInterested was not provided
   useEffect(() => {
     if (initialIsInterested !== undefined) {
-      // Already have the data, no need to fetch
       setIsChecking(false);
       return;
     }

@@ -85,18 +85,18 @@ type SortOption =
 export const DashboardFeed = () => {
   const { data: session } = useSession();
   const [displayLimit, setDisplayLimit] = useState(10);
-  const [searchInput, setSearchInput] = useState(""); // Input field value
-  const [searchQuery, setSearchQuery] = useState(""); // Actual search query
+  const [searchInput, setSearchInput] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState<SortOption>("recent");
   const [showSortDropdown, setShowSortDropdown] = useState(false);
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
 
-  // Create SWR key based on filters (NOT sortBy - we sort client-side to reuse cached data)
+  // Create SWR key based on filters
   const swrKey = useMemo(() => {
     const params = new URLSearchParams({
       skip: "0",
-      take: "100", // Fetch more data since we're doing all sorting client-side
+      take: "100",
     });
     if (searchQuery.trim()) {
       params.append("search", searchQuery.trim());
@@ -105,7 +105,7 @@ export const DashboardFeed = () => {
       params.append("categories", selectedCategories.join(","));
     }
     return `/api/dashboard/posts?${params.toString()}`;
-  }, [searchQuery, selectedCategories]); // sortBy removed from dependencies
+  }, [searchQuery, selectedCategories]);
 
   // Fetcher function for SWR
   const fetcher = async (url: string) => {
@@ -117,7 +117,7 @@ export const DashboardFeed = () => {
   const { data, error, isLoading, mutate } = useSWR(swrKey, fetcher, {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
-    dedupingInterval: 0, // Disable deduping to ensure fresh data after mutations
+    dedupingInterval: 0,
   });
 
   // Process data with client-side filtering and sorting
@@ -126,26 +126,23 @@ export const DashboardFeed = () => {
       return { posts: [], totalCount: 0 };
     }
 
-    let fetchedPosts = [...data.posts]; // Clone array to avoid mutating cache
+    let fetchedPosts = [...data.posts];
 
     try {
       // Client-side sorting based on sortBy option
       if (sortBy === "upcoming") {
         fetchedPosts = fetchedPosts.filter((p: Post) => p.isUpcomingEvent);
-        // Sort upcoming events by creation date (recent first)
         fetchedPosts.sort(
           (a: Post, b: Post) =>
             new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         );
       } else if (sortBy === "interested") {
         fetchedPosts = fetchedPosts.filter((p: Post) => p.isInterestedEvent);
-        // Sort interested events by creation date (recent first)
         fetchedPosts.sort(
           (a: Post, b: Post) =>
             new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         );
       } else if (sortBy === "trending") {
-        // Filter to last 3 days
         const threeDaysAgo = new Date();
         threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
         fetchedPosts = fetchedPosts.filter(
@@ -158,11 +155,10 @@ export const DashboardFeed = () => {
           return bScore - aScore;
         });
       } else if (sortBy === "likes") {
-        // Sort by number of likes
         fetchedPosts.sort((a: Post, b: Post) => {
           const aLikes = a._count?.likes || 0;
           const bLikes = b._count?.likes || 0;
-          // If likes are equal, sort by creation date
+          // If equal, sort by creation date
           if (bLikes === aLikes) {
             return (
               new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
@@ -171,11 +167,10 @@ export const DashboardFeed = () => {
           return bLikes - aLikes;
         });
       } else if (sortBy === "comments") {
-        // Sort by number of comments
         fetchedPosts.sort((a: Post, b: Post) => {
           const aComments = a._count?.comments || 0;
           const bComments = b._count?.comments || 0;
-          // If comments are equal, sort by creation date
+          // If equal, sort by creation date
           if (bComments === aComments) {
             return (
               new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
@@ -213,33 +208,24 @@ export const DashboardFeed = () => {
   const handleDeletePost = async (postId: string) => {
     if (!confirm("Bạn có chắc chắn muốn xóa bài viết này?")) return;
 
-    // Show loading toast
     const loadingToast = toast.loading("Đang xóa bài viết...");
 
     try {
-      // Optimistic update - remove post from list immediately
-      mutate(
-        (currentData: any) => {
-          if (!currentData) return currentData;
-          return {
-            ...currentData,
-            posts: currentData.posts.filter((p: Post) => p.id !== postId),
-            totalCount: currentData.totalCount - 1,
-          };
-        },
-        false // Don't revalidate yet
-      );
+      mutate((currentData: any) => {
+        if (!currentData) return currentData;
+        return {
+          ...currentData,
+          posts: currentData.posts.filter((p: Post) => p.id !== postId),
+          totalCount: currentData.totalCount - 1,
+        };
+      }, false);
 
-      // Perform actual deletion
       await axios.delete(`/api/posts/${postId}/delete`);
 
-      // Wait for backend to fully complete (transaction + cache invalidation)
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      // Force revalidate - bypass all caches to get fresh data
       await mutate(
         async () => {
-          // Force no-cache by adding timestamp
           const response = await axios.get(`${swrKey}&_t=${Date.now()}`);
           return response.data;
         },
@@ -253,7 +239,6 @@ export const DashboardFeed = () => {
       toast.success("Đã xóa bài viết!", { id: loadingToast });
     } catch (error) {
       console.error("Failed to delete post:", error);
-      // Revert on error by revalidating
       await mutate(undefined, { revalidate: true });
       toast.error("Không thể xóa bài viết", { id: loadingToast });
     }
@@ -267,7 +252,6 @@ export const DashboardFeed = () => {
     );
   };
 
-  // Show error message
   if (error) {
     return (
       <div className="alert alert-error">
@@ -276,7 +260,6 @@ export const DashboardFeed = () => {
     );
   }
 
-  // Show loading skeleton
   if (isLoading) {
     return (
       <div className="space-y-4">
@@ -336,8 +319,9 @@ export const DashboardFeed = () => {
               {sortBy === "interested" && "Quan tâm"}
             </span>
             <svg
-              className={`h-4 w-4 transition-transform ${showSortDropdown ? "rotate-180" : ""
-                }`}
+              className={`h-4 w-4 transition-transform ${
+                showSortDropdown ? "rotate-180" : ""
+              }`}
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -450,8 +434,9 @@ export const DashboardFeed = () => {
                 : `Thể loại (${selectedCategories.length})`}
             </span>
             <svg
-              className={`h-4 w-4 transition-transform ${showCategoryDropdown ? "rotate-180" : ""
-                }`}
+              className={`h-4 w-4 transition-transform ${
+                showCategoryDropdown ? "rotate-180" : ""
+              }`}
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -713,9 +698,12 @@ export const DashboardFeed = () => {
                       <div className="relative w-full h-64 rounded-lg overflow-hidden mb-3 border border-base-300">
                         <Image
                           src={
-                            post.imageUrl.startsWith('/api/') || post.imageUrl.startsWith('http')
+                            post.imageUrl.startsWith("/api/") ||
+                            post.imageUrl.startsWith("http")
                               ? post.imageUrl
-                              : `/api/uploads/${post.imageUrl.replace(/\\/g, "/").replace(/^\/+/, "")}`
+                              : `/api/uploads/${post.imageUrl
+                                  .replace(/\\/g, "/")
+                                  .replace(/^\/+/, "")}`
                           }
                           alt="Post image"
                           fill

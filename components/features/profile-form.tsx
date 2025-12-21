@@ -10,7 +10,6 @@ import axios, { isAxiosError } from "axios";
 import toast from "react-hot-toast";
 import { User, Gender } from "@prisma/client";
 
-// Date format
 const formatDateForInput = (date: Date | null | undefined) => {
   if (!date) return "";
   return new Date(date).toISOString().split("T")[0];
@@ -40,7 +39,6 @@ export const ProfileForm = ({ user }: { user: User }) => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // Kiểm tra xem có thay đổi gì không
     const hasChanges =
       formData.name !== (user.name || "") ||
       formData.phone !== (user.phone || "") ||
@@ -57,7 +55,7 @@ export const ProfileForm = ({ user }: { user: User }) => {
 
     try {
       await axios.put("/api/profile", formData);
-      await update(); // Cập nhật session với thông tin mới
+      await update();
       toast.success("Cập nhật hồ sơ thành công!");
       router.refresh();
     } catch (error) {

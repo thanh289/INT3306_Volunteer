@@ -4,8 +4,8 @@
 import { NextResponse } from 'next/server';
 
 interface RateLimitConfig {
-    interval: number; // Time window in milliseconds
-    uniqueTokenPerInterval: number; // Max requests per interval
+    interval: number;
+    uniqueTokenPerInterval: number;
 }
 
 interface TokenBucket {
@@ -27,7 +27,7 @@ export class RateLimiter {
 
     /**
      * Check if request should be rate limited
-     * @param identifier - Unique identifier for the client (IP, user ID, etc.)
+     * @param identifier - Unique identifier for the client (IP, user ID,...)
      * @returns true if rate limit exceeded, false otherwise
      */
     async check(identifier: string): Promise<{
@@ -39,7 +39,6 @@ export class RateLimiter {
         const now = Date.now();
         const bucket = rateLimitStore.get(identifier);
 
-        // If no bucket exists or reset time has passed, create new bucket
         if (!bucket || now > bucket.resetTime) {
             const newBucket: TokenBucket = {
                 count: 1,
@@ -55,10 +54,8 @@ export class RateLimiter {
             };
         }
 
-        // Increment count
         bucket.count++;
 
-        // Check if limit exceeded
         if (bucket.count > this.uniqueTokenPerInterval) {
             return {
                 success: false,
@@ -91,7 +88,6 @@ setInterval(() => {
  * Get client identifier from request (IP address)
  */
 export function getIdentifier(request: Request): string {
-    // Try to get real IP from headers (works with proxies/load balancers)
     const forwardedFor = request.headers.get('x-forwarded-for');
     const realIp = request.headers.get('x-real-ip');
 
@@ -103,7 +99,6 @@ export function getIdentifier(request: Request): string {
         return realIp;
     }
 
-    // Fallback (less reliable)
     return 'unknown';
 }
 
@@ -136,7 +131,6 @@ export async function withRateLimit(
         );
     }
 
-    // Add rate limit headers to response
     return null; // No rate limit error, proceed with request
 }
 

@@ -1,16 +1,9 @@
 // Defines the database schema for all models in the application.
 // prisma/schema.prisma
-// update: add indexes for optimization (and looke like we don't need to add index for unique fields)
 
 datasource db {
     provider = "mongodb"
-    // Connection URLs are no longer supported in schema files.
-    // Move your connection URL to prisma.config.ts and pass it to the PrismaClient
-    // (using `adapter` for a direct database connection or `accelerateUrl` for Accelerate).
-    // See: https://pris.ly/d/config-datasource and https://pris.ly/d/prisma7-client-config
-
-    // this is a common warning for new version of prisma
-    // but this one still work with mongodb? so just let it be like this
+    // Move connection URL to prisma.config.ts and pass it to the PrismaClient
     url = env("DATABASE_URL")
 }
 
@@ -77,39 +70,33 @@ model PushSubscription {
 
 // API generated is prisma.user
 model User {
-    id            String     @id @default(auto()) @map("_id") @db.ObjectId
-    name          String?
-    email         String     @unique
-    phone         String? //optional
-    address       String?
-    dateOfBirth   DateTime?
-    gender        Gender?
-    passwordHash  String? // Made optional for OAuth users
-    role          Role       @default(VOLUNTEER)
-    status        UserStatus @default(ACTIVE)
-    imageUrl      String?
-    createdAt     DateTime   @default(now())
-    updatedAt     DateTime   @updatedAt
-    emailVerified DateTime? // For NextAuth email verification
+    id           String     @id @default(auto()) @map("_id") @db.ObjectId
+    name         String?
+    email        String     @unique
+    phone        String?
+    address      String?
+    dateOfBirth  DateTime?
+    gender       Gender?
+    passwordHash String
+    role         Role       @default(VOLUNTEER)
+    status       UserStatus @default(ACTIVE)
+    imageUrl     String?
+    createdAt    DateTime   @default(now())
+    updatedAt    DateTime   @updatedAt
 
-    // an user can registry multiple event and have multiple post
     registrations Registration[]
     posts         Post[]
     postLikes     PostLike[]
     postComments  PostComment[]
 
-    createdEvents       Event[]             @relation("EventCreator")
-    notifications       Notification[]
-    passwordResetToken  PasswordResetToken?
-    pushSubscriptions   PushSubscription[]
-    interestedEvents    InterestedEvent[]
-    managedEvents       EventManager[]
-    invitationsReceived EventInvitation[]   @relation("EventInvitationsReceived")
-    invitationsSent     EventInvitation[]   @relation("EventInvitationsSent")
-
-    // NextAuth OAuth relations
-    accounts Account[]
-    sessions Session[]
+    createdEvents           Event[]             @relation("EventCreator")
+    notifications           Notification[]
+    passwordResetToken      PasswordResetToken?
+    pushSubscriptions       PushSubscription[]
+    interestedEvents        InterestedEvent[]
+    managedEvents           EventManager[]
+    invitationsReceived     EventInvitation[]   @relation("EventInvitationsReceived")
+    invitationsSent         EventInvitation[]   @relation("EventInvitationsSent")
 
     @@index([role])
     @@index([status])
@@ -130,10 +117,8 @@ model Event {
     createdAt     DateTime      @default(now())
     updatedAt     DateTime      @updatedAt
 
-    // Post moderation setting
     requirePostApproval Boolean @default(false)
 
-    // Registration form setting
     requiresRegistrationForm Boolean @default(false)
 
     // Soft delete fields
@@ -142,18 +127,15 @@ model Event {
     deletedBy     String?   @db.ObjectId
     deletedByRole Role?
 
-    // Cancel fields (for temporary cancellation with restore option)
     isCancelled     Boolean   @default(false)
     cancelledAt     DateTime?
     cancelledBy     String?   @db.ObjectId
     cancelledByRole Role?
     cancelReason    String?
 
-    // this event created by manager
     creatorId String @db.ObjectId
     creator   User   @relation("EventCreator", fields: [creatorId], references: [id], onDelete: Cascade)
 
-    // an event can has multiple user and post
     registrations         Registration[]
     posts                 Post[]
     interestedBy          InterestedEvent[]
@@ -171,11 +153,11 @@ model Event {
 }
 
 model RegistrationQuestion {
-    id         String   @id @default(auto()) @map("_id") @db.ObjectId
-    question   String
-    isRequired Boolean  @default(true)
-    order      Int // To maintain question order
-    createdAt  DateTime @default(now())
+    id        String   @id @default(auto()) @map("_id") @db.ObjectId
+    question  String
+    isRequired Boolean @default(true)
+    order     Int
+    createdAt DateTime @default(now())
 
     eventId String @db.ObjectId
     event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
@@ -205,18 +187,14 @@ model Registration {
     createdAt DateTime           @default(now())
     status    RegistrationStatus @default(PENDING)
 
-    // Which user
     userId String @db.ObjectId
     user   User   @relation(fields: [userId], references: [id])
 
-    // Which event
     eventId String @db.ObjectId
     event   Event  @relation(fields: [eventId], references: [id])
 
-    // Registration form answers
     answers RegistrationAnswer[]
 
-    // an user can only registry an event once
     @@unique([userId, eventId])
     @@index([userId, status])
     @@index([eventId, status])
@@ -229,15 +207,13 @@ model Post {
     imageUrl  String?
     createdAt DateTime @default(now())
 
-    // Post approval status
     postStatus PostStatus @default(APPROVED)
     reviewedAt DateTime?
     reviewedBy String?    @db.ObjectId
 
-    // Pin post feature
-    isPinned Boolean   @default(false)
+    isPinned Boolean  @default(false)
     pinnedAt DateTime?
-    pinnedBy String?   @db.ObjectId
+    pinnedBy String?  @db.ObjectId
 
     // Soft delete fields
     isDeleted     Boolean   @default(false)
@@ -262,15 +238,12 @@ model PostLike {
     id        String   @id @default(auto()) @map("_id") @db.ObjectId
     createdAt DateTime @default(now())
 
-    // Which user liked
     userId String @db.ObjectId
     user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    // Which post they liked
     postId String @db.ObjectId
     post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
 
-    // A user can only like a post once
     @@unique([userId, postId])
     @@index([postId])
     @@index([userId])
@@ -287,11 +260,9 @@ model PostComment {
     deletedBy     String?   @db.ObjectId
     deletedByRole Role?
 
-    // Which user commented
     userId String @db.ObjectId
     user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    // Which post they commented on
     postId String @db.ObjectId
     post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
 
@@ -303,7 +274,7 @@ model PostComment {
 model Notification {
     id        String   @id @default(auto()) @map("_id") @db.ObjectId
     message   String
-    href      String? // link to direct when click the notification
+    href      String?
     isRead    Boolean  @default(false)
     createdAt DateTime @default(now())
 
@@ -318,7 +289,6 @@ model PasswordResetToken {
     token   String   @unique
     expires DateTime
 
-    // 1 user will just have 1 token
     userId String @unique @db.ObjectId
     user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -329,15 +299,12 @@ model InterestedEvent {
     id        String   @id @default(auto()) @map("_id") @db.ObjectId
     createdAt DateTime @default(now())
 
-    // Which user is interested
     userId String @db.ObjectId
     user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    // Which event they're interested in
     eventId String @db.ObjectId
     event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
 
-    // A user can only mark an event as interested once
     @@unique([userId, eventId])
     @@index([userId, createdAt])
     @@index([eventId])
@@ -347,18 +314,14 @@ model EventManager {
     id        String   @id @default(auto()) @map("_id") @db.ObjectId
     createdAt DateTime @default(now())
 
-    // Which user is a manager
     userId String @db.ObjectId
     user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    // Which event they manage
     eventId String @db.ObjectId
     event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
 
-    // Who assigned this manager (creator or admin)
     assignedBy String @db.ObjectId
 
-    // A user can only be a manager of an event once
     @@unique([userId, eventId])
     @@index([userId])
     @@index([eventId])
@@ -368,62 +331,18 @@ model EventInvitation {
     id        String   @id @default(auto()) @map("_id") @db.ObjectId
     createdAt DateTime @default(now())
 
-    // Which event is the invitation for
     eventId String @db.ObjectId
     event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
 
-    // Who is being invited
     invitedUserId String @db.ObjectId
     invitedUser   User   @relation("EventInvitationsReceived", fields: [invitedUserId], references: [id], onDelete: Cascade)
 
-    // Who sent the invitation
     invitedBy String @db.ObjectId
     inviter   User   @relation("EventInvitationsSent", fields: [invitedBy], references: [id], onDelete: Cascade)
 
-    // A user can receive multiple invitations from different people for the same event
-    // but the same person cannot invite the same user twice to the same event
+// An user can be invited multiple times by many users but one user can only invite another one time.
     @@unique([eventId, invitedUserId, invitedBy])
     @@index([invitedUserId, createdAt])
     @@index([eventId])
     @@index([invitedBy])
-}
-
-// NextAuth Models for OAuth support
-model Account {
-    id                String  @id @default(auto()) @map("_id") @db.ObjectId
-    userId            String  @db.ObjectId
-    type              String
-    provider          String
-    providerAccountId String
-    refresh_token     String? @db.String
-    access_token      String? @db.String
-    expires_at        Int?
-    token_type        String?
-    scope             String?
-    id_token          String? @db.String
-    session_state     String?
-
-    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-    @@unique([provider, providerAccountId])
-    @@index([userId])
-}
-
-model Session {
-    id           String   @id @default(auto()) @map("_id") @db.ObjectId
-    sessionToken String   @unique
-    userId       String   @db.ObjectId
-    expires      DateTime
-    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-    @@index([userId])
-}
-
-model VerificationToken {
-    id         String   @id @default(auto()) @map("_id") @db.ObjectId
-    identifier String
-    token      String   @unique
-    expires    DateTime
-
-    @@unique([identifier, token])
 }

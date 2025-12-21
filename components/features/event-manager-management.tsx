@@ -48,7 +48,6 @@ export const EventManagerManagement = ({
 
   useEffect(() => {
     fetchManagers();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [eventId]);
 
   const fetchManagers = async () => {
@@ -69,7 +68,6 @@ export const EventManagerManagement = ({
 
     setIsAdding(true);
     try {
-      // First, find user by email using the new search endpoint
       const userResponse = await axios.get(
         `/api/users/search?email=${encodeURIComponent(userEmail.trim())}`
       );
@@ -81,12 +79,10 @@ export const EventManagerManagement = ({
 
       const targetUser = userResponse.data.user;
 
-      // Add as manager
       await axios.post(`/api/events/${eventId}/managers`, {
         userId: targetUser.id,
       });
 
-      // Reload the managers list
       await fetchManagers();
       setUserEmail("");
       setShowAddModal(false);

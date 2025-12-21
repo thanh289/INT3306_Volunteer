@@ -60,23 +60,22 @@ export const UserList = () => {
     setIsExporting(true);
     try {
       const response = await axios.get("/api/admin/users/export", {
-        responseType: "blob", // binary blob, raw data
+        responseType: "blob",
       });
 
-      const bom = "\uFEFF"; // Byte Order Mark, for utf8
+      const bom = "\uFEFF";
       const blobWithBom = new Blob([bom, response.data], {
         type: "text/csv;charset=utf-8;",
       });
 
-      // create a temporary URL to download
       const url = window.URL.createObjectURL(blobWithBom);
       const link = document.createElement("a");
       link.href = url;
 
-      const contentDisposition = response.headers["content-disposition"]; // take header Content-Disposition
+      const contentDisposition = response.headers["content-disposition"];
       let fileName = "users_export.csv";
       if (contentDisposition) {
-        const fileNameMatch = contentDisposition.match(/filename="(.+)"/); // @@, welp, use regex to get filename
+        const fileNameMatch = contentDisposition.match(/filename="(.+)"/);
         if (fileNameMatch && fileNameMatch[1]) {
           fileName = fileNameMatch[1];
         }
@@ -86,7 +85,7 @@ export const UserList = () => {
       document.body.appendChild(link);
       link.click();
       link.remove();
-      window.URL.revokeObjectURL(url); // after download, delete <a> and take back URL to release memory
+      window.URL.revokeObjectURL(url);
     } catch (err) {
       console.error("Export failed", err);
     } finally {

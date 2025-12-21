@@ -23,7 +23,6 @@ export async function PATCH(request: Request, { params }: RouteParams) {
     const body = await request.json();
     const { isPinned } = body;
 
-    // Get post with event info
     const post = await prisma.post.findUnique({
       where: { id: postId },
       include: {
@@ -42,7 +41,6 @@ export async function PATCH(request: Request, { params }: RouteParams) {
       return new NextResponse("Post not found", { status: 404 });
     }
 
-    // Check permissions: only admin, event creator, or event manager can pin
     const isAdmin = session.user.role === "ADMIN";
     const isCreator = session.user.id === post.event.creatorId;
     const isEventManager = post.event.eventManagers.some(
@@ -53,7 +51,6 @@ export async function PATCH(request: Request, { params }: RouteParams) {
       return new NextResponse("Forbidden", { status: 403 });
     }
 
-    // Update pin status
     const updatedPost = await prisma.post.update({
       where: { id: postId },
       data: {

@@ -13,7 +13,6 @@ export async function notifyRegistrationApproved(
   eventId: string
 ) {
   try {
-    // Send push notification only (in-app notification is created by API)
     const subscriptions = await prisma.pushSubscription.findMany({
       where: { userId },
       select: { endpoint: true, p256dh: true, auth: true },
@@ -33,7 +32,6 @@ export async function notifyRegistrationApproved(
       tag: `registration-approved-${eventId}`,
     });
 
-    // Cleanup expired subscriptions
     if (result.expired.length > 0) {
       await prisma.pushSubscription.deleteMany({
         where: { endpoint: { in: result.expired } },
@@ -53,7 +51,6 @@ export async function notifyRegistrationRejected(
   eventId: string
 ) {
   try {
-    // Send push notification only (in-app notification is created by API)
     const subscriptions = await prisma.pushSubscription.findMany({
       where: { userId },
       select: { endpoint: true, p256dh: true, auth: true },
@@ -73,7 +70,6 @@ export async function notifyRegistrationRejected(
       tag: `registration-rejected-${eventId}`,
     });
 
-    // Cleanup expired subscriptions
     if (result.expired.length > 0) {
       await prisma.pushSubscription.deleteMany({
         where: { endpoint: { in: result.expired } },
@@ -93,7 +89,6 @@ export async function notifyRegistrationCompleted(
   eventId: string
 ) {
   try {
-    // Send push notification only (in-app notification is created by API)
     const subscriptions = await prisma.pushSubscription.findMany({
       where: { userId },
       select: { endpoint: true, p256dh: true, auth: true },
@@ -113,7 +108,6 @@ export async function notifyRegistrationCompleted(
       tag: `registration-completed-${eventId}`,
     });
 
-    // Cleanup expired subscriptions
     if (result.expired.length > 0) {
       await prisma.pushSubscription.deleteMany({
         where: { endpoint: { in: result.expired } },
@@ -133,7 +127,6 @@ export async function notifyEventPublished(
   eventId: string
 ) {
   try {
-    // Create notification in database
     await prisma.notification.create({
       data: {
         userId: creatorId,
@@ -142,7 +135,6 @@ export async function notifyEventPublished(
       },
     });
 
-    // Send push notification
     const subscriptions = await prisma.pushSubscription.findMany({
       where: { userId: creatorId },
       select: { endpoint: true, p256dh: true, auth: true },
@@ -161,7 +153,6 @@ export async function notifyEventPublished(
         tag: `event-published-${eventId}`,
       });
 
-      // Cleanup expired subscriptions
       if (result.expired.length > 0) {
         await prisma.pushSubscription.deleteMany({
           where: { endpoint: { in: result.expired } },
@@ -182,7 +173,6 @@ export async function notifyEventRejected(
   eventId: string
 ) {
   try {
-    // Create notification in database
     await prisma.notification.create({
       data: {
         userId: creatorId,
@@ -191,7 +181,6 @@ export async function notifyEventRejected(
       },
     });
 
-    // Send push notification
     const subscriptions = await prisma.pushSubscription.findMany({
       where: { userId: creatorId },
       select: { endpoint: true, p256dh: true, auth: true },
@@ -210,7 +199,6 @@ export async function notifyEventRejected(
         tag: `event-rejected-${eventId}`,
       });
 
-      // Cleanup expired subscriptions
       if (result.expired.length > 0) {
         await prisma.pushSubscription.deleteMany({
           where: { endpoint: { in: result.expired } },
@@ -223,8 +211,7 @@ export async function notifyEventRejected(
 }
 
 /**
- * send to all registered users when event is about to start
- * 1 day before
+ * send to all registered users when event is about to start in 1 day
  */
 export async function notifyEventStartingSoon(
   eventId: string,
@@ -232,7 +219,6 @@ export async function notifyEventStartingSoon(
   startDateTime: Date
 ) {
   try {
-    // get all approved registrations for this event
     const registrations = await prisma.registration.findMany({
       where: {
         eventId,
@@ -245,7 +231,6 @@ export async function notifyEventStartingSoon(
 
     const userIds = registrations.map((reg) => reg.userId);
 
-    // get all subscriptions for these users
     const subscriptions = await prisma.pushSubscription.findMany({
       where: { userId: { in: userIds } },
       select: { endpoint: true, p256dh: true, auth: true },
@@ -273,7 +258,6 @@ export async function notifyEventStartingSoon(
       tag: `event-reminder-${eventId}`,
     });
 
-    // Cleanup expired subscriptions
     if (result.expired.length > 0) {
       await prisma.pushSubscription.deleteMany({
         where: { endpoint: { in: result.expired } },
@@ -292,7 +276,6 @@ export async function notifyEventCancelled(
   eventTitle: string
 ) {
   try {
-    // get all registrations for this event
     const registrations = await prisma.registration.findMany({
       where: { eventId },
       select: { userId: true },
@@ -302,7 +285,6 @@ export async function notifyEventCancelled(
 
     const userIds = registrations.map((reg) => reg.userId);
 
-    // get all subscriptions for these users
     const subscriptions = await prisma.pushSubscription.findMany({
       where: { userId: { in: userIds } },
       select: { endpoint: true, p256dh: true, auth: true },
@@ -322,7 +304,6 @@ export async function notifyEventCancelled(
       tag: `event-cancelled-${eventId}`,
     });
 
-    // Cleanup expired subscriptions
     if (result.expired.length > 0) {
       await prisma.pushSubscription.deleteMany({
         where: { endpoint: { in: result.expired } },
@@ -332,54 +313,6 @@ export async function notifyEventCancelled(
     console.error("Error sending event cancelled notification:", error);
   }
 }
-
-/**
- *  new post in registered event
- */
-// export async function notifyNewPost(
-//     eventId: string,
-//     eventTitle: string,
-//     authorName: string,
-//     excludeUserId?: string // Don't notify the post author
-// ) {
-//     try {
-//         // Get all approved registrations except the author
-//         const registrations = await prisma.registration.findMany({
-//             where: {
-//                 eventId,
-//                 status: 'APPROVED',
-//                 ...(excludeUserId && { userId: { not: excludeUserId } }),
-//             },
-//             select: { userId: true },
-//         });
-
-//         if (registrations.length === 0) return;
-
-//         const userIds = registrations.map((reg) => reg.userId);
-
-//         // Get all subscriptions for these users
-//         const subscriptions = await prisma.pushSubscription.findMany({
-//             where: { userId: { in: userIds } },
-//             select: { endpoint: true, p256dh: true, auth: true },
-//         });
-
-//         if (subscriptions.length === 0) return;
-
-//         const subscriptionsData = subscriptions.map((sub) => ({
-//             endpoint: sub.endpoint,
-//             keys: { p256dh: sub.p256dh, auth: sub.auth },
-//         }));
-
-//         await sendPushNotificationToMany(subscriptionsData, {
-//             title: 'Bài viết mới',
-//             body: `${authorName} đã đăng bài trong sự kiện "${eventTitle}"`,
-//             url: `/events/${eventId}`,
-//             tag: `new-post-${eventId}`,
-//         });
-//     } catch (error) {
-//         console.error('Error sending new post notification:', error);
-//     }
-// }
 
 /**
  * Generic function to send notification to a user
@@ -394,7 +327,6 @@ export async function sendNotification({
   href?: string;
 }) {
   try {
-    // Create notification in database
     await prisma.notification.create({
       data: {
         userId,
@@ -403,7 +335,6 @@ export async function sendNotification({
       },
     });
 
-    // Send push notification if user has subscriptions
     const subscriptions = await prisma.pushSubscription.findMany({
       where: { userId },
       select: { endpoint: true, p256dh: true, auth: true },
@@ -422,7 +353,6 @@ export async function sendNotification({
         tag: `notification-${Date.now()}`,
       });
 
-      // Cleanup expired subscriptions
       if (result.expired.length > 0) {
         await prisma.pushSubscription.deleteMany({
           where: { endpoint: { in: result.expired } },

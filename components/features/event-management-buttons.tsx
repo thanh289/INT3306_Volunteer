@@ -45,13 +45,12 @@ export const EventManagementButtons = ({ event }: Props) => {
     checkManagerStatus();
   }, [session?.user?.id, event.id]);
 
-  // Check if user can manage: admin, creator, or assigned event manager
   const isAdmin = session?.user?.role === "ADMIN";
   const isCreator = session?.user && session.user.id === event.creatorId;
   const canManage = isAdmin || isCreator || isEventManager;
 
   if (isLoading || !canManage) {
-    return null; // show nothing if have no permit or still loading
+    return null;
   }
 
   return (

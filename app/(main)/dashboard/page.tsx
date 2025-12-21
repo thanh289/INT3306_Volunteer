@@ -15,16 +15,14 @@ export default async function DashboardPage() {
   }
   const userId = session.user.id;
 
-  // Promise.all for parallel query
   const [myUpcomingRegistrations, interestedEvents] = await Promise.all([
-    // Take upcoming events user registered
     prisma.registration.findMany({
       where: {
         userId: userId,
         event: {
           startDateTime: { gte: new Date() },
           status: "PUBLISHED",
-          isDeleted: false, // Only show non-deleted events
+          isDeleted: false,
         },
       },
       take: 10,
@@ -32,13 +30,12 @@ export default async function DashboardPage() {
       include: { event: { include: { creator: true } } },
     }),
 
-    // Take events user is interested in
     prisma.interestedEvent.findMany({
       where: {
         userId: userId,
         event: {
           status: "PUBLISHED",
-          isDeleted: false, // Only show non-deleted events
+          isDeleted: false,
         },
       },
       take: 10,

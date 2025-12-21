@@ -1,6 +1,5 @@
-// A client component that provides UI for filtering and sorting events.
-// Not directly fecth the data from using db, just update the URL for parent component to fetch data accordingly.
-// component/features/events-filters.tsx
+// provides UI for filtering and sorting events.
+// Not directly fecth the data from using db, just update the URL for parent component to fetch data.
 
 "use client";
 
@@ -9,10 +8,9 @@ import Image from "next/image";
 
 export const EventFilters = () => {
   const router = useRouter();
-  const pathname = usePathname(); // get the current URL
-  const searchParams = useSearchParams(); // get params in the URL (query string)
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
-  // Get selected categories from URL
   const selectedCategories =
     searchParams.get("category")?.split(",").filter(Boolean) || [];
 
@@ -24,10 +22,8 @@ export const EventFilters = () => {
       searchParams.get("category")?.split(",").filter(Boolean) || [];
 
     if (categories.includes(category)) {
-      // Remove category
       categories = categories.filter((c) => c !== category);
     } else {
-      // Add category
       categories.push(category);
     }
 
@@ -49,10 +45,9 @@ export const EventFilters = () => {
     if (value) {
       currentParams.set(name, value);
     } else {
-      currentParams.delete(name); // Delete filter if user choose "Tất cả"
+      currentParams.delete(name);
     }
 
-    // Update the URL
     router.push(`${pathname}?${currentParams.toString()}`);
   };
 

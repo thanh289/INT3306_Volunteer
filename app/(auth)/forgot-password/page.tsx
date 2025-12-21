@@ -19,11 +19,9 @@ export default function ForgotPasswordPage() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // Client-side validation
     const error = validateEmail(email);
     if (error) {
       setEmailError(error);
-      // toast.error(error);
       return;
     }
 
@@ -35,13 +33,11 @@ export default function ForgotPasswordPage() {
       setIsSubmitted(true);
     } catch (error) {
       console.error("Forgot password error:", error);
-      // setIsSubmitted(true);
     } finally {
       setIsLoading(false);
     }
   };
 
-  // After submit
   if (isSubmitted) {
     return (
       <AuthContainer title="Kiểm tra email của bạn" subtitle="">

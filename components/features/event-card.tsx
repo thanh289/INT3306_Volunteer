@@ -137,13 +137,12 @@ export const EventCard = ({
     ? "/" + event.creator.imageUrl.replace(/\\/g, "/").replace(/^\/+/, "")
     : null;
 
-  // Validate if imageUrl actually points to a file
   const hasValidImage = event.imageUrl && event.imageUrl.trim() !== "";
 
-  // Format image URL
-  const eventImageUrl = hasValidImage && event.imageUrl
-    ? "/" + event.imageUrl.replace(/\\/g, "/").replace(/^\/+/, "")
-    : null;
+  const eventImageUrl =
+    hasValidImage && event.imageUrl
+      ? "/" + event.imageUrl.replace(/\\/g, "/").replace(/^\/+/, "")
+      : null;
 
   return (
     <Link href={`/events/${event.id}`} className="group">

@@ -86,7 +86,6 @@ export const EventWall = ({
     return content.includes(query) || authorName.includes(query);
   });
 
-  // Fetch posts with sort option - extracted as a standalone function
   const fetchPosts = useCallback(async () => {
     setIsLoading(true);
     try {
@@ -143,8 +142,8 @@ export const EventWall = ({
   };
 
   const handleSubmitPost = async (e: React.FormEvent) => {
-    e.preventDefault(); // prevent form from reload
-    if (!newPostContent.trim() && !postImage) return; // exit if no content and no image
+    e.preventDefault();
+    if (!newPostContent.trim() && !postImage) return; 
 
     setIsSubmitting(true);
     try {
@@ -161,13 +160,12 @@ export const EventWall = ({
       });
 
       // Reset form and filters
-      setNewPostContent(""); // delete content in the form
+      setNewPostContent("");
       setPostImage(null);
       setPostImagePreview(null);
-      setSearchQuery(""); // reset search
-      setSortBy("recent"); // reset sort to default
+      setSearchQuery("");
+      setSortBy("recent");
 
-      // Reload posts to get fresh data with correct order
       await fetchPosts();
 
       toast.success("Đăng bài thành công!");
@@ -213,7 +211,6 @@ export const EventWall = ({
         isPinned: !isPinned,
       });
 
-      // Refresh posts to get updated order
       fetchPosts();
 
       toast.success(
@@ -262,10 +259,8 @@ export const EventWall = ({
   const isEventManager = eventManagerIds.includes(session?.user?.id || "");
   const isPrivileged = isAdmin || isCreator || isEventManager;
 
-  // Condition: login & not being locked & event published (must be published for everyone, including admin)
   const canPost = isAuthenticated && isUserActive && isEventPublished;
 
-  // Condition: can view posts (privileged users can view even if not published)
   const canViewPosts =
     isAuthenticated && isUserActive && (isEventPublished || isPrivileged);
 
@@ -748,7 +743,7 @@ export const EventWall = ({
                     {/* Review buttons for pending posts */}
                     {post.postStatus === "PENDING" &&
                       !post.isDeleted &&
-                      post.authorId !== session?.user?.id && // Don't show review buttons for own posts
+                      post.authorId !== session?.user?.id &&
                       (session?.user?.role === "ADMIN" ||
                         session?.user?.id === creatorId ||
                         eventManagerIds.includes(session?.user?.id || "")) && (

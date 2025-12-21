@@ -10,7 +10,6 @@ import { strictRateLimiter, withRateLimit } from "@/lib/rate-limit";
 
 export async function POST(request: Request) {
   try {
-    // ADDED: Rate limiting for forgot password
     const rateLimitError = await withRateLimit(request, strictRateLimiter);
     if (rateLimitError) {
       return rateLimitError;
@@ -25,31 +24,23 @@ export async function POST(request: Request) {
 
     const { email } = result.data;
 
-    // Find the user by their email
     const user = await prisma.user.findUnique({
       where: { email },
     });
 
-    // For security, we don't reveal if the user was found or not.
-    // we'll send a success response either way.
     if (!user) {
       return NextResponse.json({
         message: "Nếu email tồn tại, link reset sẽ được gửi đến.",
       });
     }
 
-    // generate a secure, random token
     const resetToken = randomBytes(32).toString("hex");
 
-    // hash the token for more security before storing in DB
     const tokenHash = createHash("sha256").update(resetToken).digest("hex");
 
-    // Set an expiration date for the token (like 1 hour from now)
     const expires = new Date();
     expires.setHours(expires.getHours() + 1);
 
-    // Store the HASHED token in the database
-    // Use upsert to create a new token or update an existing one for this user
     await prisma.passwordResetToken.upsert({
       where: { userId: user.id },
       update: {
@@ -63,7 +54,6 @@ export async function POST(request: Request) {
       },
     });
 
-    // send the password reset email (with RAW token)
     const resetUrl = `${process.env.NEXTAUTH_URL}/reset-password?token=${resetToken}`;
 
     const fs = await import("fs");

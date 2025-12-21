@@ -30,7 +30,6 @@ export async function GET(request: Request) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    // Check cache first (10 minute TTL for profile data)
     const cacheKey = `profile:${session.user.id}`;
     const cachedProfile = dataCache.get<any>(cacheKey);
 
@@ -38,7 +37,6 @@ export async function GET(request: Request) {
       return NextResponse.json(cachedProfile);
     }
 
-    // Fetch from database
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
       select: {
@@ -61,7 +59,6 @@ export async function GET(request: Request) {
       return new NextResponse("User not found", { status: 404 });
     }
 
-    // Cache for 10 minutes (600000ms)
     dataCache.set(cacheKey, user, 600000);
 
     return NextResponse.json(user);
@@ -81,7 +78,6 @@ export async function PUT(request: Request) {
     const body = await request.json();
     const validatedData = profileUpdateSchema.parse(body);
 
-    // Chỉ update những trường có giá trị thực sự (không rỗng)
     const dataToUpdate: Record<string, unknown> = {};
     if (validatedData.name && validatedData.name.trim() !== "") {
       dataToUpdate.name = validatedData.name;
@@ -104,10 +100,8 @@ export async function PUT(request: Request) {
       data: dataToUpdate,
     });
 
-    // Invalidate profile cache after update
     dataCache.delete(`profile:${session.user.id}`);
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { passwordHash, ...userWithoutPassword } = updatedUser;
 
     return NextResponse.json(userWithoutPassword);

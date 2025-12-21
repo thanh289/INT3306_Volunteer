@@ -11,20 +11,16 @@ export async function GET(
     { params }: { params: Promise<{ path: string[] }> }
 ) {
     try {
-        // Get the file path from params
         const { path: pathSegments } = await params;
         const filePath = pathSegments.join('/');
         const fullPath = path.join(process.cwd(), 'images', filePath);
 
-        // Check if file exists
         if (!existsSync(fullPath)) {
             return new NextResponse('File not found', { status: 404 });
         }
 
-        // Read the file
         const fileBuffer = await readFile(fullPath);
 
-        // Determine content type based on file extension
         const ext = path.extname(fullPath).toLowerCase();
         const contentTypeMap: { [key: string]: string } = {
             '.jpg': 'image/jpeg',
@@ -37,7 +33,6 @@ export async function GET(
 
         const contentType = contentTypeMap[ext] || 'application/octet-stream';
 
-        // Return the file with appropriate headers
         return new NextResponse(new Uint8Array(fileBuffer), {
             status: 200,
             headers: {

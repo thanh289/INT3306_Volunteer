@@ -30,7 +30,6 @@ export const AdminUserActions = ({
 
   const isCurrentUser = session?.user?.id === user.id;
 
-  // Helper functions defined first
   const getRoleLabel = (role: Role): string => {
     const labels = {
       VOLUNTEER: "Tình nguyện viên",
@@ -52,12 +51,12 @@ export const AdminUserActions = ({
         });
         toast.success(`Đã đổi vai trò thành ${getRoleLabel(newRole)}.`);
         if (onUpdate) {
-          onUpdate(); // Revalidate SWR cache
+          onUpdate();
         }
         router.refresh();
       } catch (error) {
         toast.error(`Thao tác thất bại: ${error}`);
-        setSelectedRole(user.role); // Reset on error
+        setSelectedRole(user.role);
       }
     });
   };
@@ -79,7 +78,7 @@ export const AdminUserActions = ({
           });
           toast.success(`Đã ${actionText} tài khoản.`);
           if (onUpdate) {
-            onUpdate(); // Revalidate SWR cache
+            onUpdate();
           }
           router.refresh();
         } catch (error) {

@@ -21,7 +21,6 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const all = searchParams.get("all");
 
-    // Build where clause
     const whereClause: any = {
       userId: session.user.id,
       event: {
@@ -29,7 +28,6 @@ export async function GET(request: Request) {
       },
     };
 
-    // If 'all' parameter is set, return all interested events without pagination
     if (all === "true") {
       const interestedEvents = await prisma.interestedEvent.findMany({
         where: whereClause,
@@ -57,24 +55,20 @@ export async function GET(request: Request) {
       return NextResponse.json({ interestedEvents });
     }
 
-    // Otherwise, use pagination with filters
     const page = parseInt(searchParams.get("page") || "1");
     const filter = searchParams.get("filter") || "all"; // all, upcoming, past
 
-    // Apply time filter
     if (filter === "upcoming") {
       whereClause.event.endDateTime = { gte: new Date() };
     } else if (filter === "past") {
       whereClause.event.endDateTime = { lt: new Date() };
     }
 
-    // Get total count
     const totalInterestedEvents = await prisma.interestedEvent.count({
       where: whereClause,
     });
     const totalPages = Math.ceil(totalInterestedEvents / ITEMS_PER_PAGE);
 
-    // Get paginated interested events
     const interestedEvents = await prisma.interestedEvent.findMany({
       where: whereClause,
       include: {
@@ -130,7 +124,6 @@ export async function POST(request: Request) {
       return new NextResponse("Event ID is required", { status: 400 });
     }
 
-    // Check if event exists
     const event = await prisma.event.findUnique({
       where: { id: eventId },
     });
@@ -139,7 +132,6 @@ export async function POST(request: Request) {
       return new NextResponse("Event not found", { status: 404 });
     }
 
-    // Check if already interested
     const existing = await prisma.interestedEvent.findUnique({
       where: {
         userId_eventId: {
@@ -155,7 +147,6 @@ export async function POST(request: Request) {
       });
     }
 
-    // Add to interested events
     const interestedEvent = await prisma.interestedEvent.create({
       data: {
         userId: session.user.id,
@@ -166,7 +157,6 @@ export async function POST(request: Request) {
       },
     });
 
-    // Invalidate cache
     apiCache.delete(`interested:${session.user.id}:${eventId}`);
 
     return NextResponse.json(interestedEvent);
@@ -192,7 +182,6 @@ export async function DELETE(request: Request) {
       return new NextResponse("Event ID is required", { status: 400 });
     }
 
-    // Check if interested event exists
     const interestedEvent = await prisma.interestedEvent.findUnique({
       where: {
         userId_eventId: {
@@ -208,14 +197,12 @@ export async function DELETE(request: Request) {
       });
     }
 
-    // Delete from interested events
     await prisma.interestedEvent.delete({
       where: {
         id: interestedEvent.id,
       },
     });
 
-    // Invalidate cache
     apiCache.delete(`interested:${session.user.id}:${eventId}`);
 
     return NextResponse.json({ message: "Removed from interested events" });

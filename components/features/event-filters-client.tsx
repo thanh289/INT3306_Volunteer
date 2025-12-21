@@ -41,11 +41,9 @@ export const EventFiltersClient = ({
 
     const interval = setInterval(() => {
       setCarouselIndex((prev) => {
-        // Maximum index where we can still show 3 items
         const maxIndex = upcomingEvents.length - 3;
         const nextIndex = prev + 1;
 
-        // Only wrap to beginning when we've passed the last valid position
         return nextIndex > maxIndex ? 0 : nextIndex;
       });
     }, 3000);
@@ -53,7 +51,6 @@ export const EventFiltersClient = ({
     return () => clearInterval(interval);
   }, [upcomingEvents.length]);
 
-  // Client-side filtering and sorting
   const filteredAndSortedEvents = useMemo(() => {
     let filtered = events;
 
@@ -180,10 +177,11 @@ export const EventFiltersClient = ({
                   <button
                     key={idx}
                     onClick={() => setCarouselIndex(idx)}
-                    className={`w-2 h-2 rounded-full transition-all ${idx === carouselIndex
-                      ? "bg-primary w-8"
-                      : "bg-base-300 hover:bg-base-400"
-                      }`}
+                    className={`w-2 h-2 rounded-full transition-all ${
+                      idx === carouselIndex
+                        ? "bg-primary w-8"
+                        : "bg-base-300 hover:bg-base-400"
+                    }`}
                   />
                 ))}
               </div>
@@ -208,21 +206,35 @@ export const EventFiltersClient = ({
                           >
                             <div className="card bg-base-100 border border-base-300 hover:border-primary hover:shadow-xl transition-all h-full rounded-2xl overflow-hidden">
                               <figure className="relative h-48 overflow-hidden bg-base-200">
-                                {event.imageUrl && event.imageUrl.trim() !== "" ? (
+                                {event.imageUrl &&
+                                event.imageUrl.trim() !== "" ? (
                                   <img
-                                    src={"/" + event.imageUrl.replace(/\\/g, "/").replace(/^\/+/, "")}
+                                    src={
+                                      "/" +
+                                      event.imageUrl
+                                        .replace(/\\/g, "/")
+                                        .replace(/^\/+/, "")
+                                    }
                                     alt={event.title}
                                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                                     onError={(e) => {
                                       e.currentTarget.style.display = "none";
-                                      const placeholder = e.currentTarget.nextElementSibling as HTMLElement;
-                                      if (placeholder) placeholder.style.display = "flex";
+                                      const placeholder = e.currentTarget
+                                        .nextElementSibling as HTMLElement;
+                                      if (placeholder)
+                                        placeholder.style.display = "flex";
                                     }}
                                   />
                                 ) : null}
                                 <div
                                   className="w-full h-full flex items-center justify-center"
-                                  style={{ display: (event.imageUrl && event.imageUrl.trim() !== "") ? "none" : "flex" }}
+                                  style={{
+                                    display:
+                                      event.imageUrl &&
+                                      event.imageUrl.trim() !== ""
+                                        ? "none"
+                                        : "flex",
+                                  }}
                                 >
                                   <img
                                     src="/images/placeholder.gif"
@@ -509,10 +521,11 @@ export const EventFiltersClient = ({
                 <li>
                   <button
                     onClick={() => setSortBy("startDateTime")}
-                    className={`justify-start flex items-center gap-2 ${sortBy === "startDateTime"
-                      ? "active bg-primary text-primary-content"
-                      : ""
-                      }`}
+                    className={`justify-start flex items-center gap-2 ${
+                      sortBy === "startDateTime"
+                        ? "active bg-primary text-primary-content"
+                        : ""
+                    }`}
                   >
                     <Image
                       src="/images/calendar.png"
@@ -527,10 +540,11 @@ export const EventFiltersClient = ({
                 <li>
                   <button
                     onClick={() => setSortBy("title")}
-                    className={`justify-start flex items-center gap-2 ${sortBy === "title"
-                      ? "active bg-primary text-primary-content"
-                      : ""
-                      }`}
+                    className={`justify-start flex items-center gap-2 ${
+                      sortBy === "title"
+                        ? "active bg-primary text-primary-content"
+                        : ""
+                    }`}
                   >
                     <Image
                       src="/images/abc.png"
@@ -596,10 +610,11 @@ export const EventFiltersClient = ({
               <button
                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                 disabled={currentPage <= 1}
-                className={`flex items-center justify-center w-10 h-10 rounded-full transition-all duration-200 ${currentPage <= 1
-                  ? "bg-base-200 text-base-content/40 cursor-not-allowed"
-                  : "bg-base-200 hover:bg-base-300 text-base-content"
-                  }`}
+                className={`flex items-center justify-center w-10 h-10 rounded-full transition-all duration-200 ${
+                  currentPage <= 1
+                    ? "bg-base-200 text-base-content/40 cursor-not-allowed"
+                    : "bg-base-200 hover:bg-base-300 text-base-content"
+                }`}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -620,10 +635,11 @@ export const EventFiltersClient = ({
               {/* Always show first page */}
               <button
                 onClick={() => setCurrentPage(1)}
-                className={`flex items-center justify-center w-10 h-10 rounded-full text-sm font-medium transition-all duration-200 ${currentPage === 1
-                  ? "bg-primary text-primary-content border-2 border-primary"
-                  : "bg-base-200 hover:bg-base-300 text-base-content border-2 border-transparent"
-                  }`}
+                className={`flex items-center justify-center w-10 h-10 rounded-full text-sm font-medium transition-all duration-200 ${
+                  currentPage === 1
+                    ? "bg-primary text-primary-content border-2 border-primary"
+                    : "bg-base-200 hover:bg-base-300 text-base-content border-2 border-transparent"
+                }`}
               >
                 1
               </button>
@@ -638,18 +654,14 @@ export const EventFiltersClient = ({
               {/* Dynamic middle pages */}
               {Array.from({ length: totalPages }, (_, i) => i + 1)
                 .filter((page) => {
-                  // Show pages around current page
                   if (page === 1 || page === totalPages) return false;
                   if (currentPage <= 3) {
-                    // At the start, show pages 2, 3, 4
                     return page >= 2 && page <= Math.min(4, totalPages - 1);
                   } else if (currentPage >= totalPages - 2) {
-                    // At the end, show last 3 pages before totalPages
                     return (
                       page >= Math.max(2, totalPages - 3) && page < totalPages
                     );
                   } else {
-                    // In the middle, show current page and adjacent pages
                     return Math.abs(page - currentPage) <= 1;
                   }
                 })
@@ -657,10 +669,11 @@ export const EventFiltersClient = ({
                   <button
                     key={page}
                     onClick={() => setCurrentPage(page)}
-                    className={`flex items-center justify-center w-10 h-10 rounded-full text-sm font-medium transition-all duration-200 ${currentPage === page
-                      ? "bg-primary text-primary-content border-2 border-primary"
-                      : "bg-base-200 hover:bg-base-300 text-base-content border-2 border-transparent"
-                      }`}
+                    className={`flex items-center justify-center w-10 h-10 rounded-full text-sm font-medium transition-all duration-200 ${
+                      currentPage === page
+                        ? "bg-primary text-primary-content border-2 border-primary"
+                        : "bg-base-200 hover:bg-base-300 text-base-content border-2 border-transparent"
+                    }`}
                   >
                     {page}
                   </button>
@@ -677,10 +690,11 @@ export const EventFiltersClient = ({
               {totalPages > 1 && (
                 <button
                   onClick={() => setCurrentPage(totalPages)}
-                  className={`flex items-center justify-center w-10 h-10 rounded-full text-sm font-medium transition-all duration-200 ${currentPage === totalPages
-                    ? "bg-primary text-primary-content border-2 border-primary"
-                    : "bg-base-200 hover:bg-base-300 text-base-content border-2 border-transparent"
-                    }`}
+                  className={`flex items-center justify-center w-10 h-10 rounded-full text-sm font-medium transition-all duration-200 ${
+                    currentPage === totalPages
+                      ? "bg-primary text-primary-content border-2 border-primary"
+                      : "bg-base-200 hover:bg-base-300 text-base-content border-2 border-transparent"
+                  }`}
                 >
                   {totalPages}
                 </button>
@@ -692,10 +706,11 @@ export const EventFiltersClient = ({
                   setCurrentPage((p) => Math.min(totalPages, p + 1))
                 }
                 disabled={currentPage >= totalPages}
-                className={`flex items-center justify-center w-10 h-10 rounded-full transition-all duration-200 ${currentPage >= totalPages
-                  ? "bg-base-200 text-base-content/40 cursor-not-allowed"
-                  : "bg-base-200 hover:bg-base-300 text-base-content"
-                  }`}
+                className={`flex items-center justify-center w-10 h-10 rounded-full transition-all duration-200 ${
+                  currentPage >= totalPages
+                    ? "bg-base-200 text-base-content/40 cursor-not-allowed"
+                    : "bg-base-200 hover:bg-base-300 text-base-content"
+                }`}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

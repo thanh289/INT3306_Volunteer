@@ -23,7 +23,6 @@ export async function GET(request: Request) {
     const display = searchParams.get("display") || "";
     const itemsPerPage = 20;
 
-    // Build where clause
     const whereClause: Prisma.EventWhereInput = {};
 
     if (search) {
@@ -43,23 +42,18 @@ export async function GET(request: Request) {
 
     if (display && display !== "ALL") {
       if (display === "ACTIVE") {
-        // Đang hoạt động: không bị hủy và không bị xóa
         whereClause.isCancelled = false;
         whereClause.isDeleted = false;
       } else if (display === "CANCELLED") {
-        // Đã hủy tạm thời: isCancelled = true, nhưng chưa xóa
         whereClause.isCancelled = true;
         whereClause.isDeleted = false;
       } else if (display === "DELETED") {
-        // Đã xóa hẳn: isDeleted = true
         whereClause.isDeleted = true;
       }
     }
 
-    // Get total count for pagination
     const totalEvents = await prisma.event.count({ where: whereClause });
 
-    // Get events with pagination
     const events = await prisma.event.findMany({
       where: whereClause,
       include: {

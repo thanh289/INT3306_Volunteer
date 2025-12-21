@@ -9,7 +9,6 @@ import { CreateEventForm } from "@/components/features/create-event-form";
 export default async function CreateEventPage() {
   const session = await getServerSession(authOptions);
 
-  // this route will be protected
   if (
     !session ||
     (session.user.role !== "ADMIN" && session.user.role !== "EVENT_MANAGER")

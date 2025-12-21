@@ -24,7 +24,6 @@ export default async function ManageEventPage({
   const session = await getServerSession(authOptions);
   const { eventId } = await params;
 
-  // Check session first
   if (!session?.user?.id) {
     redirect("/login");
   }
@@ -42,7 +41,6 @@ export default async function ManageEventPage({
     notFound();
   }
 
-  // Check if user is admin, creator, or assigned event manager
   const isAdmin = session.user.role === "ADMIN";
   const isCreator = event.creatorId === session.user.id;
   const isEventManager = event.eventManagers.length > 0;

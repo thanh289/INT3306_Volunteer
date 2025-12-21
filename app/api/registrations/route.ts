@@ -19,7 +19,6 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const all = searchParams.get("all");
 
-    // Build where clause
     const whereClause: any = {
       userId: session.user.id,
       event: {
@@ -52,20 +51,17 @@ export async function GET(request: Request) {
     const page = parseInt(searchParams.get("page") || "1");
     const filter = searchParams.get("filter") || "all"; // all, upcoming, past
 
-    // Apply time filter
     if (filter === "upcoming") {
       whereClause.event.endDateTime = { gte: new Date() };
     } else if (filter === "past") {
       whereClause.event.endDateTime = { lt: new Date() };
     }
 
-    // Get total count
     const totalRegistrations = await prisma.registration.count({
       where: whereClause,
     });
     const totalPages = Math.ceil(totalRegistrations / ITEMS_PER_PAGE);
 
-    // Get paginated registrations
     const registrations = await prisma.registration.findMany({
       where: whereClause,
       include: {

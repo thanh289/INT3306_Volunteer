@@ -33,7 +33,6 @@ export const RegistrationModal = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validate required questions
     const missingRequired = questions
       .filter((q) => q.isRequired && !answers[q.id]?.trim())
       .map((q) => q.question);

@@ -50,19 +50,16 @@ export const EventInviteModal = ({
 
   useEffect(() => {
     if (!isOpen) {
-      // Reset state when modal closes
       setUsers([]);
       setSearchQuery("");
       return;
     }
 
-    // Debounce search
     const timeoutId = setTimeout(() => {
       fetchUsers();
     }, 300);
 
     return () => clearTimeout(timeoutId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, searchQuery, eventId]);
 
   const handleInvite = async (userId: string) => {

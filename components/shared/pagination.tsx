@@ -15,32 +15,27 @@ type PaginationProps = {
 export const Pagination = ({ currentPage, totalPages, baseUrl }: PaginationProps) => {
     const searchParams = useSearchParams();
 
-    // Helper to build URL with current filters
     const buildUrl = (page: number) => {
         const params = new URLSearchParams(searchParams.toString());
         params.set('page', page.toString());
         return `${baseUrl}?${params.toString()}`;
     };
 
-    // Generate page numbers to show
     const getPageNumbers = () => {
         const pages: (number | string)[] = [];
-        const maxVisible = 5; // Max page buttons to show
+        const maxVisible = 5; 
 
         if (totalPages <= maxVisible) {
-            // Show all pages if total is small
             for (let i = 1; i <= totalPages; i++) {
                 pages.push(i);
             }
         } else {
-            // Always show first page
             pages.push(1);
 
             if (currentPage > 3) {
                 pages.push('...');
             }
 
-            // Show pages around current page
             const start = Math.max(2, currentPage - 1);
             const end = Math.min(totalPages - 1, currentPage + 1);
 
@@ -52,7 +47,6 @@ export const Pagination = ({ currentPage, totalPages, baseUrl }: PaginationProps
                 pages.push('...');
             }
 
-            // Always show last page
             pages.push(totalPages);
         }
 

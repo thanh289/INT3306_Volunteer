@@ -25,12 +25,11 @@ export const NotificationBell = () => {
   const router = useRouter();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Use swr for auto fetch và data cache
   const { data: notifications, mutate } = useSWR<Notification[]>(
     "/api/notifications",
     fetcher,
     {
-      refreshInterval: 60000, // auto fetch after each 60s
+      refreshInterval: 60000,
     }
   );
 
@@ -58,12 +57,11 @@ export const NotificationBell = () => {
 
   const handleToggle = async () => {
     setIsOpen(!isOpen);
-    // If the action is open, we want to mark all unread notification to read immediately
+    // If the action is open, mark all unread notification to read immediately
     if (!isOpen && unreadCount > 0) {
       await axios.patch("/api/notifications");
-      // tell SWR update local data immidiately (optimistic update)
+      // tell SWR update local data immediately
       // false: tell SWR not to fetch now, just update local cache
-      // we do this since is just an action of read or undread, not really important
       mutate(
         notifications?.map((n) => ({ ...n, isRead: true })),
         false

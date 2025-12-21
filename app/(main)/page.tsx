@@ -16,13 +16,13 @@ export default async function HomePage() {
     where: {
       startDateTime: { gte: new Date() },
       status: "PUBLISHED",
-      isDeleted: false, // Only show non-deleted events
+      isDeleted: false,
     },
     include: { creator: true },
     orderBy: { startDateTime: "asc" },
   });
 
-  // Fetch user's interested events to avoid multiple API calls
+  // Fetch user's interested events
   const session = await getServerSession(authOptions);
   let interestedEventIds: string[] = [];
 

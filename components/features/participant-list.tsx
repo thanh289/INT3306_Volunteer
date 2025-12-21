@@ -19,11 +19,9 @@ export const ParticipantList = ({ eventId }: { eventId: string }) => {
     data: registrations,
     isLoading,
     error,
-  } = useSWR<Participant[]>(
-    `/api/events/${eventId}/registrations`,
-    fetcher,
-    { refreshInterval: 5000 } // Auto fetch after 5s
-  );
+  } = useSWR<Participant[]>(`/api/events/${eventId}/registrations`, fetcher, {
+    refreshInterval: 5000,
+  });
 
   if (isLoading) return <p>Đang tải danh sách...</p>;
   if (error) return <p>Không thể tải danh sách người tham gia.</p>;
@@ -126,7 +124,7 @@ export const ParticipantList = ({ eventId }: { eventId: string }) => {
   );
 };
 
-// Create a small component to display the status icon
+// Status component
 const StatusBadge = ({ status }: { status: RegistrationStatus }) => {
   const statusConfig = {
     PENDING: { text: "Chờ duyệt", style: "bg-yellow-100 text-yellow-800" },

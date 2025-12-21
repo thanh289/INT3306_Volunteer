@@ -114,7 +114,6 @@ export const CreateEventForm = () => {
       if (imageFile) {
         submitData.append("image", imageFile);
       }
-      // Add registration questions as JSON (only if form is enabled)
       if (formData.requiresRegistrationForm) {
         submitData.append(
           "registrationQuestions",
@@ -136,7 +135,6 @@ export const CreateEventForm = () => {
       if (isAxiosError(error) && error.response?.data) {
         const errorData = error.response.data;
 
-        // Show detailed validation errors if available
         if (errorData.details && Array.isArray(errorData.details)) {
           errorData.details.forEach(
             (detail: { field: string; message: string }) => {
@@ -149,7 +147,6 @@ export const CreateEventForm = () => {
           toast.error("Tạo sự kiện thất bại. Vui lòng kiểm tra lại thông tin.");
         }
 
-        // Keep console for debugging
         console.error("Validation errors:", errorData);
       } else {
         toast.error("Đã có lỗi không mong muốn xảy ra.");
@@ -541,7 +538,6 @@ export const CreateEventForm = () => {
                 ...prev,
                 requiresRegistrationForm: checked,
               }));
-              // Clear questions if unchecking
               if (!checked) {
                 setRegistrationQuestions([]);
               }

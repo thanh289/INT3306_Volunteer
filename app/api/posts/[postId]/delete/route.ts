@@ -22,7 +22,6 @@ export async function DELETE(request: Request, context: RouteContext) {
 
     const { postId } = await context.params;
 
-    // Get the post with event info and check if user is event manager
     const post = await prisma.post.findUnique({
       where: { id: postId },
       include: {
@@ -53,15 +52,12 @@ export async function DELETE(request: Request, context: RouteContext) {
       );
     }
 
-    // Use transaction to ensure atomicity - delete likes/comments first, then delete post
     await prisma.$transaction(async (tx) => {
-      // Delete all likes for this post FIRST
       const deletedLikes = await tx.postLike.deleteMany({
         where: { postId },
       });
       console.log(`Deleted ${deletedLikes.count} likes for post ${postId}`);
 
-      // Delete all comments for this post
       const deletedComments = await tx.postComment.deleteMany({
         where: { postId },
       });
@@ -69,14 +65,12 @@ export async function DELETE(request: Request, context: RouteContext) {
         `Deleted ${deletedComments.count} comments for post ${postId}`
       );
 
-      // Hard delete the post - remove from database completely
       await tx.post.delete({
         where: { id: postId },
       });
       console.log(`Post ${postId} permanently deleted from database`);
     });
 
-    // Invalidate cache AFTER transaction completes successfully
     dataCache.invalidatePattern("dashboard:posts:");
     console.log("Cache invalidated after post deletion:", postId);
 

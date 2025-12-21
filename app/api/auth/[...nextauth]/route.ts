@@ -14,14 +14,12 @@ import { authRateLimiter } from "@/lib/rate-limit";
 export const authOptions: AuthOptions = {
   adapter: PrismaAdapter(prisma) as any,
   providers: [
-    // Google OAuth Provider
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID || "",
       clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
       allowDangerousEmailAccountLinking: true, // Allows linking if email exists
     }),
 
-    // Traditional Credentials Provider
     CredentialsProvider({
       name: "credentials",
       credentials: {
@@ -30,9 +28,7 @@ export const authOptions: AuthOptions = {
       },
 
       async authorize(credentials, req) {
-        // Rate limiting for login attempts
         if (req?.headers) {
-          // req.headers is a Headers object, so we need to extract the IP differently
           const forwardedFor = req.headers["x-forwarded-for"];
           const realIp = req.headers["x-real-ip"];
           const identifier =
@@ -48,12 +44,10 @@ export const authOptions: AuthOptions = {
           }
         }
 
-        // Check whether type email and pw
         if (!credentials?.email || !credentials?.password) {
           throw new Error("Vui lòng nhập email và mật khẩu");
         }
 
-        // find user in db
         const user = await prisma.user.findUnique({
           where: {
             email: credentials.email,
@@ -64,12 +58,10 @@ export const authOptions: AuthOptions = {
           throw new Error("Người dùng không tồn tại");
         }
 
-        // check status
         if (user.status === "LOCKED") {
           throw new Error("Tài khoản này đã bị khóa.");
         }
 
-        // check pw
         const isPasswordCorrect = await bcrypt.compare(
           credentials.password,
           user.passwordHash
@@ -79,7 +71,6 @@ export const authOptions: AuthOptions = {
           throw new Error("Mật khẩu không chính xác");
         }
 
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { passwordHash, ...userWithoutPassword } = user;
         return userWithoutPassword;
       },
@@ -88,30 +79,23 @@ export const authOptions: AuthOptions = {
 
   // view types/next-auth.d.ts
   // This callback is called whenever a JWT is created (i.e., at sign-in).
-  // We are adding the user ID from the database to the token here.
   callbacks: {
-    // Handle account linking and user creation for OAuth
     async signIn({ user, account, profile }) {
-      // Allow credentials provider to work as before
       if (account?.provider === "credentials") {
         return true;
       }
 
-      // For OAuth providers (Google, Email)
       if (account?.provider === "google" || account?.provider === "email") {
         try {
-          // Check if user exists
           const existingUser = await prisma.user.findUnique({
             where: { email: user.email! },
           });
 
-          // If user exists, check status
           if (existingUser) {
             if (existingUser.status === "LOCKED") {
-              return false; // Don't allow locked users to sign in
+              return false; 
             }
 
-            // Update user info from OAuth if needed
             if (account.provider === "google" && profile) {
               await prisma.user.update({
                 where: { id: existingUser.id },
@@ -121,12 +105,11 @@ export const authOptions: AuthOptions = {
               });
             }
           } else {
-            // Create new user for OAuth sign-in
             const newUser = await prisma.user.create({
               data: {
                 email: user.email!,
                 name: user.name,
-                passwordHash: undefined, // No password for OAuth users
+                passwordHash: undefined,
                 role: "VOLUNTEER",
                 status: "ACTIVE",
               },
@@ -144,9 +127,7 @@ export const authOptions: AuthOptions = {
       return true;
     },
 
-    // called when a JWT is created
     async jwt({ token, user, trigger, account }) {
-      // First sign in with OAuth
       if (account && user) {
         const dbUser = await prisma.user.findUnique({
           where: { email: user.email! },
@@ -161,16 +142,14 @@ export const authOptions: AuthOptions = {
         }
       }
 
-      // Regular update for credentials
       if (user && !account) {
-        token.id = user.id; // add user's ID into token
+        token.id = user.id;
         token.role = user.role;
         token.status = user.status;
         token.imageUrl = user.imageUrl;
         token.name = user.name;
       }
 
-      // use const {update} = useSession() -> await update() for for jwt trigger
       if (trigger === "update") {
         const freshUser = await prisma.user.findUnique({
           where: { id: token.id as string },
@@ -185,13 +164,11 @@ export const authOptions: AuthOptions = {
       }
       return token;
     },
-    // called when a token is accessed
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.id as string;
         session.user.role = token.role as string;
 
-        // take status from db each time session is called
         const userFromDb = await prisma.user.findUnique({
           where: { id: token.id as string },
           select: { status: true, imageUrl: true, name: true },
@@ -205,9 +182,9 @@ export const authOptions: AuthOptions = {
   },
 
   session: {
-    strategy: "jwt", // use jwt to mange session
+    strategy: "jwt",
   },
-  secret: process.env.NEXTAUTH_SECRET, // JWT secret key
+  secret: process.env.NEXTAUTH_SECRET,
   debug: process.env.NODE_ENV === "development",
 };
 

@@ -28,7 +28,6 @@ export default async function EventDetailPage({
   const userId = session?.user?.id;
   const userRole = session?.user?.role;
 
-  // Use Promise.all for better performance
   const [event, registration] = await Promise.all([
     prisma.event.findUnique({
       where: { id: eventId },
@@ -41,8 +40,8 @@ export default async function EventDetailPage({
     }),
     userId
       ? prisma.registration.findUnique({
-        where: { userId_eventId: { userId, eventId: eventId } },
-      })
+          where: { userId_eventId: { userId, eventId: eventId } },
+        })
       : null,
   ]);
 
@@ -50,21 +49,17 @@ export default async function EventDetailPage({
     notFound();
   }
 
-  // Get all event manager IDs
   const eventManagerIds = event.eventManagers.map((m) => m.userId);
 
-  // Check if current user is event manager
   const isEventManager = userId ? eventManagerIds.includes(userId) : false;
 
-  // Check if user can access this event
-  const canAccessDeletedEvent = userRole === "ADMIN" || userId === event.creatorId || isEventManager;
+  const canAccessDeletedEvent =
+    userRole === "ADMIN" || userId === event.creatorId || isEventManager;
 
-  // Block access to deleted events for non-privileged users
   if (event.isDeleted && !canAccessDeletedEvent) {
     notFound();
   }
 
-  // volunteer cannot access unpublished detail event
   if (
     event.status !== "PUBLISHED" &&
     userRole !== "ADMIN" &&
@@ -80,7 +75,6 @@ export default async function EventDetailPage({
   const canManage =
     userId === event.creatorId || userRole === "ADMIN" || isEventManager;
 
-  // Helper for formatting date
   const formatDateTime = (date: Date) => {
     return new Date(date).toLocaleString("vi-VN", {
       day: "2-digit",
@@ -141,10 +135,11 @@ export default async function EventDetailPage({
               <div className="flex flex-wrap gap-2">
                 {canManage && event.status !== "PUBLISHED" && (
                   <div
-                    className={`badge ${event.status === "PENDING_APPROVAL"
-                      ? "bg-amber-500 text-white border-amber-600 border-2"
-                      : "bg-rose-600 text-white border-rose-700 border-2"
-                      } gap-2 font-bold shadow-lg`}
+                    className={`badge ${
+                      event.status === "PENDING_APPROVAL"
+                        ? "bg-amber-500 text-white border-amber-600 border-2"
+                        : "bg-rose-600 text-white border-rose-700 border-2"
+                    } gap-2 font-bold shadow-lg`}
                   >
                     {event.status === "PENDING_APPROVAL"
                       ? "Đang chờ duyệt"
@@ -363,31 +358,39 @@ export default async function EventDetailPage({
                 <div className="pt-4 border-t border-base-300">
                   <div className="flex flex-col gap-3">
                     {/* Admin or creator: only management buttons */}
-                    {canManage && (userRole === "ADMIN" || userId === event.creatorId) && (
-                      <EventManagementButtons event={event} />
-                    )}
+                    {canManage &&
+                      (userRole === "ADMIN" || userId === event.creatorId) && (
+                        <EventManagementButtons event={event} />
+                      )}
 
                     {/* Manager (not creator): management (if assigned) + volunteer buttons */}
-                    {userRole === "EVENT_MANAGER" && userId !== event.creatorId && (
-                      <>
-                        {canManage && <EventManagementButtons event={event} />}
-                        {canManage && <div className="divider my-2">Hoặc tham gia như tình nguyện viên</div>}
-                        <RegisterEventButton
-                          eventId={event.id}
-                          isInitiallyRegistered={isRegistered}
-                          registrationStatus={registration?.status}
-                          isEventEnded={isEventEnded}
-                          isEventStarted={isEventStarted}
-                          isCancelled={event.isCancelled}
-                          cancelReason={event.cancelReason}
-                          requiresRegistrationForm={
-                            event.requiresRegistrationForm
-                          }
-                        />
-                        <InviteEventButton eventId={event.id} />
-                        <FavoriteEventButton eventId={event.id} />
-                      </>
-                    )}
+                    {userRole === "EVENT_MANAGER" &&
+                      userId !== event.creatorId && (
+                        <>
+                          {canManage && (
+                            <EventManagementButtons event={event} />
+                          )}
+                          {canManage && (
+                            <div className="divider my-2">
+                              Hoặc tham gia như tình nguyện viên
+                            </div>
+                          )}
+                          <RegisterEventButton
+                            eventId={event.id}
+                            isInitiallyRegistered={isRegistered}
+                            registrationStatus={registration?.status}
+                            isEventEnded={isEventEnded}
+                            isEventStarted={isEventStarted}
+                            isCancelled={event.isCancelled}
+                            cancelReason={event.cancelReason}
+                            requiresRegistrationForm={
+                              event.requiresRegistrationForm
+                            }
+                          />
+                          <InviteEventButton eventId={event.id} />
+                          <FavoriteEventButton eventId={event.id} />
+                        </>
+                      )}
 
                     {/* Volunteer: only volunteer buttons */}
                     {userRole === "VOLUNTEER" && (

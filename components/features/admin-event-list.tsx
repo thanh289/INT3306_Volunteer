@@ -24,7 +24,7 @@ export const AdminEventList = () => {
     error,
     mutate,
   } = useSWR<PendingEvent[]>("/api/admin/pending-events", fetcher, {
-    refreshInterval: 30000, // ask sv after each 30s
+    refreshInterval: 30000,
   });
 
   if (isLoading) return <EventListSkeleton count={3} />;
@@ -47,8 +47,8 @@ export const AdminEventList = () => {
         <span>Không thể tải danh sách sự kiện. Vui lòng thử lại.</span>
       </div>
     );
-  // Lọc bỏ các event đã bị xóa mềm (isDeleted = true)
-  const filteredEvents = pendingEvents?.filter((event) => !event.isDeleted) || [];
+  const filteredEvents =
+    pendingEvents?.filter((event) => !event.isDeleted) || [];
 
   if (filteredEvents.length === 0) {
     return (

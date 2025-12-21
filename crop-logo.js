@@ -4,7 +4,6 @@ const path = require("path");
 
 async function cropLogo() {
   try {
-    // Read the original logo
     const inputPath = path.join(__dirname, "public/images/logo.webp");
     const outputPath = path.join(__dirname, "public/images/logo-cropped.webp");
 
@@ -12,8 +11,8 @@ async function cropLogo() {
     const metadata = await sharp(inputPath).metadata();
     const { width, height } = metadata;
 
-    // Calculate the size of the circular logo (assuming it's roughly square and centered)
-    // Logo appears to be circular, so we crop to a square centered on the circle
+    // Calculate size of logo (assuming roughly square and centered)
+    // crop to a square centered on the circle
     const size = Math.min(width, height) * 0.8; // 80% of the smaller dimension
     const left = (width - size) / 2;
     const top = (height - size) / 2;

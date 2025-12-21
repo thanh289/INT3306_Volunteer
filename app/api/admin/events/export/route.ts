@@ -21,7 +21,6 @@ export async function GET(request: Request) {
     const category = searchParams.get("category") || "";
     const display = searchParams.get("display") || "";
 
-    // Build where clause
     const whereClause: Prisma.EventWhereInput = {};
 
     if (search) {
@@ -41,20 +40,16 @@ export async function GET(request: Request) {
 
     if (display && display !== "ALL") {
       if (display === "ACTIVE") {
-        // Đang hoạt động: không bị hủy và không bị xóa
         whereClause.isCancelled = false;
         whereClause.isDeleted = false;
       } else if (display === "CANCELLED") {
-        // Đã hủy tạm thời: isCancelled = true, nhưng chưa xóa
         whereClause.isCancelled = true;
         whereClause.isDeleted = false;
       } else if (display === "DELETED") {
-        // Đã xóa hẳn: isDeleted = true
         whereClause.isDeleted = true;
       }
     }
 
-    // Get all events matching filters
     const events = await prisma.event.findMany({
       where: whereClause,
       include: {
@@ -68,7 +63,6 @@ export async function GET(request: Request) {
       orderBy: { createdAt: "desc" },
     });
 
-    // Create CSV content
     const headers = [
       "ID",
       "Tên sự kiện",
@@ -106,7 +100,7 @@ export async function GET(request: Request) {
 
         return [
           event.id,
-          `"${event.title.replace(/"/g, '""')}"`, // Escape quotes in CSV
+          `"${event.title.replace(/"/g, '""')}"`,
           `"${event.description.replace(/"/g, '""')}"`,
           `"${event.location.replace(/"/g, '""')}"`,
           `"${event.creator.name || "N/A"}"`,
@@ -129,7 +123,6 @@ export async function GET(request: Request) {
 
     const csvContent = csvRows.join("\n");
 
-    // Create filename with timestamp
     const timestamp = new Date().toISOString().split("T")[0];
     const filename = `events_export_${timestamp}.csv`;
 

@@ -26,7 +26,6 @@ export const EventActions = ({
 }: Props) => {
   const router = useRouter();
 
-  // Check if event is currently ongoing
   const now = new Date();
   const isOngoing =
     now >= new Date(event.startDateTime) && now <= new Date(event.endDateTime);
@@ -34,7 +33,6 @@ export const EventActions = ({
   const handleCancel = async () => {
     const reason = window.prompt("Vui lòng nhập lý do hủy sự kiện (tùy chọn):");
 
-    // User clicked cancel on prompt
     if (reason === null) return;
 
     if (

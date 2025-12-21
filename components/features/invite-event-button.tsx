@@ -18,7 +18,6 @@ export const InviteEventButton = ({ eventId }: InviteEventButtonProps) => {
     try {
       // Check if user can invite by making a test request
       await axios.get(`/api/events/${eventId}/invite?search=`);
-      // If successful, open modal
       setIsInviteModalOpen(true);
     } catch (error) {
       if (axios.isAxiosError(error)) {

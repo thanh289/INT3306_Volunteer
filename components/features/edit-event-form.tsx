@@ -34,7 +34,6 @@ const categoryConfig = {
   },
 };
 
-// date format
 const formatDateForInput = (date: Date) => {
   const d = new Date(date);
   d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
@@ -56,11 +55,9 @@ export const EditEventForm = ({ event }: { event: Event }) => {
     category: event.category,
   });
 
-  // Check if we should show image upload section (from query param)
   useEffect(() => {
     if (searchParams.get("uploadImage") === "true") {
       setShowImageUpload(true);
-      // Remove the query param
       router.replace(`/events/${event.id}/edit`);
     }
   }, [searchParams, event.id, router]);
@@ -77,7 +74,6 @@ export const EditEventForm = ({ event }: { event: Event }) => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // Kiểm tra xem có thay đổi gì không
     const hasChanges =
       formData.title !== event.title ||
       formData.description !== event.description ||
@@ -99,9 +95,13 @@ export const EditEventForm = ({ event }: { event: Event }) => {
       const data = response.data;
 
       if (data.statusChanged) {
-        toast.success(data.message || "Sự kiện đã được cập nhật và chuyển về trạng thái chờ duyệt do có thay đổi quan trọng.", {
-          duration: 5000,
-        });
+        toast.success(
+          data.message ||
+            "Sự kiện đã được cập nhật và chuyển về trạng thái chờ duyệt do có thay đổi quan trọng.",
+          {
+            duration: 5000,
+          }
+        );
       } else {
         toast.success(data.message || "Cập nhật sự kiện thành công!");
       }
@@ -145,8 +145,9 @@ export const EditEventForm = ({ event }: { event: Event }) => {
             <button type="button" className="btn btn-ghost btn-sm btn-circle">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className={`h-5 w-5 transition-transform ${showImageUpload ? "rotate-180" : ""
-                  }`}
+                className={`h-5 w-5 transition-transform ${
+                  showImageUpload ? "rotate-180" : ""
+                }`}
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -253,10 +254,11 @@ export const EditEventForm = ({ event }: { event: Event }) => {
                 {Object.entries(categoryConfig).map(([key, config]) => (
                   <label
                     key={key}
-                    className={`card border-2 cursor-pointer transition-all hover:shadow-md ${formData.category === key
-                      ? "border-primary bg-primary/5 shadow-md"
-                      : "border-base-300 hover:border-primary/50"
-                      }`}
+                    className={`card border-2 cursor-pointer transition-all hover:shadow-md ${
+                      formData.category === key
+                        ? "border-primary bg-primary/5 shadow-md"
+                        : "border-base-300 hover:border-primary/50"
+                    }`}
                   >
                     <div className="card-body p-4 items-center text-center">
                       <input

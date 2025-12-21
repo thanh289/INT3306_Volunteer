@@ -31,7 +31,6 @@ export async function POST(request: Request) {
             );
         }
 
-        // Validate file
         const validation = validateImageFile(file, MAX_FILE_SIZES.AVATAR);
         if (!validation.valid) {
             return NextResponse.json(
@@ -40,13 +39,11 @@ export async function POST(request: Request) {
             );
         }
 
-        // Get current user to check for old avatar
         const currentUser = await prisma.user.findUnique({
             where: { id: session.user.id },
             select: { imageUrl: true },
         });
 
-        // Save and optimize new image
         const result = await saveAndOptimizeImage(
             file,
             UPLOAD_DIRS.AVATARS,
@@ -64,7 +61,6 @@ export async function POST(request: Request) {
             );
         }
 
-        // Update user's imageUrl in database
         const updatedUser = await prisma.user.update({
             where: { id: session.user.id },
             data: { imageUrl: result.filename },
@@ -76,7 +72,6 @@ export async function POST(request: Request) {
             },
         });
 
-        // Delete old avatar file if exists (after successful update)
         if (currentUser?.imageUrl) {
             await deleteImageFile(currentUser.imageUrl);
         }
@@ -105,7 +100,6 @@ export async function DELETE() {
             return new NextResponse('Unauthorized', { status: 401 });
         }
 
-        // Get current avatar
         const currentUser = await prisma.user.findUnique({
             where: { id: session.user.id },
             select: { imageUrl: true },
@@ -118,7 +112,6 @@ export async function DELETE() {
             );
         }
 
-        // Remove from database
         const updatedUser = await prisma.user.update({
             where: { id: session.user.id },
             data: { imageUrl: null },
@@ -130,7 +123,6 @@ export async function DELETE() {
             },
         });
 
-        // Delete file
         await deleteImageFile(currentUser.imageUrl);
 
         return NextResponse.json({

@@ -16,7 +16,6 @@ export async function GET(request: Request, context: RouteContext) {
   try {
     const { postId } = await context.params;
 
-    // Get the post with event info
     const post = await prisma.post.findUnique({
       where: { id: postId },
       select: {
@@ -57,7 +56,6 @@ export async function GET(request: Request, context: RouteContext) {
       orderBy: { createdAt: "asc" },
     });
 
-    // Add event creator and manager info to response
     return NextResponse.json({
       comments,
       eventCreatorId: post.event.creatorId,
@@ -69,7 +67,6 @@ export async function GET(request: Request, context: RouteContext) {
   }
 }
 
-// POST: Create a new comment
 export async function POST(request: Request, context: RouteContext) {
   try {
     const session = await getServerSession(authOptions);
@@ -78,7 +75,6 @@ export async function POST(request: Request, context: RouteContext) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    // Rate limiting for comment creation (authenticated by user ID)
     const rateLimitError = await withRateLimit(
       request,
       apiRateLimiter,
@@ -101,7 +97,6 @@ export async function POST(request: Request, context: RouteContext) {
       });
     }
 
-    // Check if post exists and get event info
     const post = await prisma.post.findUnique({
       where: { id: postId },
       select: {
@@ -114,7 +109,6 @@ export async function POST(request: Request, context: RouteContext) {
       return new NextResponse("Post not found", { status: 404 });
     }
 
-    // Create comment
     const comment = await prisma.postComment.create({
       data: {
         content: content.trim(),

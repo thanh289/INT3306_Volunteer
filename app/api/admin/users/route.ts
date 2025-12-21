@@ -1,6 +1,5 @@
 // API route for Admins to fetch all users
 // app/api/admin/users/route.ts
-// update: add pagination support
 
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
@@ -29,7 +28,6 @@ export async function GET(request: Request) {
         }
       : {};
 
-    // Get total count and paginated users
     const [totalUsers, users] = await Promise.all([
       prisma.user.count({ where }),
       prisma.user.findMany({

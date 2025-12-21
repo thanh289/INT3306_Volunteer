@@ -14,7 +14,6 @@ export async function GET(request: Request) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    // Only EVENT_MANAGER and ADMIN can search users
     if (
       session.user.role !== "EVENT_MANAGER" &&
       session.user.role !== "ADMIN"
@@ -29,7 +28,6 @@ export async function GET(request: Request) {
       return new NextResponse("Email parameter is required", { status: 400 });
     }
 
-    // Find user by exact email match
     const user = await prisma.user.findUnique({
       where: { email: email.toLowerCase() },
       select: {

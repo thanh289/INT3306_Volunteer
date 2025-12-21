@@ -36,14 +36,11 @@ export async function POST(request: Request) {
 
         const { endpoint, keys } = validation.data;
 
-        // check if subscription already exists
         const existingSubscription = await prisma.pushSubscription.findUnique({
             where: { endpoint },
         });
 
         if (existingSubscription) {
-            // same device but can change with other account, so we need to check and
-            // update if belongs to different user
             if (existingSubscription.userId !== session.user.id) {
                 await prisma.pushSubscription.update({
                     where: { endpoint },
@@ -55,7 +52,6 @@ export async function POST(request: Request) {
                 });
             }
         } else {
-            // Create new subscription
             await prisma.pushSubscription.create({
                 data: {
                     userId: session.user.id,
@@ -99,7 +95,6 @@ export async function DELETE(request: Request) {
             );
         }
 
-        // Delete subscription
         await prisma.pushSubscription.deleteMany({
             where: {
                 userId: session.user.id,
@@ -121,7 +116,6 @@ export async function DELETE(request: Request) {
     }
 }
 
-// Get current subscription status
 export async function GET() {
     try {
         const session = await getServerSession(authOptions);

@@ -35,7 +35,6 @@ export const DashboardSidebar = ({
     localStorage.setItem("dashboardSidebarCollapsed", String(isCollapsed));
   }, [isCollapsed]);
 
-  // If route changes while this component is mounted, collapse the sidebar
   useEffect(() => {
     setIsCollapsed(true);
     localStorage.setItem("dashboardSidebarCollapsed", "true");

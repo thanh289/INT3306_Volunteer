@@ -55,7 +55,6 @@ export async function PATCH(request: Request, { params }: RouteParams) {
       return new NextResponse("Bài viết không tồn tại", { status: 404 });
     }
 
-    // Check permissions: must be admin, creator, or event manager
     const isAdmin = session.user.role === "ADMIN";
     const isCreator = session.user.id === post.event.creatorId;
     const isEventManager = post.event.eventManagers.some(
@@ -66,9 +65,7 @@ export async function PATCH(request: Request, { params }: RouteParams) {
       return new NextResponse("Forbidden", { status: 403 });
     }
 
-    // Use transaction to update post and create notification
     const result = await prisma.$transaction(async (tx) => {
-      // Update post status
       const updatedPost = await tx.post.update({
         where: { id: postId },
         data: {
@@ -89,7 +86,6 @@ export async function PATCH(request: Request, { params }: RouteParams) {
         },
       });
 
-      // Create notification for post author (only if not reviewing own post)
       if (post.authorId !== session.user.id) {
         const notificationMessage =
           action === "approve"
