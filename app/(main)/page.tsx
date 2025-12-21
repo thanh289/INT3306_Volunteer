@@ -14,7 +14,7 @@ export default async function HomePage() {
   const cacheKey = "homepage:events";
 
   // Try to get from cache first
-  let events = dataCache.get(cacheKey);
+  let events = dataCache.get(cacheKey) as any;
 
   if (!events) {
     // Fetch all published upcoming events that are not deleted
