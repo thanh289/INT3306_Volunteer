@@ -62,13 +62,13 @@ export async function GET(request: Request, { params }: RouteParams) {
         ...(canSeePending
           ? {} // Admins/managers can see all posts
           : {
-              OR: [
-                { postStatus: "APPROVED" as const }, // Everyone sees approved posts
-                ...(currentUserId
-                  ? [{ authorId: currentUserId }] // Users see their own posts regardless of status
-                  : []),
-              ],
-            }),
+            OR: [
+              { postStatus: "APPROVED" as const }, // Everyone sees approved posts
+              ...(currentUserId
+                ? [{ authorId: currentUserId }] // Users see their own posts regardless of status
+                : []),
+            ],
+          }),
       },
       skip,
       take,
@@ -142,11 +142,11 @@ export async function GET(request: Request, { params }: RouteParams) {
         ...(canSeePending
           ? {}
           : {
-              OR: [
-                { postStatus: "APPROVED" as const },
-                ...(currentUserId ? [{ authorId: currentUserId }] : []),
-              ],
-            }),
+            OR: [
+              { postStatus: "APPROVED" as const },
+              ...(currentUserId ? [{ authorId: currentUserId }] : []),
+            ],
+          }),
       },
     });
 
@@ -261,7 +261,6 @@ export async function POST(request: Request, { params }: RouteParams) {
         // Create uploads directory if it doesn't exist
         const uploadsDir = path.join(
           process.cwd(),
-          "public",
           "uploads",
           "posts"
         );
@@ -273,7 +272,7 @@ export async function POST(request: Request, { params }: RouteParams) {
         const filepath = path.join(uploadsDir, filename);
         await writeFile(filepath, buffer);
 
-        imageUrl = `uploads/posts/${filename}`;
+        imageUrl = `/api/uploads/posts/${filename}`;
       } catch (error) {
         console.error("Error uploading post image:", error);
         console.error("Image file details:", {
@@ -282,8 +281,7 @@ export async function POST(request: Request, { params }: RouteParams) {
           type: imageFile.type,
         });
         return new NextResponse(
-          `Không thể tải lên ảnh: ${
-            error instanceof Error ? error.message : "Unknown error"
+          `Không thể tải lên ảnh: ${error instanceof Error ? error.message : "Unknown error"
           }`,
           { status: 500 }
         );

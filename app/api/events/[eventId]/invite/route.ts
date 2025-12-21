@@ -200,10 +200,10 @@ export async function GET(
       // Check if registration is approved or completed
       if (
         userRegistration.status !== "APPROVED" &&
-        userRegistration.status !== "COMPLETED"
+        userRegistration.status !== "PENDING"
       ) {
         return new NextResponse(
-          "Bạn chỉ có thể mời người khác khi đã được duyệt tham gia sự kiện",
+          "Bạn chỉ có thể mời người khác khi đã tham gia sự kiện",
           { status: 403 }
         );
       }

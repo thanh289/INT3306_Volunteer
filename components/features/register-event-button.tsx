@@ -20,6 +20,7 @@ type Question = {
 type RegisterEventButtonProps = {
   eventId: string;
   isInitiallyRegistered: boolean;
+  registrationStatus?: string | null;
   isEventEnded: boolean;
   isEventStarted: boolean;
   isCancelled?: boolean;
@@ -30,6 +31,7 @@ type RegisterEventButtonProps = {
 export const RegisterEventButton = ({
   eventId,
   isInitiallyRegistered,
+  registrationStatus,
   isEventEnded,
   isEventStarted,
   isCancelled,
@@ -39,7 +41,10 @@ export const RegisterEventButton = ({
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  const [isRegistered, setIsRegistered] = useState(isInitiallyRegistered);
+  // Only consider registered if status is not REJECTED
+  const [isRegistered, setIsRegistered] = useState(
+    isInitiallyRegistered && registrationStatus !== "REJECTED"
+  );
   const [isPending, startTransition] = useTransition();
   const [showModal, setShowModal] = useState(false);
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -190,8 +195,8 @@ export const RegisterEventButton = ({
         onClick={handleClick}
         disabled={isPending}
         className={`btn w-full gap-2 text-white ${isRegistered
-            ? "bg-red-600 hover:bg-red-700 border-red-600"
-            : "bg-green-600 hover:bg-green-700 border-green-600"
+          ? "bg-red-600 hover:bg-red-700 border-red-600"
+          : "bg-green-600 hover:bg-green-700 border-green-600"
           }`}
       >
         {isPending

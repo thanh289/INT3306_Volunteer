@@ -367,6 +367,7 @@ export default async function EventDetailPage({
                         <RegisterEventButton
                           eventId={event.id}
                           isInitiallyRegistered={isRegistered}
+                          registrationStatus={registration?.status}
                           isEventEnded={isEventEnded}
                           isEventStarted={isEventStarted}
                           isCancelled={event.isCancelled}
@@ -386,6 +387,7 @@ export default async function EventDetailPage({
                         <RegisterEventButton
                           eventId={event.id}
                           isInitiallyRegistered={isRegistered}
+                          registrationStatus={registration?.status}
                           isEventEnded={isEventEnded}
                           isEventStarted={isEventStarted}
                           isCancelled={event.isCancelled}
