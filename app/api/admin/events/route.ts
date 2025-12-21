@@ -20,6 +20,7 @@ export async function GET(request: Request) {
     const search = searchParams.get("search") || "";
     const status = searchParams.get("status") || "";
     const category = searchParams.get("category") || "";
+    const display = searchParams.get("display") || "";
     const itemsPerPage = 20;
 
     // Build where clause
@@ -38,6 +39,21 @@ export async function GET(request: Request) {
 
     if (category && category !== "ALL") {
       whereClause.category = category as EventCategory;
+    }
+
+    if (display && display !== "ALL") {
+      if (display === "ACTIVE") {
+        // Đang hoạt động: không bị hủy và không bị xóa
+        whereClause.isCancelled = false;
+        whereClause.isDeleted = false;
+      } else if (display === "CANCELLED") {
+        // Đã hủy tạm thời: isCancelled = true, nhưng chưa xóa
+        whereClause.isCancelled = true;
+        whereClause.isDeleted = false;
+      } else if (display === "DELETED") {
+        // Đã xóa hẳn: isDeleted = true
+        whereClause.isDeleted = true;
+      }
     }
 
     // Get total count for pagination

@@ -47,7 +47,10 @@ export const AdminEventList = () => {
         <span>Không thể tải danh sách sự kiện. Vui lòng thử lại.</span>
       </div>
     );
-  if (!pendingEvents || pendingEvents.length === 0) {
+  // Lọc bỏ các event đã bị xóa mềm (isDeleted = true)
+  const filteredEvents = pendingEvents?.filter((event) => !event.isDeleted) || [];
+
+  if (filteredEvents.length === 0) {
     return (
       <div className="text-center py-12">
         <svg
@@ -74,7 +77,7 @@ export const AdminEventList = () => {
   return (
     <>
       <div className="space-y-3">
-        {pendingEvents.map((event) => (
+        {filteredEvents.map((event) => (
           <div
             key={event.id}
             className="card bg-base-100 border border-base-300 hover:border-primary transition-all cursor-pointer"

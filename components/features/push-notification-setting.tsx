@@ -296,36 +296,6 @@ export const PushNotificationSetting = () => {
         </div>
       )}
 
-      {/* Status info */}
-      {isSubscribed && permission === "granted" && (
-        <div className="alert alert-success">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
-          <div>
-            <p className="text-sm">
-              Thông báo sẽ xuất hiện trên màn hình khi có:
-            </p>
-            <ul className="text-xs mt-1 ml-4 list-disc">
-              <li>Đăng ký được duyệt/từ chối</li>
-              <li>Sự kiện được công bố</li>
-              <li>Bài viết mới trong sự kiện</li>
-              <li>Và nhiều thông báo khác...</li>
-            </ul>
-          </div>
-        </div>
-      )}
 
       {/* Debug info (only in development) */}
       {/* {process.env.NODE_ENV === 'development' && (

@@ -13,6 +13,7 @@ export async function notifyRegistrationApproved(
   eventId: string
 ) {
   try {
+    // Send push notification only (in-app notification is created by API)
     const subscriptions = await prisma.pushSubscription.findMany({
       where: { userId },
       select: { endpoint: true, p256dh: true, auth: true },
@@ -52,6 +53,7 @@ export async function notifyRegistrationRejected(
   eventId: string
 ) {
   try {
+    // Send push notification only (in-app notification is created by API)
     const subscriptions = await prisma.pushSubscription.findMany({
       where: { userId },
       select: { endpoint: true, p256dh: true, auth: true },
@@ -91,6 +93,7 @@ export async function notifyRegistrationCompleted(
   eventId: string
 ) {
   try {
+    // Send push notification only (in-app notification is created by API)
     const subscriptions = await prisma.pushSubscription.findMany({
       where: { userId },
       select: { endpoint: true, p256dh: true, auth: true },
@@ -130,30 +133,40 @@ export async function notifyEventPublished(
   eventId: string
 ) {
   try {
+    // Create notification in database
+    await prisma.notification.create({
+      data: {
+        userId: creatorId,
+        message: `Sự kiện "${eventTitle}" của bạn đã được duyệt và công bố.`,
+        href: `/events/${eventId}`,
+      },
+    });
+
+    // Send push notification
     const subscriptions = await prisma.pushSubscription.findMany({
       where: { userId: creatorId },
       select: { endpoint: true, p256dh: true, auth: true },
     });
 
-    if (subscriptions.length === 0) return;
+    if (subscriptions.length > 0) {
+      const subscriptionsData = subscriptions.map((sub) => ({
+        endpoint: sub.endpoint,
+        keys: { p256dh: sub.p256dh, auth: sub.auth },
+      }));
 
-    const subscriptionsData = subscriptions.map((sub) => ({
-      endpoint: sub.endpoint,
-      keys: { p256dh: sub.p256dh, auth: sub.auth },
-    }));
-
-    const result = await sendPushNotificationToMany(subscriptionsData, {
-      title: "Sự kiện đã được duyệt!",
-      body: `Sự kiện "${eventTitle}" của bạn đã được duyệt và công bố.`,
-      url: `/events/${eventId}`,
-      tag: `event-published-${eventId}`,
-    });
-
-    // Cleanup expired subscriptions
-    if (result.expired.length > 0) {
-      await prisma.pushSubscription.deleteMany({
-        where: { endpoint: { in: result.expired } },
+      const result = await sendPushNotificationToMany(subscriptionsData, {
+        title: "Sự kiện đã được duyệt!",
+        body: `Sự kiện "${eventTitle}" của bạn đã được duyệt và công bố.`,
+        url: `/events/${eventId}`,
+        tag: `event-published-${eventId}`,
       });
+
+      // Cleanup expired subscriptions
+      if (result.expired.length > 0) {
+        await prisma.pushSubscription.deleteMany({
+          where: { endpoint: { in: result.expired } },
+        });
+      }
     }
   } catch (error) {
     console.error("Error sending event published:", error);
@@ -169,30 +182,40 @@ export async function notifyEventRejected(
   eventId: string
 ) {
   try {
+    // Create notification in database
+    await prisma.notification.create({
+      data: {
+        userId: creatorId,
+        message: `Rất tiếc, sự kiện "${eventTitle}" của bạn đã bị từ chối.`,
+        href: `/events/${eventId}`,
+      },
+    });
+
+    // Send push notification
     const subscriptions = await prisma.pushSubscription.findMany({
       where: { userId: creatorId },
       select: { endpoint: true, p256dh: true, auth: true },
     });
 
-    if (subscriptions.length === 0) return;
+    if (subscriptions.length > 0) {
+      const subscriptionsData = subscriptions.map((sub) => ({
+        endpoint: sub.endpoint,
+        keys: { p256dh: sub.p256dh, auth: sub.auth },
+      }));
 
-    const subscriptionsData = subscriptions.map((sub) => ({
-      endpoint: sub.endpoint,
-      keys: { p256dh: sub.p256dh, auth: sub.auth },
-    }));
-
-    const result = await sendPushNotificationToMany(subscriptionsData, {
-      title: "Sự kiện bị từ chối",
-      body: `Rất tiếc, sự kiện "${eventTitle}" của bạn đã bị từ chối.`,
-      url: `/events/${eventId}`,
-      tag: `event-rejected-${eventId}`,
-    });
-
-    // Cleanup expired subscriptions
-    if (result.expired.length > 0) {
-      await prisma.pushSubscription.deleteMany({
-        where: { endpoint: { in: result.expired } },
+      const result = await sendPushNotificationToMany(subscriptionsData, {
+        title: "Sự kiện bị từ chối",
+        body: `Rất tiếc, sự kiện "${eventTitle}" của bạn đã bị từ chối.`,
+        url: `/events/${eventId}`,
+        tag: `event-rejected-${eventId}`,
       });
+
+      // Cleanup expired subscriptions
+      if (result.expired.length > 0) {
+        await prisma.pushSubscription.deleteMany({
+          where: { endpoint: { in: result.expired } },
+        });
+      }
     }
   } catch (error) {
     console.error("Error sending event rejected:", error);

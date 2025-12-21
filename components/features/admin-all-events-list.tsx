@@ -39,6 +39,7 @@ export const AdminAllEventsList = () => {
   const search = searchParams.get("search") || "";
   const statusFilter = searchParams.get("status") || "ALL";
   const categoryFilter = searchParams.get("category") || "ALL";
+  const displayFilter = searchParams.get("display") || "ALL";
   const [searchInput, setSearchInput] = useState(search);
   const [isExporting, setIsExporting] = useState(false);
 
@@ -49,6 +50,7 @@ export const AdminAllEventsList = () => {
     });
     if (statusFilter !== "ALL") params.append("status", statusFilter);
     if (categoryFilter !== "ALL") params.append("category", categoryFilter);
+    if (displayFilter !== "ALL") params.append("display", displayFilter);
     return params.toString();
   };
 
@@ -87,6 +89,7 @@ export const AdminAllEventsList = () => {
       if (search) params.append("search", search);
       if (statusFilter !== "ALL") params.append("status", statusFilter);
       if (categoryFilter !== "ALL") params.append("category", categoryFilter);
+      if (displayFilter !== "ALL") params.append("display", displayFilter);
 
       const response = await axios.get(`/api/admin/events/export?${params}`, {
         responseType: "blob",
@@ -369,6 +372,90 @@ export const AdminAllEventsList = () => {
                       }`}
                   >
                     🤝 Cộng đồng
+                  </button>
+                </li>
+              </ul>
+            </div>
+
+            {/* Display Status Filter Dropdown */}
+            <div className="dropdown dropdown-end w-full md:w-52">
+              <label
+                tabIndex={0}
+                className="btn btn-ghost w-full justify-between normal-case hover:bg-base-200"
+              >
+                <span>
+                  {displayFilter === "ALL" && "🔍 Tất cả"}
+                  {displayFilter === "ACTIVE" && "Đang hoạt động"}
+                  {displayFilter === "CANCELLED" && "Đã hủy tạm thời"}
+                  {displayFilter === "DELETED" && "Đã xóa"}
+                </span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </label>
+              <ul
+                tabIndex={0}
+                className="dropdown-content menu p-2 shadow-lg bg-base-100 rounded-box w-52 mt-1 border border-base-300"
+                style={{
+                  position: 'absolute',
+                  zIndex: 9999,
+                  top: '100%',
+                  right: 0
+                }}
+              >
+                <li>
+                  <button
+                    onClick={() => handleFilterChange("display", "ALL")}
+                    className={`justify-start ${displayFilter === "ALL"
+                      ? "active bg-primary text-primary-content"
+                      : ""
+                      }`}
+                  >
+                    🔍 Tất cả sự kiện
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => handleFilterChange("display", "ACTIVE")}
+                    className={`justify-start ${displayFilter === "ACTIVE"
+                      ? "active bg-success text-success-content"
+                      : ""
+                      }`}
+                  >
+                    Đang hoạt động
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => handleFilterChange("display", "CANCELLED")}
+                    className={`justify-start ${displayFilter === "CANCELLED"
+                      ? "active bg-warning text-warning-content"
+                      : ""
+                      }`}
+                  >
+                    Đã hủy tạm thời
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => handleFilterChange("display", "DELETED")}
+                    className={`justify-start ${displayFilter === "DELETED"
+                      ? "active bg-error text-error-content"
+                      : ""
+                      }`}
+                  >
+                    Đã xóa hẳn
                   </button>
                 </li>
               </ul>

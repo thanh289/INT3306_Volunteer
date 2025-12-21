@@ -208,12 +208,12 @@ export const EventCard = ({
           {/* Cancelled badge overlay */}
           {event.isCancelled && (
             <div className="absolute bottom-3 left-3 right-3">
-              <div className="bg-error/90 backdrop-blur-md text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-xl border border-error">
-                <Ban className="h-5 w-5" />
+              <div className="bg-amber-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-xl border-2 border-amber-600">
+                <Ban className="h-5 w-5 flex-shrink-0" />
                 <div className="flex-1">
-                  <div className="font-bold">Sự kiện đã bị hủy</div>
+                  <div className="font-bold text-sm">Sự kiện đã bị hủy</div>
                   {event.cancelReason && (
-                    <div className="text-xs opacity-90 line-clamp-1">
+                    <div className="text-xs opacity-90 line-clamp-1 mt-0.5">
                       {event.cancelReason}
                     </div>
                   )}
