@@ -7,7 +7,6 @@ import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import Image from 'next/image';
 
 type EventImageUploadProps = {
     eventId: string;
@@ -46,13 +45,6 @@ export const EventImageUpload = ({ eventId, currentImageUrl, eventTitle }: Event
             return;
         }
 
-        // preview
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            setPreviewUrl(reader.result as string);
-        };
-        reader.readAsDataURL(file);
-
         await uploadImage(file);
     };
 
@@ -69,8 +61,12 @@ export const EventImageUpload = ({ eventId, currentImageUrl, eventTitle }: Event
                 },
             });
 
+            console.log('Upload response:', response.data);
             toast.success('Cập nhật ảnh sự kiện thành công!');
-            setPreviewUrl(formatImageUrl(response.data.imageUrl));
+            // Add cache busting parameter to force reload
+            const newImageUrl = formatImageUrl(response.data.imageUrl);
+            console.log('Formatted image URL:', newImageUrl);
+            setPreviewUrl(newImageUrl ? `${newImageUrl}?t=${Date.now()}` : null);
             router.refresh();
 
         } catch (error) {
@@ -123,12 +119,10 @@ export const EventImageUpload = ({ eventId, currentImageUrl, eventTitle }: Event
             {/* Preview */}
             <div className="relative w-full h-64 bg-base-200 rounded-lg overflow-hidden border-2 border-dashed border-base-300 mb-4 mt-2">
                 {previewUrl ? (
-                    <Image
+                    <img
                         src={previewUrl}
                         alt={eventTitle}
-                        fill
-                        className="object-cover"
-                        unoptimized
+                        className="w-full h-full object-cover"
                     />
                 ) : (
                     <div className="flex flex-col items-center justify-center h-full text-base-content/40">
