@@ -221,8 +221,8 @@ export const CreateEventForm = () => {
             <label
               key={value}
               className={`cursor-pointer card card-compact border-2 transition-all hover:shadow-lg ${formData.category === value
-                  ? "border-primary bg-primary/5 shadow-md"
-                  : "border-base-300 hover:border-primary/50"
+                ? "border-primary bg-primary/5 shadow-md"
+                : "border-base-300 hover:border-primary/50"
                 }`}
             >
               <div className="card-body items-center text-center">
@@ -653,28 +653,6 @@ export const CreateEventForm = () => {
           </div>
         </div>
       )}
-
-      {/* Info Alert */}
-      <div className="alert alert-info shadow-lg">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-6 w-6 flex-shrink-0"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-        </svg>
-        <span>
-          Sau khi tạo, bạn không thể thay đổi thông tin, bạn chỉ có thể quản lý
-          sự kiện.
-        </span>
-      </div>
 
       {/* Submit Button */}
       <div className="pt-4">

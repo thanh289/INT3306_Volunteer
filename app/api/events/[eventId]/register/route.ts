@@ -42,6 +42,10 @@ export async function POST(request: Request, { params }: PostParams) {
         throw new Error("EVENT_NOT_FOUND");
       }
 
+      if (eventDetails.isDeleted) {
+        throw new Error("EVENT_DELETED");
+      }
+
       if (new Date(eventDetails.endDateTime) < new Date()) {
         throw new Error("EVENT_ENDED");
       }
@@ -95,6 +99,10 @@ export async function POST(request: Request, { params }: PostParams) {
       switch (error.message) {
         case "EVENT_NOT_FOUND":
           return new NextResponse("Sự kiện không tồn tại", { status: 404 });
+        case "EVENT_DELETED":
+          return new NextResponse("Sự kiện đã bị xóa, không thể đăng ký.", {
+            status: 400,
+          });
         case "EVENT_ENDED":
           return new NextResponse("Sự kiện đã kết thúc, không thể đăng ký.", {
             status: 400,

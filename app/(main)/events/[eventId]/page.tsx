@@ -56,6 +56,14 @@ export default async function EventDetailPage({
   // Check if current user is event manager
   const isEventManager = userId ? eventManagerIds.includes(userId) : false;
 
+  // Check if user can access this event
+  const canAccessDeletedEvent = userRole === "ADMIN" || userId === event.creatorId || isEventManager;
+
+  // Block access to deleted events for non-privileged users
+  if (event.isDeleted && !canAccessDeletedEvent) {
+    notFound();
+  }
+
   // volunteer cannot access unpublished detail event
   if (
     event.status !== "PUBLISHED" &&

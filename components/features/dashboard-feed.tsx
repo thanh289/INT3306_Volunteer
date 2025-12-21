@@ -713,10 +713,9 @@ export const DashboardFeed = () => {
                       <div className="relative w-full h-64 rounded-lg overflow-hidden mb-3 border border-base-300">
                         <Image
                           src={
-                            "/api/" +
-                            post.imageUrl
-                              .replace(/\\/g, "/")
-                              .replace(/^\/+/, "")
+                            post.imageUrl.startsWith('/api/') || post.imageUrl.startsWith('http')
+                              ? post.imageUrl
+                              : `/api/uploads/${post.imageUrl.replace(/\\/g, "/").replace(/^\/+/, "")}`
                           }
                           alt="Post image"
                           fill
