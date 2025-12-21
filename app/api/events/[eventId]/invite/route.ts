@@ -66,7 +66,7 @@ export async function POST(
       // Check if registration is approved or completed
       if (
         userRegistration.status !== "APPROVED" &&
-        userRegistration.status !== "COMPLETED"
+        userRegistration.status !== "PENDING"
       ) {
         return new NextResponse(
           "Bạn chỉ có thể mời người khác khi đã được duyệt tham gia sự kiện",
