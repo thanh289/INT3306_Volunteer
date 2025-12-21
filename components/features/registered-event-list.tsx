@@ -119,8 +119,8 @@ export const RegisteredEventList = () => {
   return (
     <div className="space-y-6">
       {/* Filter Tabs */}
-      <div className="card bg-base-100 shadow-sm border border-base-300">
-        <div className="card-body p-4">
+      <div className="card bg-base-100 shadow-sm border border-base-300" style={{ overflow: 'visible' }}>
+        <div className="card-body p-4" style={{ overflow: 'visible' }}>
           <div className="flex flex-col md:flex-row gap-4">
             {/* Search Bar */}
             <div className="flex-1">
@@ -152,7 +152,7 @@ export const RegisteredEventList = () => {
             </div>
 
             {/* Time Filter Dropdown */}
-            <div className="dropdown dropdown-end w-full md:w-52">
+            <div className="dropdown dropdown-end w-full md:w-52" style={{ position: 'relative' }}>
               <label
                 tabIndex={0}
                 className="btn btn-ghost w-full justify-between normal-case hover:bg-base-200"
@@ -162,10 +162,10 @@ export const RegisteredEventList = () => {
                   {filter === "all"
                     ? "Tất cả"
                     : filter === "upcoming"
-                    ? "Sắp diễn ra"
-                    : filter === "ongoing"
-                    ? "Đang diễn ra"
-                    : "Đã kết thúc"}
+                      ? "Sắp diễn ra"
+                      : filter === "ongoing"
+                        ? "Đang diễn ra"
+                        : "Đã kết thúc"}
                 </span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -184,16 +184,21 @@ export const RegisteredEventList = () => {
               </label>
               <ul
                 tabIndex={0}
-                className="dropdown-content z-[1] menu p-2 shadow-lg bg-base-100 rounded-box w-52 mt-1 border border-base-300"
+                className="dropdown-content menu p-2 shadow-lg bg-base-100 rounded-box w-52 mt-1 border border-base-300"
+                style={{
+                  position: 'absolute',
+                  zIndex: 9999,
+                  top: '100%',
+                  right: 0
+                }}
               >
                 <li>
                   <button
                     onClick={() => setFilter("all")}
-                    className={`justify-start ${
-                      filter === "all"
-                        ? "active bg-primary text-primary-content"
-                        : ""
-                    }`}
+                    className={`justify-start ${filter === "all"
+                      ? "active bg-primary text-primary-content"
+                      : ""
+                      }`}
                   >
                     Tất cả
                   </button>
@@ -201,11 +206,10 @@ export const RegisteredEventList = () => {
                 <li>
                   <button
                     onClick={() => setFilter("upcoming")}
-                    className={`justify-start ${
-                      filter === "upcoming"
-                        ? "active bg-primary text-primary-content"
-                        : ""
-                    }`}
+                    className={`justify-start ${filter === "upcoming"
+                      ? "active bg-primary text-primary-content"
+                      : ""
+                      }`}
                   >
                     Sắp diễn ra
                   </button>
@@ -213,11 +217,10 @@ export const RegisteredEventList = () => {
                 <li>
                   <button
                     onClick={() => setFilter("ongoing")}
-                    className={`justify-start ${
-                      filter === "ongoing"
-                        ? "active bg-primary text-primary-content"
-                        : ""
-                    }`}
+                    className={`justify-start ${filter === "ongoing"
+                      ? "active bg-primary text-primary-content"
+                      : ""
+                      }`}
                   >
                     Đang diễn ra
                   </button>
@@ -225,11 +228,10 @@ export const RegisteredEventList = () => {
                 <li>
                   <button
                     onClick={() => setFilter("past")}
-                    className={`justify-start ${
-                      filter === "past"
-                        ? "active bg-primary text-primary-content"
-                        : ""
-                    }`}
+                    className={`justify-start ${filter === "past"
+                      ? "active bg-primary text-primary-content"
+                      : ""
+                      }`}
                   >
                     Đã kết thúc
                   </button>
@@ -238,7 +240,7 @@ export const RegisteredEventList = () => {
             </div>
 
             {/* Registration Status Filter Dropdown */}
-            <div className="dropdown dropdown-end w-full md:w-52">
+            <div className="dropdown dropdown-end w-full md:w-52" style={{ position: 'relative' }}>
               <label
                 tabIndex={0}
                 className="btn btn-ghost w-full justify-between normal-case hover:bg-base-200"
@@ -248,8 +250,8 @@ export const RegisteredEventList = () => {
                   {registrationStatus === "all"
                     ? "Tất cả trạng thái"
                     : registrationStatus === "APPROVED"
-                    ? "Đã duyệt"
-                    : "Chờ duyệt"}
+                      ? "Đã duyệt"
+                      : "Chờ duyệt"}
                 </span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -268,16 +270,21 @@ export const RegisteredEventList = () => {
               </label>
               <ul
                 tabIndex={0}
-                className="dropdown-content z-[1] menu p-2 shadow-lg bg-base-100 rounded-box w-52 mt-1 border border-base-300"
+                className="dropdown-content menu p-2 shadow-lg bg-base-100 rounded-box w-52 mt-1 border border-base-300"
+                style={{
+                  position: 'absolute',
+                  zIndex: 9999,
+                  top: '100%',
+                  right: 0
+                }}
               >
                 <li>
                   <button
                     onClick={() => setRegistrationStatus("all")}
-                    className={`justify-start ${
-                      registrationStatus === "all"
-                        ? "active bg-primary text-primary-content"
-                        : ""
-                    }`}
+                    className={`justify-start ${registrationStatus === "all"
+                      ? "active bg-primary text-primary-content"
+                      : ""
+                      }`}
                   >
                     Tất cả trạng thái
                   </button>
@@ -285,11 +292,10 @@ export const RegisteredEventList = () => {
                 <li>
                   <button
                     onClick={() => setRegistrationStatus("APPROVED")}
-                    className={`justify-start ${
-                      registrationStatus === "APPROVED"
-                        ? "active bg-primary text-primary-content"
-                        : ""
-                    }`}
+                    className={`justify-start ${registrationStatus === "APPROVED"
+                      ? "active bg-primary text-primary-content"
+                      : ""
+                      }`}
                   >
                     Đã duyệt
                   </button>
@@ -297,11 +303,10 @@ export const RegisteredEventList = () => {
                 <li>
                   <button
                     onClick={() => setRegistrationStatus("PENDING")}
-                    className={`justify-start ${
-                      registrationStatus === "PENDING"
-                        ? "active bg-primary text-primary-content"
-                        : ""
-                    }`}
+                    className={`justify-start ${registrationStatus === "PENDING"
+                      ? "active bg-primary text-primary-content"
+                      : ""
+                      }`}
                   >
                     Chờ duyệt
                   </button>
@@ -361,9 +366,8 @@ export const RegisteredEventList = () => {
           <button
             onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
             disabled={currentPage <= 1}
-            className={`btn btn-circle btn-sm border border-base-300 ${
-              currentPage <= 1 ? "btn-disabled" : "btn-ghost"
-            }`}
+            className={`btn btn-circle btn-sm border border-base-300 ${currentPage <= 1 ? "btn-disabled" : "btn-ghost"
+              }`}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -386,11 +390,10 @@ export const RegisteredEventList = () => {
             <button
               key={page}
               onClick={() => setCurrentPage(page)}
-              className={`btn btn-circle btn-sm border ${
-                currentPage === page
-                  ? "btn-primary"
-                  : "btn-ghost border-base-300"
-              }`}
+              className={`btn btn-circle btn-sm border ${currentPage === page
+                ? "btn-primary"
+                : "btn-ghost border-base-300"
+                }`}
             >
               {page}
             </button>
@@ -400,9 +403,8 @@ export const RegisteredEventList = () => {
           <button
             onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
             disabled={currentPage >= totalPages}
-            className={`btn btn-circle btn-sm border border-base-300 ${
-              currentPage >= totalPages ? "btn-disabled" : "btn-ghost"
-            }`}
+            className={`btn btn-circle btn-sm border border-base-300 ${currentPage >= totalPages ? "btn-disabled" : "btn-ghost"
+              }`}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

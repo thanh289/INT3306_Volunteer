@@ -166,7 +166,7 @@ export default function AboutPage() {
             <Link href="/register" className="btn btn-primary">
               Đăng ký ngay
             </Link>
-            <Link href="/events" className="btn btn-outline">
+            <Link href="." className="btn btn-outline">
               Xem sự kiện
             </Link>
           </div>

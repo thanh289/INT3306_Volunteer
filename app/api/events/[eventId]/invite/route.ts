@@ -34,44 +34,32 @@ export async function POST(
       return new NextResponse("Event not found", { status: 404 });
     }
 
-    // Check if user is event creator, manager, or admin
-    const isCreator = event.creatorId === session.user.id;
-    const isManager = await prisma.eventManager.findFirst({
+    // Check if user is registered and approved for the event
+    const userRegistration = await prisma.registration.findUnique({
       where: {
-        eventId: eventId,
-        userId: session.user.id,
+        userId_eventId: {
+          userId: session.user.id,
+          eventId: eventId,
+        },
       },
     });
-    const isAdmin = session.user.role === "ADMIN";
 
-    // If not creator/manager/admin, check if user is registered and approved for the event
-    if (!isCreator && !isManager && !isAdmin) {
-      const userRegistration = await prisma.registration.findUnique({
-        where: {
-          userId_eventId: {
-            userId: session.user.id,
-            eventId: eventId,
-          },
-        },
-      });
+    if (!userRegistration) {
+      return new NextResponse(
+        "Bạn phải đăng ký sự kiện trước khi mời người khác",
+        { status: 403 }
+      );
+    }
 
-      if (!userRegistration) {
-        return new NextResponse(
-          "Bạn phải đăng ký sự kiện trước khi mời người khác",
-          { status: 403 }
-        );
-      }
-
-      // Check if registration is approved or completed
-      if (
-        userRegistration.status !== "APPROVED" &&
-        userRegistration.status !== "COMPLETED"
-      ) {
-        return new NextResponse(
-          "Bạn chỉ có thể mời người khác khi đã được duyệt tham gia sự kiện",
-          { status: 403 }
-        );
-      }
+    // Check if registration is approved or completed
+    if (
+      userRegistration.status !== "APPROVED" &&
+      userRegistration.status !== "COMPLETED"
+    ) {
+      return new NextResponse(
+        "Bạn chỉ có thể mời người khác khi đã được duyệt tham gia sự kiện",
+        { status: 403 }
+      );
     }
 
     // Check if invited user exists
@@ -167,44 +155,32 @@ export async function GET(
       return new NextResponse("Event not found", { status: 404 });
     }
 
-    // Check if user is event creator, manager, or admin
-    const isCreator = event.creatorId === session.user.id;
-    const isManager = await prisma.eventManager.findFirst({
+    // Check if user is registered and approved for the event
+    const userRegistration = await prisma.registration.findUnique({
       where: {
-        eventId: eventId,
-        userId: session.user.id,
+        userId_eventId: {
+          userId: session.user.id,
+          eventId: eventId,
+        },
       },
     });
-    const isAdmin = session.user.role === "ADMIN";
 
-    // If not creator/manager/admin, check if user is registered and approved for the event
-    if (!isCreator && !isManager && !isAdmin) {
-      const userRegistration = await prisma.registration.findUnique({
-        where: {
-          userId_eventId: {
-            userId: session.user.id,
-            eventId: eventId,
-          },
-        },
-      });
+    if (!userRegistration) {
+      return new NextResponse(
+        "Bạn phải đăng ký sự kiện trước khi mời người khác",
+        { status: 403 }
+      );
+    }
 
-      if (!userRegistration) {
-        return new NextResponse(
-          "Bạn phải đăng ký sự kiện trước khi mời người khác",
-          { status: 403 }
-        );
-      }
-
-      // Check if registration is approved or completed
-      if (
-        userRegistration.status !== "APPROVED" &&
-        userRegistration.status !== "COMPLETED"
-      ) {
-        return new NextResponse(
-          "Bạn chỉ có thể mời người khác khi đã được duyệt tham gia sự kiện",
-          { status: 403 }
-        );
-      }
+    // Check if registration is approved or completed
+    if (
+      userRegistration.status !== "APPROVED" &&
+      userRegistration.status !== "COMPLETED"
+    ) {
+      return new NextResponse(
+        "Bạn chỉ có thể mời người khác khi đã được duyệt tham gia sự kiện",
+        { status: 403 }
+      );
     }
 
     // Get all registered user IDs

@@ -65,7 +65,6 @@ export const RegisterEventButton = ({
 
   // This button just for user
   if (
-    session?.user?.role === Role.EVENT_MANAGER ||
     session?.user?.role === Role.ADMIN
   ) {
     return null;
@@ -190,17 +189,16 @@ export const RegisterEventButton = ({
       <button
         onClick={handleClick}
         disabled={isPending}
-        className={`btn w-full gap-2 text-white ${
-          isRegistered
+        className={`btn w-full gap-2 text-white ${isRegistered
             ? "bg-red-600 hover:bg-red-700 border-red-600"
             : "bg-green-600 hover:bg-green-700 border-green-600"
-        }`}
+          }`}
       >
         {isPending
           ? "Đang xử lý..."
           : isRegistered
-          ? "Hủy đăng ký"
-          : "Đăng ký tham gia sự kiện này"}
+            ? "Hủy đăng ký"
+            : "Đăng ký tham gia sự kiện này"}
       </button>
 
       {/* Registration Modal */}

@@ -353,25 +353,52 @@ export default async function EventDetailPage({
 
                 {/* Action buttons */}
                 <div className="pt-4 border-t border-base-300">
-                  {canManage ? (
-                    <EventManagementButtons event={event} />
-                  ) : (
-                    <div className="flex flex-col gap-3">
-                      <RegisterEventButton
-                        eventId={event.id}
-                        isInitiallyRegistered={isRegistered}
-                        isEventEnded={isEventEnded}
-                        isEventStarted={isEventStarted}
-                        isCancelled={event.isCancelled}
-                        cancelReason={event.cancelReason}
-                        requiresRegistrationForm={
-                          event.requiresRegistrationForm
-                        }
-                      />
-                      <InviteEventButton eventId={event.id} />
-                      <FavoriteEventButton eventId={event.id} />
-                    </div>
-                  )}
+                  <div className="flex flex-col gap-3">
+                    {/* Admin or creator: only management buttons */}
+                    {canManage && (userRole === "ADMIN" || userId === event.creatorId) && (
+                      <EventManagementButtons event={event} />
+                    )}
+
+                    {/* Manager (not creator): management (if assigned) + volunteer buttons */}
+                    {userRole === "EVENT_MANAGER" && userId !== event.creatorId && (
+                      <>
+                        {canManage && <EventManagementButtons event={event} />}
+                        {canManage && <div className="divider my-2">Hoặc tham gia như tình nguyện viên</div>}
+                        <RegisterEventButton
+                          eventId={event.id}
+                          isInitiallyRegistered={isRegistered}
+                          isEventEnded={isEventEnded}
+                          isEventStarted={isEventStarted}
+                          isCancelled={event.isCancelled}
+                          cancelReason={event.cancelReason}
+                          requiresRegistrationForm={
+                            event.requiresRegistrationForm
+                          }
+                        />
+                        <InviteEventButton eventId={event.id} />
+                        <FavoriteEventButton eventId={event.id} />
+                      </>
+                    )}
+
+                    {/* Volunteer: only volunteer buttons */}
+                    {userRole === "VOLUNTEER" && (
+                      <>
+                        <RegisterEventButton
+                          eventId={event.id}
+                          isInitiallyRegistered={isRegistered}
+                          isEventEnded={isEventEnded}
+                          isEventStarted={isEventStarted}
+                          isCancelled={event.isCancelled}
+                          cancelReason={event.cancelReason}
+                          requiresRegistrationForm={
+                            event.requiresRegistrationForm
+                          }
+                        />
+                        <InviteEventButton eventId={event.id} />
+                        <FavoriteEventButton eventId={event.id} />
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

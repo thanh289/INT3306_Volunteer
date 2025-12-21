@@ -187,9 +187,8 @@ export const MobileDrawer = ({ children }: { children: React.ReactNode }) => {
                 <li>
                   <Link
                     href="/dashboard"
-                    className={`gap-3 ${
-                      isActive("/dashboard") ? "active" : ""
-                    }`}
+                    className={`gap-3 ${isActive("/dashboard") ? "active" : ""
+                      }`}
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -209,15 +208,14 @@ export const MobileDrawer = ({ children }: { children: React.ReactNode }) => {
                   </Link>
                 </li>
 
-                {/* Volunteer links */}
-                {userRole === "VOLUNTEER" && (
+                {/* Volunteer & Manager links */}
+                {(userRole === "VOLUNTEER" || userRole === "EVENT_MANAGER") && (
                   <>
                     <li>
                       <Link
                         href="/registered-events"
-                        className={`gap-3 ${
-                          isActive("/registered-events") ? "active" : ""
-                        }`}
+                        className={`gap-3 ${isActive("/registered-events") ? "active" : ""
+                          }`}
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -239,9 +237,8 @@ export const MobileDrawer = ({ children }: { children: React.ReactNode }) => {
                     <li>
                       <Link
                         href="/interested-events"
-                        className={`gap-3 ${
-                          isActive("/interested-events") ? "active" : ""
-                        }`}
+                        className={`gap-3 ${isActive("/interested-events") ? "active" : ""
+                          }`}
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -268,9 +265,36 @@ export const MobileDrawer = ({ children }: { children: React.ReactNode }) => {
                     <li>
                       <Link
                         href="/created-events"
-                        className={`gap-3 ${
-                          isActive("/created-events") ? "active" : ""
-                        }`}
+                        className={`gap-3 ${isActive("/created-events") ? "active" : ""
+                          }`}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-5 w-5"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
+                          />
+                        </svg>
+                        Sự kiện đã đăng ký
+                      </Link>
+                    </li>
+                  </>
+                )}
+                {/* Manager/Admin links */}
+                {(userRole === "EVENT_MANAGER" || userRole === "ADMIN") && (
+                  <>
+                    <li>
+                      <Link
+                        href="/created-events"
+                        className={`gap-3 ${isActive("/created-events") ? "active" : ""
+                          }`}
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -292,9 +316,8 @@ export const MobileDrawer = ({ children }: { children: React.ReactNode }) => {
                     <li>
                       <Link
                         href="/events/create"
-                        className={`gap-3 btn btn-primary btn-sm justify-start ${
-                          isActive("/events/create") ? "btn-active" : ""
-                        }`}
+                        className={`gap-3 btn btn-primary btn-sm justify-start ${isActive("/events/create") ? "btn-active" : ""
+                          }`}
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -321,9 +344,8 @@ export const MobileDrawer = ({ children }: { children: React.ReactNode }) => {
                   <li>
                     <Link
                       href="/admin/event-approval"
-                      className={`gap-3 btn btn-secondary btn-sm justify-start ${
-                        isActive("/admin/event-approval") ? "btn-active" : ""
-                      }`}
+                      className={`gap-3 btn btn-secondary btn-sm justify-start ${isActive("/admin/event-approval") ? "btn-active" : ""
+                        }`}
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
