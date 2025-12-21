@@ -62,7 +62,7 @@ export const MobileDrawer = ({ children }: { children: React.ReactNode }) => {
           <div className="mb-4 flex items-center gap-3 px-4">
             <div className="relative w-10 h-10">
               <Image
-                src="/images/logo.webp"
+                src="/api/images/logo.webp"
                 alt="VolunteerHub Logo"
                 fill
                 className="object-contain"

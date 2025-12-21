@@ -140,14 +140,19 @@ export const EventCard = ({
   // Validate if imageUrl actually points to a file
   const hasValidImage = event.imageUrl && event.imageUrl.trim() !== "";
 
+  // Format image URL
+  const eventImageUrl = hasValidImage && event.imageUrl
+    ? "/" + event.imageUrl.replace(/\\/g, "/").replace(/^\/+/, "")
+    : null;
+
   return (
     <Link href={`/events/${event.id}`} className="group">
       <div className="card rounded-xl overflow-hidden bg-gradient-to-br from-blue-50 to-cyan-50 shadow-lg hover:shadow-2xl transition-all duration-300 border border-base-300 h-full group-hover:-translate-y-1 group-hover:border-primary/50">
         {/* Image placeholder */}
         <figure className="relative h-36 sm:h-48 bg-base-200 overflow-hidden">
-          {hasValidImage && event.imageUrl ? (
+          {eventImageUrl ? (
             <img
-              src={"/" + event.imageUrl.replace(/\\/g, "/").replace(/^\/+/, "")}
+              src={eventImageUrl}
               alt={event.title}
               className="w-full h-full object-cover"
               onError={(e) => {

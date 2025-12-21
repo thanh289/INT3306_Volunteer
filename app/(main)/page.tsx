@@ -11,26 +11,16 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const cacheKey = "homepage:events";
-
-  // Try to get from cache first
-  let events = dataCache.get(cacheKey) as any;
-
-  if (!events) {
-    // Fetch all published upcoming events that are not deleted
-    events = await prisma.event.findMany({
-      where: {
-        startDateTime: { gte: new Date() },
-        status: "PUBLISHED",
-        isDeleted: false, // Only show non-deleted events
-      },
-      include: { creator: true },
-      orderBy: { startDateTime: "asc" },
-    });
-
-    // Store in cache for 5 minutes (dataCache default)
-    dataCache.set(cacheKey, events);
-  }
+  // Fetch all published upcoming events that are not deleted (no caching)
+  const events = await prisma.event.findMany({
+    where: {
+      startDateTime: { gte: new Date() },
+      status: "PUBLISHED",
+      isDeleted: false, // Only show non-deleted events
+    },
+    include: { creator: true },
+    orderBy: { startDateTime: "asc" },
+  });
 
   // Fetch user's interested events to avoid multiple API calls
   const session = await getServerSession(authOptions);

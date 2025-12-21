@@ -7,8 +7,8 @@ import path from 'path';
 import sharp from 'sharp';
 
 export const UPLOAD_DIRS = {
-    AVATARS: 'public/uploads/avatars',
-    EVENTS: 'public/uploads/events',
+    AVATARS: 'uploads/avatars',
+    EVENTS: 'uploads/events',
 };
 
 export const MAX_FILE_SIZES = {
@@ -114,8 +114,8 @@ export async function saveAndOptimizeImage(
         // Save optimized image
         await image.toFile(filepath);
 
-        // Return web-accessible path
-        const webPath = filepath.replace('public', '');
+        // Return web-accessible path for API
+        const webPath = `/api/uploads/${path.relative('uploads', filepath).replace(/\\/g, '/')}`;
 
         return {
             success: true,
@@ -136,7 +136,10 @@ export async function deleteImageFile(imagePath: string): Promise<void> {
         if (!imagePath) return;
 
         const { unlink } = await import('fs/promises');
-        const fullPath = path.join('public', imagePath);
+
+        // Extract the actual file path from URL (e.g., /api/uploads/avatars/xxx.jpg -> uploads/avatars/xxx.jpg)
+        const cleanPath = imagePath.replace(/^\/api\/uploads\//, 'uploads/');
+        const fullPath = path.join(process.cwd(), cleanPath);
 
         if (existsSync(fullPath)) {
             await unlink(fullPath);

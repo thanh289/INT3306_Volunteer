@@ -97,7 +97,7 @@ export const EditEventForm = ({ event }: { event: Event }) => {
     try {
       const response = await axios.put(`/api/events/${event.id}`, formData);
       const data = response.data;
-      
+
       if (data.statusChanged) {
         toast.success(data.message || "Sự kiện đã được cập nhật và chuyển về trạng thái chờ duyệt do có thay đổi quan trọng.", {
           duration: 5000,
@@ -105,7 +105,7 @@ export const EditEventForm = ({ event }: { event: Event }) => {
       } else {
         toast.success(data.message || "Cập nhật sự kiện thành công!");
       }
-      
+
       router.push(`/events/${event.id}`);
       router.refresh();
     } catch (error) {

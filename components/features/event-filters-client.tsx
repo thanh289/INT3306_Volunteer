@@ -180,11 +180,10 @@ export const EventFiltersClient = ({
                   <button
                     key={idx}
                     onClick={() => setCarouselIndex(idx)}
-                    className={`w-2 h-2 rounded-full transition-all ${
-                      idx === carouselIndex
-                        ? "bg-primary w-8"
-                        : "bg-base-300 hover:bg-base-400"
-                    }`}
+                    className={`w-2 h-2 rounded-full transition-all ${idx === carouselIndex
+                      ? "bg-primary w-8"
+                      : "bg-base-300 hover:bg-base-400"
+                      }`}
                   />
                 ))}
               </div>
@@ -209,21 +208,28 @@ export const EventFiltersClient = ({
                           >
                             <div className="card bg-base-100 border border-base-300 hover:border-primary hover:shadow-xl transition-all h-full rounded-2xl overflow-hidden">
                               <figure className="relative h-48 overflow-hidden bg-base-200">
-                                {event.imageUrl ? (
+                                {event.imageUrl && event.imageUrl.trim() !== "" ? (
                                   <img
-                                    src={event.imageUrl}
+                                    src={"/" + event.imageUrl.replace(/\\/g, "/").replace(/^\/+/, "")}
                                     alt={event.title}
                                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                                    onError={(e) => {
+                                      e.currentTarget.style.display = "none";
+                                      const placeholder = e.currentTarget.nextElementSibling as HTMLElement;
+                                      if (placeholder) placeholder.style.display = "flex";
+                                    }}
                                   />
-                                ) : (
-                                  <div className="w-full h-full flex items-center justify-center">
-                                    <img
-                                      src="/images/placeholder.gif"
-                                      alt="No image"
-                                      className="max-w-full max-h-full object-contain p-4"
-                                    />
-                                  </div>
-                                )}
+                                ) : null}
+                                <div
+                                  className="w-full h-full flex items-center justify-center"
+                                  style={{ display: (event.imageUrl && event.imageUrl.trim() !== "") ? "none" : "flex" }}
+                                >
+                                  <img
+                                    src="/images/placeholder.gif"
+                                    alt="No image"
+                                    className="max-w-full max-h-full object-contain p-4"
+                                  />
+                                </div>
                               </figure>
                               <div className="card-body p-4">
                                 <h3 className="card-title text-base line-clamp-2 group-hover:text-primary transition-colors">
@@ -503,11 +509,10 @@ export const EventFiltersClient = ({
                 <li>
                   <button
                     onClick={() => setSortBy("startDateTime")}
-                    className={`justify-start flex items-center gap-2 ${
-                      sortBy === "startDateTime"
-                        ? "active bg-primary text-primary-content"
-                        : ""
-                    }`}
+                    className={`justify-start flex items-center gap-2 ${sortBy === "startDateTime"
+                      ? "active bg-primary text-primary-content"
+                      : ""
+                      }`}
                   >
                     <Image
                       src="/images/calendar.png"
@@ -522,11 +527,10 @@ export const EventFiltersClient = ({
                 <li>
                   <button
                     onClick={() => setSortBy("title")}
-                    className={`justify-start flex items-center gap-2 ${
-                      sortBy === "title"
-                        ? "active bg-primary text-primary-content"
-                        : ""
-                    }`}
+                    className={`justify-start flex items-center gap-2 ${sortBy === "title"
+                      ? "active bg-primary text-primary-content"
+                      : ""
+                      }`}
                   >
                     <Image
                       src="/images/abc.png"
@@ -592,11 +596,10 @@ export const EventFiltersClient = ({
               <button
                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                 disabled={currentPage <= 1}
-                className={`flex items-center justify-center w-10 h-10 rounded-full transition-all duration-200 ${
-                  currentPage <= 1
-                    ? "bg-base-200 text-base-content/40 cursor-not-allowed"
-                    : "bg-base-200 hover:bg-base-300 text-base-content"
-                }`}
+                className={`flex items-center justify-center w-10 h-10 rounded-full transition-all duration-200 ${currentPage <= 1
+                  ? "bg-base-200 text-base-content/40 cursor-not-allowed"
+                  : "bg-base-200 hover:bg-base-300 text-base-content"
+                  }`}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -617,11 +620,10 @@ export const EventFiltersClient = ({
               {/* Always show first page */}
               <button
                 onClick={() => setCurrentPage(1)}
-                className={`flex items-center justify-center w-10 h-10 rounded-full text-sm font-medium transition-all duration-200 ${
-                  currentPage === 1
-                    ? "bg-primary text-primary-content border-2 border-primary"
-                    : "bg-base-200 hover:bg-base-300 text-base-content border-2 border-transparent"
-                }`}
+                className={`flex items-center justify-center w-10 h-10 rounded-full text-sm font-medium transition-all duration-200 ${currentPage === 1
+                  ? "bg-primary text-primary-content border-2 border-primary"
+                  : "bg-base-200 hover:bg-base-300 text-base-content border-2 border-transparent"
+                  }`}
               >
                 1
               </button>
@@ -655,11 +657,10 @@ export const EventFiltersClient = ({
                   <button
                     key={page}
                     onClick={() => setCurrentPage(page)}
-                    className={`flex items-center justify-center w-10 h-10 rounded-full text-sm font-medium transition-all duration-200 ${
-                      currentPage === page
-                        ? "bg-primary text-primary-content border-2 border-primary"
-                        : "bg-base-200 hover:bg-base-300 text-base-content border-2 border-transparent"
-                    }`}
+                    className={`flex items-center justify-center w-10 h-10 rounded-full text-sm font-medium transition-all duration-200 ${currentPage === page
+                      ? "bg-primary text-primary-content border-2 border-primary"
+                      : "bg-base-200 hover:bg-base-300 text-base-content border-2 border-transparent"
+                      }`}
                   >
                     {page}
                   </button>
@@ -676,11 +677,10 @@ export const EventFiltersClient = ({
               {totalPages > 1 && (
                 <button
                   onClick={() => setCurrentPage(totalPages)}
-                  className={`flex items-center justify-center w-10 h-10 rounded-full text-sm font-medium transition-all duration-200 ${
-                    currentPage === totalPages
-                      ? "bg-primary text-primary-content border-2 border-primary"
-                      : "bg-base-200 hover:bg-base-300 text-base-content border-2 border-transparent"
-                  }`}
+                  className={`flex items-center justify-center w-10 h-10 rounded-full text-sm font-medium transition-all duration-200 ${currentPage === totalPages
+                    ? "bg-primary text-primary-content border-2 border-primary"
+                    : "bg-base-200 hover:bg-base-300 text-base-content border-2 border-transparent"
+                    }`}
                 >
                   {totalPages}
                 </button>
@@ -692,11 +692,10 @@ export const EventFiltersClient = ({
                   setCurrentPage((p) => Math.min(totalPages, p + 1))
                 }
                 disabled={currentPage >= totalPages}
-                className={`flex items-center justify-center w-10 h-10 rounded-full transition-all duration-200 ${
-                  currentPage >= totalPages
-                    ? "bg-base-200 text-base-content/40 cursor-not-allowed"
-                    : "bg-base-200 hover:bg-base-300 text-base-content"
-                }`}
+                className={`flex items-center justify-center w-10 h-10 rounded-full transition-all duration-200 ${currentPage >= totalPages
+                  ? "bg-base-200 text-base-content/40 cursor-not-allowed"
+                  : "bg-base-200 hover:bg-base-300 text-base-content"
+                  }`}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

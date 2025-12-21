@@ -7,6 +7,7 @@ import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { mutate } from 'swr';
 
 type EventImageUploadProps = {
     eventId: string;
@@ -67,6 +68,11 @@ export const EventImageUpload = ({ eventId, currentImageUrl, eventTitle }: Event
             const newImageUrl = formatImageUrl(response.data.imageUrl);
             console.log('Formatted image URL:', newImageUrl);
             setPreviewUrl(newImageUrl ? `${newImageUrl}?t=${Date.now()}` : null);
+
+            // Invalidate all SWR caches to force refetch
+            mutate(() => true, undefined, { revalidate: true });
+
+            // Force router refresh
             router.refresh();
 
         } catch (error) {
@@ -101,6 +107,11 @@ export const EventImageUpload = ({ eventId, currentImageUrl, eventTitle }: Event
             await axios.delete(`/api/events/${eventId}/image`);
             toast.success('Đã xóa ảnh sự kiện');
             setPreviewUrl(null);
+
+            // Invalidate all SWR caches to force refetch
+            mutate(() => true, undefined, { revalidate: true });
+
+            // Force router refresh
             router.refresh();
         } catch (error) {
             console.error('Error deleting event image:', error);

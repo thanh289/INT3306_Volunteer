@@ -2,9 +2,11 @@
 // app/api/events/[eventId]/image/route.ts
 
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import prisma from '@/lib/prisma';
+import { dataCache } from '@/lib/cache';
 import {
     validateImageFile,
     saveAndOptimizeImage,
@@ -104,6 +106,19 @@ export async function POST(request: Request, { params }: RouteParams) {
             await deleteImageFile(event.imageUrl);
         }
 
+        // Invalidate caches to force refresh
+        dataCache.delete(`event:details:${eventId}`);
+        dataCache.invalidatePattern("homepage:events");
+        dataCache.invalidatePattern("dashboard:posts:");
+
+        // Revalidate paths to update all pages showing this event
+        revalidatePath(`/events/${eventId}`);
+        revalidatePath(`/events/${eventId}/edit`);
+        revalidatePath('/events');
+        revalidatePath('/dashboard');
+        revalidatePath('/created-events');
+        revalidatePath('/');
+
         return NextResponse.json({
             success: true,
             imageUrl: updatedEvent.imageUrl,
@@ -172,6 +187,19 @@ export async function DELETE(request: Request, { params }: RouteParams) {
 
         // Delete file
         await deleteImageFile(event.imageUrl);
+
+        // Invalidate caches to force refresh
+        dataCache.delete(`event:details:${eventId}`);
+        dataCache.invalidatePattern("homepage:events");
+        dataCache.invalidatePattern("dashboard:posts:");
+
+        // Revalidate paths to update all pages showing this event
+        revalidatePath(`/events/${eventId}`);
+        revalidatePath(`/events/${eventId}/edit`);
+        revalidatePath('/events');
+        revalidatePath('/dashboard');
+        revalidatePath('/created-events');
+        revalidatePath('/');
 
         return NextResponse.json({
             success: true,

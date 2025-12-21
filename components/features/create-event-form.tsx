@@ -220,11 +220,10 @@ export const CreateEventForm = () => {
           {Object.entries(categoryConfig).map(([value, config]) => (
             <label
               key={value}
-              className={`cursor-pointer card card-compact border-2 transition-all hover:shadow-lg ${
-                formData.category === value
+              className={`cursor-pointer card card-compact border-2 transition-all hover:shadow-lg ${formData.category === value
                   ? "border-primary bg-primary/5 shadow-md"
                   : "border-base-300 hover:border-primary/50"
-              }`}
+                }`}
             >
               <div className="card-body items-center text-center">
                 <input
