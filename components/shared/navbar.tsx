@@ -54,7 +54,7 @@ export const Navbar = () => {
                 }`}
             >
               <Image
-                src="/api/images/logo.webp"
+                src="/images/logo.webp"
                 alt="VolunteerHub Logo"
                 fill
                 className="object-contain"

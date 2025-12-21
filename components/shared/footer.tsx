@@ -15,7 +15,7 @@ export const Footer = () => {
             <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
               <div className="relative w-8 h-8">
                 <Image
-                  src="/api/images/logo.webp"
+                  src="/images/logo.webp"
                   alt="VolunteerHub Logo"
                   fill
                   sizes="32px"
