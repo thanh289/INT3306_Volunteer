@@ -14,7 +14,7 @@ export async function POST(
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
-      return new NextResponse("Unauthorized", { status: 401 });
+      return new NextResponse("Bạn cần đăng nhập để sử dụng chức năng này!", { status: 401 });
     }
 
     const { eventId } = await params;
@@ -128,9 +128,8 @@ export async function POST(
     // Send notification to invited user
     await sendNotification({
       userId: invitedUserId,
-      message: `${session.user.name || "Ai đó"} đã mời bạn tham gia sự kiện "${
-        event.title
-      }"`,
+      message: `${session.user.name || "Ai đó"} đã mời bạn tham gia sự kiện "${event.title
+        }"`,
       href: `/events/${eventId}`,
     });
 
@@ -152,7 +151,7 @@ export async function GET(
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
-      return new NextResponse("Unauthorized", { status: 401 });
+      return new NextResponse("Bạn cần đăng nhập để sử dụng chức năng này!", { status: 401 });
     }
 
     const { eventId } = await params;
