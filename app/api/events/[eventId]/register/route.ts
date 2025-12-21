@@ -46,8 +46,19 @@ export async function POST(request: Request, { params }: PostParams) {
         throw new Error("EVENT_ENDED");
       }
 
+      // Check existing registration - allow re-registration if rejected
       if (existingRegistration) {
-        throw new Error("ALREADY_REGISTERED");
+        if (existingRegistration.status === "REJECTED") {
+          // Delete old rejected registration and its answers to allow re-registration
+          await tx.registrationAnswer.deleteMany({
+            where: { registrationId: existingRegistration.id },
+          });
+          await tx.registration.delete({
+            where: { id: existingRegistration.id },
+          });
+        } else {
+          throw new Error("ALREADY_REGISTERED");
+        }
       }
 
       if (registrationCount >= eventDetails.maxAttendees) {
