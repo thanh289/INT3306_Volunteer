@@ -654,8 +654,8 @@ export const EventWall = ({
                                 handlePinPost(post.id, post.isPinned || false)
                               }
                               className={`btn btn-ghost btn-sm ${post.isPinned
-                                  ? "text-primary hover:bg-primary/10"
-                                  : "hover:bg-base-200"
+                                ? "text-primary hover:bg-primary/10"
+                                : "hover:bg-base-200"
                                 }`}
                               title={
                                 post.isPinned ? "Bỏ ghim" : "Ghim bài viết"
@@ -732,7 +732,7 @@ export const EventWall = ({
                           <div className="relative w-full h-64 rounded-lg overflow-hidden mb-3 border border-base-300">
                             <Image
                               src={
-                                "/" +
+                                "/api/" +
                                 post.imageUrl
                                   .replace(/\\/g, "/")
                                   .replace(/^\/+/, "")

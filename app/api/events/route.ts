@@ -133,7 +133,6 @@ export async function POST(request: Request) {
         // Create uploads directory if it doesn't exist
         const uploadsDir = path.join(
           process.cwd(),
-          "public",
           "uploads",
           "events"
         );
@@ -145,7 +144,7 @@ export async function POST(request: Request) {
         const filepath = path.join(uploadsDir, filename);
         await writeFile(filepath, buffer);
 
-        imageUrl = `uploads/events/${filename}`;
+        imageUrl = `/api/uploads/events/${filename}`;
       } catch (error) {
         console.error("Error uploading image:", error);
         return new NextResponse("Không thể tải lên ảnh", { status: 500 });
