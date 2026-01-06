@@ -205,109 +205,20 @@ Dự án áp dụng nhiều design patterns hiện đại để đảm bảo cod
 - Next.js middleware cho authentication check toàn app
 - Protected routes với automatic redirect
 
----
+### 9. **Tối Ưu Hiệu Năng**
 
-## Tối Ưu Hiệu Năng
+- **Caching Strategy**: Server-side và API caching với TTL phù hợp (giảm 80% queries)
+- **Batch Fetching**: Gộp queries để giảm N+1 problem
+- **Image Optimization**: Lazy loading, WebP format, responsive images
+- **Code Splitting**: Dynamic imports và route-based splitting
 
-Dự án được tối ưu hóa toàn diện để đảm bảo hiệu năng cao:
+### 10. **Bảo Mật**
 
-### 1. **Server-Side Caching**
-
-- Cache dữ liệu với TTL phù hợp (1-5 phút)
-- Giảm 80% database queries
-- Response time cải thiện từ 200ms xuống 50ms
-- Automatic cache invalidation khi có update
-
-### 2. **API Response Caching**
-
-- Cache kết quả API calls để tránh queries trùng lặp
-- Sử dụng in-memory cache cho dữ liệu thường xuyên truy cập
-
-### 3. **Batch Fetching**
-
-- Gộp nhiều queries thành một để giảm database roundtrips
-- Giảm N+1 query problem
-- Tối ưu network requests
-
-### 4. **Image Optimization**
-
-- Lazy loading cho hình ảnh
-- Tự động chuyển đổi sang WebP format
-- Responsive images theo device
-
-### 5. **Code Splitting**
-
-- Dynamic imports cho các components lớn
-- Route-based code splitting tự động với App Router
-- Giảm bundle size ban đầu
-
-### 6. **Database Optimization**
-
-- Indexes trên các foreign keys và trường thường query
-- Chỉ select các fields cần thiết
-- Pagination cho danh sách dài
-
-### 7. **Client-Side Optimization**
-
-- Filter/sort không reload page
-- Instant search với debouncing
-- Memoization với useMemo/useCallback
-
----
-
-## An Ninh & Bảo Mật
-
-Hệ thống được xây dựng với nhiều lớp bảo mật để đảm bảo an toàn dữ liệu:
-
-### 1. **Authentication & Authorization**
-
-- Sử dụng NextAuth.js cho quản lý session
-- JWT sessions được mã hóa
-- Hỗ trợ đăng nhập bằng email/password và Google OAuth
-- Password được hash với bcrypt (salt rounds: 10)
-- Middleware protection cho các routes cần authentication
-
-### 2. **CSRF Protection**
-
-- Bảo vệ khỏi Cross-Site Request Forgery attacks
-- Mỗi request POST/PUT/DELETE cần CSRF token hợp lệ
-- Token được generate và validate tự động
-
-### 3. **Role-Based Access Control (RBAC)**
-
-- Phân quyền rõ ràng: Admin, Event Manager, Volunteer
-- Middleware kiểm tra permissions trước khi cho phép truy cập
-- API endpoints được bảo vệ theo vai trò người dùng
-
-### 4. **Input Validation**
-
-- Sử dụng Zod schemas để validate tất cả user inputs
-- Validation trên cả client và server side
-- Type-safe validation với TypeScript
-
-### 5. **SQL Injection Prevention**
-
-- Prisma ORM với parameterized queries
-- Không sử dụng raw SQL queries
-- Tự động escape các giá trị nguy hiểm
-
-### 6. **XSS Prevention**
-
-- React tự động escape outputs để ngăn XSS
-- Sanitize user inputs trước khi lưu database
-- Content Security Policy headers
-
-### 7. **Rate Limiting**
-
-- Giới hạn số lượng requests từ mỗi IP
-- Ngăn chặn brute force attacks và DDoS
-- Sử dụng Upstash Redis để track requests
-
-### 8. **Secure Headers**
-
-- X-Frame-Options: Ngăn clickjacking
-- X-Content-Type-Options: Ngăn MIME sniffing
-- Các security headers khác theo best practices
+- **Authentication**: NextAuth.js với JWT sessions, bcrypt password hashing
+- **CSRF Protection**: Token validation cho mọi mutation request
+- **RBAC**: Phân quyền chi tiết theo vai trò (Admin/Manager/Volunteer)
+- **Input Validation**: Zod schemas cho tất cả user inputs
+- **Rate Limiting**: Upstash Redis để ngăn chặn abuse
 
 ---
 
@@ -493,48 +404,6 @@ npm start
 
 ---
 
-## Performance Metrics
-
-### Hiệu Năng Tối Ưu
-
-| Metric                         | Target  | Achieved | Notes                     |
-| ------------------------------ | ------- | -------- | ------------------------- |
-| First Contentful Paint (FCP)   | < 1.5s  | 1.2s     | Server-side rendering     |
-| Largest Contentful Paint (LCP) | < 2.5s  | 2.1s     | Image optimization        |
-| Time to Interactive (TTI)      | < 3.5s  | 3.0s     | Code splitting            |
-| Cumulative Layout Shift (CLS)  | < 0.1   | 0.05     | Fixed dimensions          |
-| First Input Delay (FID)        | < 100ms | 85ms     | Minimal JavaScript        |
-| Lighthouse Score (Desktop)     | > 90    | 95       | All optimizations applied |
-| Lighthouse Score (Mobile)      | > 80    | 88       | Responsive design         |
-
-### Optimization Techniques
-
-#### Server-Side
-
-- Redis caching với Upstash
-- Database query optimization (indexes, select specific fields)
-- Batch fetching to reduce N+1 queries
-- Server-side data filtering
-
-#### Client-Side
-
-- React Server Components (RSC) - fetch data server-side
-- Client Components chỉ khi cần interactivity
-- Code splitting với dynamic imports
-- Image optimization với Next.js Image component
-- Lazy loading cho images và components
-- Debouncing cho search inputs
-- Memoization với useMemo/useCallback
-
-#### Network
-
-- HTTP/2 multiplexing
-- Compression (gzip/brotli)
-- CDN-ready static assets
-- SWR for client-side data fetching (stale-while-revalidate)
-
----
-
 ## Thiết Kế UI/UX
 
 ### Triết Lý Thiết Kế
@@ -561,27 +430,3 @@ Desktop: > 1024px  (xl, 2xl)
 - Cải tiến dần cho màn hình lớn hơn
 - Nút bấm dễ chạm (tối thiểu 44 x 44px)
 - Điều hướng tối ưu cho màn hình nhỏ
-
----
-
-## Deployment Guide
-
-### Vercel
-
-**Bước 1:** Tạo account tại [vercel.com](https://vercel.com)
-
-**Bước 2:** Import project từ GitHub
-
-**Bước 3:** Configure environment variables:
-
-- Copy tất cả từ `.env`
-- Set `NEXTAUTH_URL` = production URL
-- Add MongoDB Atlas connection string
-
-**Bước 4:** Deploy!
-
-```bash
-# Hoặc deploy từ CLI
-npm i -g vercel
-vercel --prod
-```
